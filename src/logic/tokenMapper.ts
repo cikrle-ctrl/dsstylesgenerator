@@ -242,7 +242,6 @@ function getTokens(
 ): CssTokenMap {
     const isLight = mode === 'light';
     const n = scales.neutral;
-    const p = scales.primary;
 
     const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary, customTones);
     const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary, customTones);
@@ -251,38 +250,52 @@ function getTokens(
     const successSet = createTokenSet(scales, 'success', mode, contrast, stayTrueToInputColor, inputColors?.success, customTones);
     const infoSet = createTokenSet(scales, 'info', mode, contrast, stayTrueToInputColor, inputColors?.info, customTones);
 
-    // Základní tokeny podle finální specifikace
+    // Základní tokeny podle finální specifikace (Krok 4 + 6 algoritmu)
     const baseTokens: CssTokenMap = {
-        // Surface (Povrchy a Pozadí)
-        // High contrast: čisté extrémy pro maximální čitelnost
-        '--color-background': (contrast === 'high-contrast' || contrast === 'extra-high') ? (isLight ? n['0'] : n['1000']) : (isLight ? n['50'] : n['1000']),
-        '--color-surface': (contrast === 'high-contrast' || contrast === 'extra-high') ? (isLight ? n['0'] : n['1000']) : (isLight ? n['0'] : n['900']),
-        // V kontrastních režimech dejme variantě lehkou barevnost z primary, aby UI nepůsobilo černobíle
-        '--color-surface-variant': (contrast === 'high-contrast' || contrast === 'extra-high')
-            ? (isLight ? p['150'] : p['800'])
-            : (isLight ? n['200'] : n['800']),
+        // Surface (Povrchy a Pozadí) - Krok 4: Definice Režimů a Sémantických Povrchů
+        // background: Vnější pozadí stránky ("za" kartami)
+        '--color-background': isLight ? n['50'] : n['1000'],
+        
+        // surface-default: Výchozí pozadí komponent (karty, modály) - hlavní pozadí pro výpočty kontrastu
+        '--color-surface': isLight ? n['0'] : n['950'],
+        
+        // surface-variant: Pozadí pro odlišené sekce (tmavší na světlém, světlejší na tmavém)
+        '--color-surface-variant': isLight ? n['100'] : n['900'],
+        
         '--color-inverse-surface': isLight ? n['950'] : n['0'],
 
-        // OnSurface (Texty a Ikony) - klíčové pro čitelnost
-        '--color-on-surface-heading': (contrast === 'high-contrast' || contrast === 'extra-high') ? (isLight ? n['1000'] : n['0']) : (isLight ? n['900'] : n['0']),
-        '--color-on-surface-variant': contrast === 'extra-high'
-            ? (isLight ? n['800'] : n['200'])  // Extra: tmavší/světlejší pro body text
-            : (isLight ? n['700'] : n['300']),
-        '--color-on-surface-subtle': contrast === 'extra-high'
-            ? (isLight ? n['700'] : n['300'])  // Extra: méně subtle
-            : (isLight ? n['600'] : n['400']),
+        // OnSurface (Texty a Ikony) - Krok 6D: Statická mapování pro Text
+        // on-surface-heading: Nejvyšší důraz, téměř černá/bílá
+        '--color-on-surface-heading': isLight ? n['950'] : n['50'],
+        
+        // on-surface-body: Standardní text (použijeme on-surface-variant jako body)
+        '--color-on-surface-variant': isLight ? n['800'] : n['100'],
+        
+        // on-surface-subtle: Nízký důraz (placeholders), střední šedá
+        '--color-on-surface-subtle': isLight ? n['500'] : n['500'],
+        
         '--color-on-surface-inverse': isLight ? n['0'] : n['1000'],
         '--color-primary-inverse': isLight ? scales.primary['300'] : scales.primary['500'],
 
-        // Outline (Ohraničení) - odvoď podle kontrastu k aktuální surface
+        // Outline (Ohraničení) - Krok 6D: Statická mapování pro Okraje
         // Subtle ~2:1, Default ~3:1, Strong ~4.5:1
         ...(() => {
-            const surfaceHex = (contrast === 'high-contrast' || contrast === 'extra-high') ? (isLight ? n['0'] : n['1000']) : (isLight ? n['0'] : n['900']);
-            const subtle = findBestContrast(surfaceHex, isLight ? [n['200'], n['250'], n['300'], n['350']] : [n['800'], n['750'], n['700'], n['650']], 2.0);
-            const deflt = findBestContrast(surfaceHex, isLight ? [n['400'], n['450'], n['500']] : [n['600'], n['550'], n['500']], 3.0);
-            const strong = findBestContrast(surfaceHex, isLight ? [n['700'], n['750'], n['800'], n['850']] : [n['300'], n['250'], n['200'], n['150']], contrast === 'extra-high' ? 4.5 : 4.5);
-            const hover = findBestContrast(surfaceHex, isLight ? [n['500'], n['550']] : [n['500'], n['450']], 3.0);
-            const pressed = findBestContrast(surfaceHex, isLight ? [n['600'], n['650']] : [n['400'], n['350']], 3.0);
+            const surfaceHex = isLight ? n['0'] : n['950'];
+            
+            // border-subtle: Nejméně viditelný okraj (oddělovač)
+            const subtle = findBestContrast(surfaceHex, isLight ? [n['100'], n['150'], n['200']] : [n['850'], n['800'], n['750']], 2.0);
+            
+            // border-default: Výchozí okraj (např. u surface-variant)
+            const deflt = findBestContrast(surfaceHex, isLight ? [n['200'], n['250'], n['300']] : [n['800'], n['750'], n['700']], 3.0);
+            
+            // border-default-hover: Zvýraznění okraje při najetí
+            const hover = findBestContrast(surfaceHex, isLight ? [n['300'], n['350'], n['400']] : [n['700'], n['650'], n['600']], 3.0);
+            
+            const pressed = findBestContrast(surfaceHex, isLight ? [n['400'], n['450'], n['500']] : [n['600'], n['550'], n['500']], 3.0);
+            
+            // border-strong: Vysoce viditelný okraj (kontrastní)
+            const strong = findBestContrast(surfaceHex, isLight ? [n['500'], n['550'], n['600']] : [n['500'], n['450'], n['400']], contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 4.5 : 4.5);
+            
             return {
                 '--color-outline-subtle': subtle,
                 '--color-outline-default': deflt,
@@ -291,6 +304,8 @@ function getTokens(
                 '--color-outline-pressed': pressed,
             } as CssTokenMap;
         })(),
+        
+        // border-focus: Dynamický token, odkazuje na již vypočítanou primary-default
         '--color-focus': isLight ? scales.info['500'] : scales.info['400'],
 
         // Ostatní
@@ -301,29 +316,19 @@ function getTokens(
                 ? (isLight ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.8)')
                 : (isLight ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.6)'),
         
-        // Stavy povrchů - explicitně podle kontrastu (default jemný, high výraznější, extra nejvýraznější)
-        '--color-surface-hover': (
-            contrast === 'extra-high'
-                ? (isLight ? n['200'] : n['750'])
-                : contrast === 'high-contrast'
-                    ? (isLight ? n['150'] : n['800'])
-                    : (isLight ? n['100'] : n['850'])
-        ),
-        '--color-surface-pressed': (
-            contrast === 'extra-high'
-                ? (isLight ? n['300'] : n['700'])
-                : contrast === 'high-contrast'
-                    ? (isLight ? n['250'] : n['750'])
-                    : (isLight ? n['150'] : n['800'])
-        ),
+        // Stavy povrchů - Krok 4: surface-hover a surface-pressed
+        // surface-hover: Stav surface-default při najetí myší
+        '--color-surface-hover': isLight ? n['50'] : n['900'],
         
-        // Disabled stavy - musí být rozpoznatelné
-        '--color-disabled': contrast === 'extra-high' 
-            ? (isLight ? n['150'] : n['850']) 
-            : (contrast === 'high-contrast' ? (isLight ? n['200'] : n['800']) : (isLight ? n['300'] : n['700'])),
-        '--color-on-disabled': contrast === 'extra-high'
-            ? (isLight ? n['600'] : n['400'])  // Extra: lepší čitelnost disabled textu
-            : (isLight ? n['500'] : n['500']),
+        // surface-pressed: Stav surface-default při stisknutí
+        '--color-surface-pressed': isLight ? n['100'] : n['850'],
+        
+        // Disabled stavy - Krok 6D: Statická mapování pro Stavy
+        // disabled-surface: Pozadí vypnutého prvku (nízký kontrast)
+        '--color-disabled': isLight ? n['100'] : n['850'],
+        
+        // on-disabled: Text na vypnutém pozadí
+        '--color-on-disabled': isLight ? n['400'] : n['600'],
     };
 
     return {
