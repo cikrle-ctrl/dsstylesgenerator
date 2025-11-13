@@ -23,6 +23,8 @@
 
 /* === 1. Levý Panel (Kontrolky) === */
 .control-panel {
+  display: flex;
+  flex-direction: column;
   padding: 24px 20px;
   /* Token-based background so it adapts to light/dark/contrast */
   background: var(--color-surface-variant);

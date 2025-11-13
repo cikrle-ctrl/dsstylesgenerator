@@ -1,76 +1,305 @@
-# DS Styles Generator
+# 🎨 DS Styles Generator
 
-A visual theme builder that generates complete design tokens and color scales (0→1000), supports Light/Dark modes, three contrast levels, and multi-format export. Built with React + TypeScript + Vite and grounded in OKLCH/HCT color principles.
+A visual theme builder that generates complete design tokens and color scales (0→1000), supports Light/Dark modes, contrast levels, and multi-format export. Built with React + TypeScript + Vite and grounded in OKLCH/HCT color principles.
 
-## What it does
+## ✅ All Features Implemented
 
-- 0–1000 color scale in 50-step increments (perceptual spacing)
-- Semantic tokens for Primary, Secondary, Error, Warning, Success, Info + Neutral
-- Light/Dark themes and contrast levels: default / high-contrast / extra-high
-- Adaptive chroma (boosts mid-tones, reduces at extremes)
-- Tokens for surface/outline/focus/disabled + hover/pressed variants
-- Color harmonies (analogous, complementary, triadic)
-- Colorblind simulation (4 types)
-- Export: CSS, SCSS, Tailwind, JSON, Figma (JSON)
+### 📋 Feature Overview
 
-## How it works (short)
-
-- Scale generation: `src/logic/colorModule.ts`
-  - OKLCH perceptual lightness curve, adaptive chroma by lightness
-  - Neutral: tinted gray from primary or pure gray (optional)
-- Token mapping: `src/logic/tokenMapper.ts`
-  - Produces semantic tokens for both themes and all contrast tiers
-  - On-colors selected via `findBestContrast` (WCAG 2.1)
-  - Contrast modes stay colorful (more colorful containers and surface-variant)
-- State: `src/store/themeStore.ts` (Zustand)
-  - Stores inputs (colors, surface strategies), scales, generated tokens, and UI modes
-
-## Contrast modes
-
-- Default: text 4.5:1, UI 3:1, subtle surface states
-- High-contrast: text 7:1, stronger surfaces, colorful containers (not grayscale)
-- Extra-high: text 7:1+, maximum readability and state prominence
-
-## Tokens (selection)
-
-- Colors: `--color-primary`, `--color-secondary`, `--color-error`, ...
-- On-colors: `--color-on-primary`, `--color-on-primary-container`, ...
-- Surface: `--color-surface`, `--color-surface-variant`, `--color-surface-hover/pressed`
-- Outline: `--color-outline-subtle/default/strong/hover/pressed`
-- Disabled: `--color-disabled`, `--color-on-disabled`
-- Focus ring: `--color-focus`
-
-## UI and components
-
-- Custom components: Select, Slider, Checkbox, ColorInput, ColorPicker, Tabs, etc.
-- Live Preview: buttons, cards, text field, tabs, alerts, badges, progress…
-- Colorblind Simulation: side-by-side comparison of original vs filtered colors
-
-## Usage
-
-Run the dev server and open in your browser. Exports are available in the Export panel within the UI.
-
-## Responsive behavior
-
-- Cards and layout adapt paddings; rows collapse to columns under 768 px
-- Selects and inputs use 100% width in their containers
-- Fixed-width components (e.g., text field) clamp with `min(100%, …px)`
-
-## Project structure (short)
-
-- `src/components` – UI and demo components (LivePreview, Palette/Scale Preview, …)
-- `src/logic` – scale generation, tokens, contrast, HCT/OKLCH
-- `src/store` – Zustand store for inputs, scales, tokens and UI modes
-
-## Scripts
-
-Dev: `npm run dev`  •  Build: `npm run build`  •  Lint: `npm run lint`
-
-## Further documentation
-
-- Material HCT integration: `MATERIAL_HCT_INTEGRATION.md`
-- Improvements breakdown: `IMPROVEMENTS.md`
+| # | Feature | Component | Description |
+|---|---------|-----------|-------------|
+| 1 | Adaptive Chroma | `colorModule.ts` + `toneContrastSystem.ts` | Automatic saturation reduction at extreme tone values |
+| 2 | Perceptual Spacing | `colorModule.ts` | Non-linear lightness steps with easing |
+| 3 | Pure Neutrals | `AdvancedControls.tsx` | Toggle for pure gray neutrals (chroma = 0) |
+| 4 | Adaptive Container | `tokenMapper.ts` | Dynamic container color selection for 3:1 contrast |
+| 5 | Saturation/Temperature | `AdvancedControls.tsx` | Sliders for global saturation and temperature |
+| 6 | A11y Badges | `PalettePreview.tsx` | AAA/AA/FAIL indicators with colors |
+| 7 | Export Formats | `ExportPanel.tsx` | CSS, Tailwind, SCSS, JSON, Figma tokens |
+| 8 | Colorblind Simulation | `ColorblindSimulator.tsx` | Deuteranopia, Protanopia, Tritanopia, Grayscale |
+| 9 | Color Harmony | `ColorHarmonyVisualizer.tsx` | Analogous, Complementary, Triadic |
+| 10 | Live Preview | `LivePreview.tsx` | Combinable Theme (Light/Dark) + Contrast modes |
+| 11 | Material Design 3 HCT | `toneContrastSystem.ts` | Tone-based contrast system |
+| 12 | UI Components | Multiple | Complete UI for all capabilities |
 
 ---
 
-Tips: If you want to tweak contrast strictness or saturation in contrast modes, check `tokenMapper.ts` and `colorModule.ts` (see inline comments for relevant branches).
+## 🎯 Key Components
+
+### LivePreview
+**Features:**
+- 🔄 Two independent segmented controls: Theme (Light/Dark) + Contrast (Default/High)
+- 📦 Single preview box with 4 possible combinations
+- ✨ Automatic theme switching
+- 🎨 Real-time token application
+
+**Combinations:**
+1. Light + Default → Standard light mode
+2. Light + High Contrast → Light with max contrast (up to 21:1)
+3. Dark + Default → Standard dark mode
+4. Dark + High Contrast → Dark with max contrast (up to 21:1)
+
+### AdvancedControls
+**Features:**
+- ☑️ Pure Neutrals Toggle: Switch to grayscale neutrals
+- 🎚️ Saturation Slider: 0.5x - 1.5x global multiplier
+- 🌡️ Temperature Slider: -15° to +15° hue shift
+- 🎨 Harmony Dropdown: None, Analogous, Complementary, Triadic
+- 📖 Inline guidance for each control
+
+### ColorHarmonyVisualizer
+**Features:**
+- 🎨 Analogous: Primary + Adjacent color (+30° hue)
+- 🎯 Complementary: Primary + Opposite color (+180° hue)
+- 🔺 Triadic: Three evenly spaced colors (+120° intervals)
+- 🖼️ Visual swatches with hex values
+- 💡 Explanation for each harmony type
+
+### ColorblindSimulator
+**Features:**
+- 👁️ 5 modes: None, Deuteranopia, Protanopia, Tritanopia, Grayscale
+- 🎨 Before/After preview for all semantic colors
+- 📊 Grid layout for side-by-side comparison
+- 🧬 Color matrix transformations (Brettel algorithm)
+
+### ExportPanel
+**Supported formats:**
+1. CSS Variables → `.css` with `:root` and `[data-theme="dark"]`
+2. Tailwind Config → `.js` with `module.exports` object
+3. SCSS Variables → `.scss` with `$color-primary` syntax
+4. JSON → `.json` with complete tokens and scales
+5. Figma Tokens → `.json` compatible with Figma Tokens plugin
+
+---
+
+## 🔬 Material Design 3 HCT System
+
+### Tone-Based Contrast
+
+**Standard Contrast:**
+```typescript
+Light Mode:
+  Primary: tone 40  → On Primary: tone 100  = 4.5:1 (AA)
+  Container: tone 90 → On Container: tone 10 = 9.2:1 (AAA)
+
+Dark Mode:
+  Primary: tone 80  → On Primary: tone 20  = 4.5:1 (AA)
+  Container: tone 30 → On Container: tone 90 = 9.3:1 (AAA)
+```
+
+**High Contrast:**
+```typescript
+Light Mode:
+  Primary: tone 30  → On Primary: tone 100  = 7.1:1 (AAA)
+  Surface: tone 100 → On Surface: tone 0   = 21:1 (AAA)
+
+Dark Mode:
+  Primary: tone 90  → On Primary: tone 10  = 11.4:1 (AAA)
+  Surface: tone 0   → On Surface: tone 100 = 21:1 (AAA)
+```
+
+### Adaptive Chroma
+Automatic saturation reduction at physically limited tone values:
+
+```typescript
+if (tone >= 95 || tone <= 5)   → chroma × 0.3  // Extreme
+if (tone >= 85 || tone <= 15)  → chroma × 0.6  // Very light/dark
+if (tone >= 75 || tone <= 25)  → chroma × 0.8  // Slightly light/dark
+else                            → chroma × 1.0  // Full saturation
+```
+
+**Why?** Physical color limits — some hue + chroma + tone combinations are impossible (e.g., "bright light blue @ 95% tone").
+
+---
+
+## 🎨 Color Harmony
+
+### Implemented Modes
+
+**1. Analogous (+30° hue)**
+```
+Primary: #0052cc (blue, 220°)
+↓
+Secondary: #5200cc (purple, 250°)
+```
+Use: Harmonious, calm palettes
+
+**2. Complementary (+180° hue)**
+```
+Primary: #0052cc (blue, 220°)
+↓
+Secondary: #cc7a00 (orange, 40°)
+```
+Use: High contrast, vibrant palettes
+
+**3. Triadic (+120° intervals)**
+```
+Primary: #0052cc (blue, 220°)
+↓
+Colors: #0052cc, #cc0052, #52cc00
+        (blue, red, green - 120° apart)
+```
+Use: Balanced, vibrant palettes
+
+---
+
+## 📊 Project Structure
+
+```
+src/
+├── components/
+│   ├── AdvancedControls.tsx         ← Pure neutrals, saturation, temp, harmony
+│   ├── ColorblindSimulator.tsx      ← Colorblind simulation preview
+│   ├── ColorHarmonyVisualizer.tsx   ← Harmony schemes visualizer
+│   ├── ExportPanel.tsx              ← Multi-format export
+│   ├── LivePreview.tsx              ← Theme + Contrast segmented buttons
+│   ├── PalettePreview.tsx           ← AAA/AA/FAIL badges
+│   └── ...
+├── logic/
+│   ├── colorModule.ts               ← Core color generation + harmony
+│   ├── colorblindSimulator.ts       ← Color matrix transformations
+│   ├── toneContrastSystem.ts        ← Material Design 3 HCT system
+│   ├── tokenMapper.ts               ← Semantic token mapping
+│   └── ...
+└── store/
+    └── themeStore.ts                ← Zustand state management
+```
+
+---
+
+## 🚀 Usage
+
+### 1. Basic Setup
+```tsx
+// Left panel: Color inputs
+- Primary color picker
+- Secondary color picker
+- Auto-generated semantics (Error, Warning, Success, Info)
+- Surface controls (Radius, Shadow)
+```
+
+### 2. Advanced Controls
+```tsx
+// Click "Advanced Controls" to expand
+- Pure Neutrals: ☑️ Remove color tint
+- Saturation: 🎚️ 0.5x - 1.5x
+- Temperature: 🌡️ -15° - +15°
+- Harmony: 🎨 Dropdown (None/Analogous/Complementary/Triadic)
+```
+
+### 3. Live Preview
+```tsx
+// Top panel: Combine modes
+Theme:    [Light] [Dark]
+Contrast: [Default] [High Contrast]
+
+// 4 combinations:
+✅ Light + Default
+✅ Light + High Contrast
+✅ Dark + Default
+✅ Dark + High Contrast
+```
+
+### 4. Visualizations
+```tsx
+// Scroll down for:
+- 🎨 Color Harmony Generator (3 harmony types)
+- 👁️ Colorblind Simulation (5 vision types)
+- 📊 Material Design 3 Tonal Palettes (Primary, Secondary, Error)
+- 🎯 Complete Token Preview (100+ tokens with contrast badges)
+- 📏 Scale Preview (0-1000 in 50-step increments)
+```
+
+### 5. Export
+```tsx
+// Bottom: Export Panel
+[CSS Variables] [Tailwind Config] [SCSS Variables]
+[JSON] [Figma Tokens]
+
+// One click = file download
+```
+
+---
+
+## 🎯 Key Principles
+
+### 1. Physical Color Limits
+```typescript
+// Some colors are physically impossible
+❌ "Bright light blue" @ tone 95 + high chroma
+✅ "Pale light blue" @ tone 95 + reduced chroma (0.3x)
+
+// System handles this automatically with adaptive chroma
+```
+
+### 2. Tone-Based Guaranteed Contrast
+```typescript
+// Instead of guessing colors, use tone system
+Primary (tone 40) + On Primary (tone 100) = guaranteed 4.5:1 contrast
+
+// High contrast pushes tones further
+Primary (tone 30) + On Primary (tone 100) = guaranteed 7.1:1 contrast
+```
+
+### 3. Independent Modes
+```typescript
+// Theme and Contrast are independent
+data-theme="light" | "dark"           // Color scheme
+data-contrast="default" | "high"       // Contrast level
+
+// Users can combine as needed
+```
+
+### 4. Accessibility First
+```typescript
+// All tokens have AAA/AA/FAIL badges
+// High contrast mode guarantees 7:1+ contrast
+// Colorblind simulation for testing
+```
+
+---
+
+## 📜 Scripts
+
+**Development:**
+```bash
+npm run dev
+```
+
+**Build:**
+```bash
+npm run build
+```
+
+**Lint:**
+```bash
+npm run lint
+```
+
+---
+
+## 📚 Further Documentation
+
+- **MATERIAL_HCT_INTEGRATION.md** → Material Design 3 HCT system in detail
+- **QUICK_START.md** → 5-minute quick start guide
+- **IMPROVEMENTS.md** → Complete list of improvements + implementation
+
+---
+
+## 🎉 Outcome
+
+Professional design system generator with:
+- ✅ Material Design 3 HCT tone system
+- ✅ Combinable Light/Dark + Default/High Contrast modes
+- ✅ Adaptive chroma honoring physical color limits
+- ✅ Perceptual lightness spacing
+- ✅ Color harmony generation (analogous, complementary, triadic)
+- ✅ Pure neutrals option
+- ✅ Saturation & temperature controls
+- ✅ Colorblind simulation (4 types)
+- ✅ Multi-format export (CSS, Tailwind, SCSS, JSON, Figma)
+- ✅ Real-time WCAG contrast validation (AAA/AA/FAIL)
+- ✅ 0-1000 color scale (21 steps, step 50)
+- ✅ 100+ semantic tokens
+- ✅ Live preview of all components
+
+Built on science, physics, and accessibility! 🚀✨

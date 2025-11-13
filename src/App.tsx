@@ -131,6 +131,28 @@ function App() {
 
                     <AdvancedControls />
                     <ExportPanel />
+                    
+                    <div style={{ 
+                        marginTop: 'auto', 
+                        padding: '16px', 
+                        textAlign: 'center', 
+                        fontSize: '12px', 
+                        color: 'var(--color-on-surface-variant)',
+                        borderTop: '1px solid var(--color-outline-subtle)'
+                    }}>
+                        made with ❤️ by <a 
+                            href="https://github.com/cikrle-ctrl" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{
+                                color: 'var(--color-primary)',
+                                textDecoration: 'none',
+                                fontWeight: 500
+                            }}
+                        >
+                            ciki
+                        </a>
+                    </div>
                 </div>
 
                 {/* MIDDLE PANEL: routes */}
