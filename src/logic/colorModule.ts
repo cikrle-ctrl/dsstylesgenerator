@@ -248,3 +248,33 @@ export function generateTriadicColors(baseColorHex: string): [string, string, st
         formatHex(clampChroma({ ...baseOklch, h: hue3 }, 'oklch')),
     ];
 }
+
+/**
+ * Zvýší sytost škály pro high contrast režimy
+ * Extra-high (AAA) dostane nejvyšší boost sytosti
+ */
+export function applyContrastSaturationBoost(scale: ShadeScale, contrastMode: 'default' | 'high-contrast' | 'extra-high'): ShadeScale {
+    if (contrastMode === 'default') return scale;
+    
+    // Extra-high: 1.3x boost, High: 1.15x boost
+    const boostMultiplier = contrastMode === 'extra-high' ? 1.3 : 1.15;
+    
+    const boostedScale: Partial<ShadeScale> = {};
+    for (const [step, hex] of Object.entries(scale)) {
+        const color = oklch(hex);
+        if (!color) {
+            boostedScale[step as keyof ShadeScale] = hex;
+            continue;
+        }
+        
+        // Zvýšíme chroma, ale respektujeme fyzikální limity
+        const newColor = {
+            ...color,
+            c: (color.c || 0) * boostMultiplier,
+        };
+        
+        boostedScale[step as keyof ShadeScale] = formatHex(clampChroma(newColor, 'oklch'));
+    }
+    
+    return boostedScale as ShadeScale;
+}

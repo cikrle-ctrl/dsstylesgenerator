@@ -6,7 +6,8 @@ import {
     autoGenerateSemantics,
     generatePureNeutrals,
     applySaturationMultiplier,
-    applyTemperatureShift
+    applyTemperatureShift,
+    applyContrastSaturationBoost
 } from '../logic/colorModule';
 import { generateMappedTokens } from '../logic/tokenMapper';
 import { 
@@ -124,15 +125,27 @@ export const useThemeStore = create<ThemeState>((set) => ({
     setThemeMode: (mode) => set((state) => ({ ui: { ...state.ui, themeMode: mode } })),
     setContrastMode: (mode) =>
         set((state) => {
-            // Při změně kontrastu přegenerujeme tokeny s novým kontrastem
+            // Při změně kontrastu aplikujeme saturation boost na všechny škály
+            const boostedScales = {
+                primary: applyContrastSaturationBoost(state.scales.primary, mode),
+                secondary: applyContrastSaturationBoost(state.scales.secondary, mode),
+                neutral: state.scales.neutral, // Neutral zůstává beze změny
+                error: applyContrastSaturationBoost(state.scales.error, mode),
+                warning: applyContrastSaturationBoost(state.scales.warning, mode),
+                success: applyContrastSaturationBoost(state.scales.success, mode),
+                info: applyContrastSaturationBoost(state.scales.info, mode),
+            };
+            
+            // Přegenerujeme tokeny s novým kontrastem a boosted scales
             const newColorTokens = generateMappedTokens(
-                state.scales, 
+                boostedScales, 
                 mode, 
                 state.advancedSettings.stayTrueToInputColor,
                 state.inputs.colors
             );
             return {
                 ui: { ...state.ui, contrastMode: mode },
+                scales: boostedScales,
                 tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark },
             };
         }),
@@ -182,7 +195,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 }
             };
 
-            const newScales = {
+            let newScales = {
                 primary: generateShades(newInputs.colors.primary),
                 secondary: generateShades(newInputs.colors.secondary),
                 neutral: generateTintedNeutrals(newInputs.colors.primary),
@@ -191,6 +204,19 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 success: generateShades(newInputs.colors.success),
                 info: generateShades(newInputs.colors.info),
             };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales = {
+                    primary: applyContrastSaturationBoost(newScales.primary, state.ui.contrastMode),
+                    secondary: applyContrastSaturationBoost(newScales.secondary, state.ui.contrastMode),
+                    neutral: newScales.neutral,
+                    error: applyContrastSaturationBoost(newScales.error, state.ui.contrastMode),
+                    warning: applyContrastSaturationBoost(newScales.warning, state.ui.contrastMode),
+                    success: applyContrastSaturationBoost(newScales.success, state.ui.contrastMode),
+                    info: applyContrastSaturationBoost(newScales.info, state.ui.contrastMode),
+                };
+            }
 
             const newColorTokens = generateMappedTokens(
                 newScales, 
@@ -209,7 +235,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
 
     setSecondaryColor: (color: string) =>
         set((state) => {
-            const newScales = { ...state.scales, secondary: generateShades(color) };
+            let newScales = { ...state.scales, secondary: generateShades(color) };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales.secondary = applyContrastSaturationBoost(newScales.secondary, state.ui.contrastMode);
+            }
+            
             const newColorTokens = generateMappedTokens(
                 newScales, 
                 state.ui.contrastMode,
@@ -224,7 +256,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setErrorColor: (color: string) =>
         set((state) => {
-            const newScales = { ...state.scales, error: generateShades(color) };
+            let newScales = { ...state.scales, error: generateShades(color) };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales.error = applyContrastSaturationBoost(newScales.error, state.ui.contrastMode);
+            }
+            
             const newColorTokens = generateMappedTokens(
                 newScales, 
                 state.ui.contrastMode,
@@ -239,7 +277,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setWarningColor: (color: string) =>
         set((state) => {
-            const newScales = { ...state.scales, warning: generateShades(color) };
+            let newScales = { ...state.scales, warning: generateShades(color) };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales.warning = applyContrastSaturationBoost(newScales.warning, state.ui.contrastMode);
+            }
+            
             const newColorTokens = generateMappedTokens(
                 newScales, 
                 state.ui.contrastMode,
@@ -254,7 +298,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setSuccessColor: (color: string) =>
         set((state) => {
-            const newScales = { ...state.scales, success: generateShades(color) };
+            let newScales = { ...state.scales, success: generateShades(color) };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales.success = applyContrastSaturationBoost(newScales.success, state.ui.contrastMode);
+            }
+            
             const newColorTokens = generateMappedTokens(
                 newScales, 
                 state.ui.contrastMode,
@@ -269,7 +319,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setInfoColor: (color: string) =>
         set((state) => {
-            const newScales = { ...state.scales, info: generateShades(color) };
+            let newScales = { ...state.scales, info: generateShades(color) };
+            
+            // Aplikuj contrast boost pokud je nastaven
+            if (state.ui.contrastMode !== 'default') {
+                newScales.info = applyContrastSaturationBoost(newScales.info, state.ui.contrastMode);
+            }
+            
             const newColorTokens = generateMappedTokens(
                 newScales, 
                 state.ui.contrastMode,
