@@ -110,3 +110,65 @@
 .cell-on-surface-subtle { background: var(--color-on-surface-subtle); color: var(--color-surface); }
 .cell-inverse-surface { background: var(--color-inverse-surface); color: var(--color-on-surface-inverse); }
 .cell-primary-inverse { background: var(--color-primary-inverse); color: var(--color-on-surface-inverse); }
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .palette-wrapper {
+        margin: 24px 0;
+    }
+    
+    .palette-wrapper h2 {
+        font-size: 1.5rem;
+        padding-bottom: 12px;
+    }
+    
+    .palette-wrapper h3 {
+        font-size: 1.1rem;
+        margin: 24px 0 12px 0;
+    }
+    
+    .palette-group {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+    
+    /* 2 columns on tablets */
+    .palette-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .palette-cell {
+        padding: 10px 12px;
+        min-height: 50px;
+    }
+    
+    .palette-cell-label {
+        font-size: 0.85rem;
+    }
+    
+    .palette-cell-value {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .palette-wrapper h2 {
+        font-size: 1.3rem;
+    }
+    
+    .palette-group {
+        padding: 12px;
+    }
+    
+    /* Single column on mobile */
+    .palette-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .palette-cell {
+        padding: 12px;
+        min-height: 60px;
+    }
+}

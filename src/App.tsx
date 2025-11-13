@@ -1,4 +1,5 @@
 // src/App.tsx
+import { useState } from 'react';
 import { useThemeStore } from './store/themeStore';
 import { ThemeInjector } from './components/ThemeInjector';
 import './App.css';
@@ -14,12 +15,13 @@ import { HeaderToolbar } from './components/HeaderToolbar';
 import { Docs } from './pages/Docs';
 import { ColorInput } from './components/ui/ColorInput';
 import { Accordion } from './components/ui/Accordion';
-import { Palette, Sparkles, Box, Shuffle } from 'lucide-react';
+import { Palette, Sparkles, Box, Shuffle, Menu, X } from 'lucide-react';
 import { Select } from './components/ui/Select';
 import { Button } from './components/ui/Button';
 
 
 function App() {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const {
         inputs,
         setPrimaryColor,
@@ -35,9 +37,27 @@ function App() {
     return (
         <>
             <ThemeInjector />
+            
+            {/* Mobile Hamburger Button */}
+            <button 
+                className="mobile-menu-toggle"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle menu"
+            >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            
+            {/* Mobile Overlay */}
+            {isMobileMenuOpen && (
+                <div 
+                    className="mobile-overlay"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+            
             <div className="app-layout">
                 {/* LEFT PANEL (CONTROLS) */}
-                <div className="control-panel">
+                <div className={`control-panel ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
                     <div className="control-panel__header">
                         <h2 className="control-panel__title">ThemeEngine</h2>
                         <p className="control-panel__subtitle">Design System Generator</p>

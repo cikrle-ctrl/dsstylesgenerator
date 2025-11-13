@@ -93,3 +93,50 @@
 .accordion__content-inner {
     padding: 0 16px 16px 16px;
 }
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .accordion__header {
+        padding: 12px 14px;
+    }
+    
+    .accordion__title-text {
+        font-size: 14px;
+    }
+    
+    .accordion__icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .accordion__content-inner {
+        padding: 0 14px 14px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .accordion {
+        margin-bottom: 8px;
+    }
+    
+    .accordion__header {
+        padding: 10px 12px;
+    }
+    
+    .accordion__title {
+        gap: 8px;
+    }
+    
+    .accordion__title-text {
+        font-size: 13px;
+    }
+    
+    .accordion__icon svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .accordion__content-inner {
+        padding: 0 12px 12px 12px;
+    }
+}

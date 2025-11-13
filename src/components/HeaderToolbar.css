@@ -15,3 +15,43 @@
 
 /* Doc button uses our Button component; keep spacing with toolbar */
 .toolbar__docbtn { margin-left: 4px; }
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+    .toolbar {
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .toolbar__side {
+        gap: 8px;
+    }
+    
+    /* Make segmented controls stack or shrink */
+    .seg .custom-button {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .toolbar {
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    .toolbar__side {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .seg .custom-button {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .toolbar__docbtn {
+        margin-left: 0;
+    }
+}

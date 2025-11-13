@@ -12,3 +12,23 @@
 .sel__option--active { background: var(--color-surface-hover); }
 .sel__option--selected { background:var(--color-primary-container); color:var(--color-on-primary-container); }
 .sel__check { width:18px; display:inline-flex; align-items:center; justify-content:center; color:var(--color-primary); }
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 480px) {
+    .sel__control {
+        padding: 8px 10px;
+    }
+    
+    .sel__value {
+        font-size: 13px;
+    }
+    
+    .sel__option {
+        padding: 7px 8px;
+        font-size: 13px;
+    }
+    
+    .sel__menu {
+        max-height: 220px;
+    }
+}

@@ -158,3 +158,118 @@
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
 }
+
+/* === MOBILE HAMBURGER MENU === */
+.mobile-menu-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1002;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: none; /* Hidden on desktop */
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.95);
+}
+
+.mobile-overlay {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  /* Show hamburger button on mobile */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  
+  /* Show overlay when menu is open */
+  .mobile-overlay {
+    display: block;
+  }
+  
+  /* Single column layout on mobile */
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Hide control panel by default, show as slide-in drawer */
+  .control-panel {
+    position: fixed;
+    top: 0;
+    left: -320px; /* Hidden off-screen */
+    width: 320px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Show panel when mobile menu is open */
+  .control-panel.mobile-open {
+    left: 0;
+  }
+  
+  /* Main content takes full width on mobile */
+  .main-content {
+    width: 100%;
+  }
+  
+  /* Reduce padding on mobile */
+  .live-preview {
+    padding: 80px 16px 16px 16px; /* Extra top padding for hamburger button */
+  }
+  
+  .content-container {
+    gap: 16px;
+  }
+  
+  /* Make control panel header more compact on mobile */
+  .control-panel__header {
+    padding-top: 60px; /* Space for close button */
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+  
+  .control-panel__title {
+    font-size: 20px;
+  }
+  
+  .control-panel__subtitle {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small phones */
+  .control-panel {
+    width: 280px;
+    left: -280px;
+  }
+  
+  .live-preview {
+    padding: 70px 12px 12px 12px;
+  }
+  
+  .control-panel__title {
+    font-size: 18px;
+  }
+}
