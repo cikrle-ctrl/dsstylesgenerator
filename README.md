@@ -64,10 +64,14 @@ A visual theme builder that generates complete design tokens and color scales (0
 ### ExportPanel
 **Supported formats:**
 1. CSS Variables → `.css` with `:root` and `[data-theme="dark"]`
-2. Tailwind Config → `.js` with `module.exports` object
+2. Tailwind Config → **v3** (`.js` module.exports) or **v4** (`.css` @theme directive) with version toggle
 3. SCSS Variables → `.scss` with `$color-primary` syntax
 4. JSON → `.json` with complete tokens and scales
 5. Figma Tokens → `.json` compatible with Figma Tokens plugin
+
+**Tailwind Version Selector:**
+- **v3**: JavaScript config file (`tailwind.config.js`) with `theme.extend.colors` object
+- **v4**: CSS-first approach with `@theme` directive and CSS custom properties
 
 ---
 
@@ -277,11 +281,30 @@ npm run lint
 
 ---
 
-## 📚 Further Documentation
+## 📚 Documentation
 
-- **MATERIAL_HCT_INTEGRATION.md** → Material Design 3 HCT system in detail
-- **QUICK_START.md** → 5-minute quick start guide
-- **IMPROVEMENTS.md** → Complete list of improvements + implementation
+### Quick Links
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **README.md** | Overview and features | Everyone |
+| **[QUICK_START.md](./QUICK_START.md)** | 5-minute getting started guide | New users |
+| **[FEATURE_SHOWCASE.md](./FEATURE_SHOWCASE.md)** | Complete feature list with visuals | Users, stakeholders |
+| **[MATERIAL_HCT_INTEGRATION.md](./MATERIAL_HCT_INTEGRATION.md)** | Material Design 3 HCT system | Designers, developers |
+| **[COLOR_THEORY.md](./COLOR_THEORY.md)** | Color science foundations | Designers, color nerds |
+| **[TECHNICAL_REFERENCE.md](./TECHNICAL_REFERENCE.md)** | API reference and architecture | Developers |
+| **[IMPROVEMENTS.md](./IMPROVEMENTS.md)** | Implementation details | Developers |
+
+### In-App Documentation
+
+Visit the **Docs** page in the app for interactive documentation with:
+- How the app works
+- Color theory & OKLCH
+- Adaptive chroma explanation
+- Contrast modes
+- Design tokens
+- Export formats
+- File structure
 
 ---
 

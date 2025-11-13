@@ -12,7 +12,12 @@ import { Select } from './ui/Select';
 
 type HarmonyMode = 'none' | 'analogous' | 'complementary' | 'triadic';
 
-export const AdvancedControls = () => {
+interface AdvancedControlsProps {
+    isExpanded?: boolean;
+    onToggle?: () => void;
+}
+
+export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps) => {
     const { inputs, advancedSettings, setSecondaryColor, setAdvancedSettings } = useThemeStore();
 
     const handleNeutralToggle = () => {
@@ -55,7 +60,12 @@ export const AdvancedControls = () => {
     };
 
     return (
-        <Accordion title="Advanced Settings" icon={<Settings />} defaultExpanded={false}>
+        <Accordion 
+            title="Advanced Settings" 
+            icon={<Settings />} 
+            isExpanded={isExpanded}
+            onToggle={onToggle}
+        >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
                 {/* Stay True to Input Color Toggle */}

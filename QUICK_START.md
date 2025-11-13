@@ -76,13 +76,21 @@ Scroll to the bottom → Export Panel
 
 Click a format:
 ├─ [CSS Variables]   → For vanilla CSS/HTML
-├─ [Tailwind Config] → For Tailwind CSS
+├─ [Tailwind Config] → For Tailwind CSS (v3 or v4)
+│   └─ Use toggle to select version:
+│       • v3 = JavaScript config (tailwind.config.js)
+│       • v4 = CSS @theme directive (for Tailwind v4+)
 ├─ [SCSS Variables]  → For Sass/SCSS
 ├─ [JSON]            → For JavaScript/TypeScript
 └─ [Figma Tokens]    → For the Figma plugin
 ```
 
 The file downloads automatically.
+
+**Tailwind Version Selector:**
+- **v3** (default in older projects): Generates `theme.extend.colors` JavaScript object
+- **v4** (new CSS-first approach): Generates `@theme` block with CSS custom properties
+- Choose based on your Tailwind version - v4 is more modern but requires Tailwind 4.0+
 
 ---
 
@@ -134,8 +142,10 @@ Test colorblindness
 
 Export to Tailwind
 1) Scroll to Export Panel
-2) Click [Tailwind Config]
-3) Copy the downloaded `theme-tokens.js` into `tailwind.config.js`
+2) Choose Tailwind version (v3 or v4) using the toggle next to the button
+3) Click [Tailwind Config]
+4) **v3**: Copy `theme-tokens.js` content into `tailwind.config.js` under `theme.extend.colors`
+5) **v4**: Import the `theme-tokens.css` file in your main CSS (requires Tailwind 4.0+)
 
 See all tokens
 1) Scroll to Complete Token Preview

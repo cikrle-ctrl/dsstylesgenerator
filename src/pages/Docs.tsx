@@ -18,7 +18,9 @@ const section = {
 export function Docs() {
     const sections = useMemo(() => ([
         { id: 'how', label: 'How it works' },
+        { id: 'color-theory', label: 'Color theory & OKLCH' },
         { id: 'scales', label: 'Color scales' },
+        { id: 'adaptive-chroma', label: 'Adaptive chroma' },
         { id: 'contrast', label: 'Contrast modes' },
         { id: 'tokens', label: 'Design tokens' },
         { id: 'surface', label: 'Surface & Radius & Outline' },
@@ -91,18 +93,92 @@ export function Docs() {
                 </ol>
             </section>
 
+            {/* Color Theory */}
+            <section id="color-theory" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Color theory & OKLCH</h2>
+                <p style={body}>
+                    This system uses <b>OKLCH</b> (Oklab Lightness-Chroma-Hue), a perceptually uniform color space.
+                    Unlike HSL or RGB, OKLCH ensures equal visual steps between colors.
+                </p>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Why OKLCH?</h3>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>Perceptual uniformity</b> – Equal numeric changes = equal visual changes</li>
+                    <li><b>Independent lightness</b> – Change hue/chroma without affecting perceived brightness</li>
+                    <li><b>Better gradients</b> – Smooth color transitions without muddy mid-tones</li>
+                    <li><b>Predictable contrast</b> – Lightness directly correlates with WCAG contrast</li>
+                </ul>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>OKLCH Components</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginTop: 8 }}>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b style={{ color: 'var(--color-primary)' }}>L (Lightness)</b>
+                        <p style={{ ...body, margin: '4px 0 0' }}>0.0 = black, 1.0 = white. Matches human perception.</p>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b style={{ color: 'var(--color-secondary)' }}>C (Chroma)</b>
+                        <p style={{ ...body, margin: '4px 0 0' }}>0 = gray, higher = more vivid. Typical range: 0-0.4.</p>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b style={{ color: 'var(--color-error)' }}>H (Hue)</b>
+                        <p style={{ ...body, margin: '4px 0 0' }}>0-360° on color wheel. Red≈30°, Blue≈260°, Green≈145°.</p>
+                    </div>
+                </div>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Physical Color Limits</h3>
+                <p style={body}>
+                    Not all hue/chroma/lightness combinations are physically possible. For example, "bright light blue at 95% lightness"
+                    exceeds the sRGB gamut. Our system automatically reduces chroma at extreme lightness values (adaptive chroma).
+                </p>
+            </section>
+
             {/* Scales */}
             <section id="scales" className="preview-card" style={section}>
                 <h2 style={{ ...title, fontSize: 18 }}>Color scales and generation</h2>
                 <p style={body}>
-                    Scales are generated in OKLCH: each step targets a specific lightness. Chroma adaptively reduces
-                    at extremes (very light/dark) and slightly increases in mid-tones for dark mode accents. Neutral is
-                    a tinted gray derived from the primary color (or pure gray when Pure neutrals is enabled).
+                    Scales are generated in OKLCH: each step targets a specific lightness. The system uses a <b>0-1000 scale</b> with
+                    21 steps (0, 50, 100...1000) for finer granularity than Material Design 3's 0-100 scale.
+                </p>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Lightness Distribution</h3>
+                <p style={body}>
+                    Lightness values follow a <b>perceptual curve</b> (power 0.9) for better visual distribution:
                 </p>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Stay true to input</b> – accent maps to the nearest scale step (300–600).</li>
-                    <li><b>Harmony</b> – optional analogous/complementary/triadic complementary colors.</li>
-                    <li><b>WCAG validation</b> – contrast is tested using proper relative luminance.</li>
+                    <li><b>0-200</b>: Very light tones (backgrounds, containers in light mode)</li>
+                    <li><b>300-600</b>: Mid-tones (primary accents, interactive elements)</li>
+                    <li><b>700-1000</b>: Dark tones (backgrounds in dark mode, text on light)</li>
+                </ul>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Scale Generation Logic</h3>
+                <p style={body}>
+                    <code>generateShades(baseColorHex)</code> in <code>colorModule.ts</code>:
+                </p>
+                <ol style={{ ...body, paddingLeft: 18 }}>
+                    <li>Parse input color to OKLCH</li>
+                    <li>For each step (0-1000), apply target lightness</li>
+                    <li>Apply adaptive chroma multiplier based on lightness</li>
+                    <li>Clamp to valid sRGB gamut using <code>clampChroma()</code></li>
+                    <li>Convert back to hex color</li>
+                </ol>
+            </section>
+
+            {/* Adaptive Chroma */}
+            <section id="adaptive-chroma" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Adaptive chroma</h2>
+                <p style={body}>
+                    Adaptive chroma automatically reduces saturation at extreme lightness values to honor physical color limitations
+                    and create more natural-looking palettes.
+                </p>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Multiplier Rules</h3>
+                <div style={{ background: 'var(--color-surface-variant)', padding: 12, borderRadius: 8, fontFamily: 'monospace', fontSize: 13, marginTop: 8 }}>
+                    <div>Lightness &gt; 0.90 (steps 0, 50) → chroma × 0.3 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Very light pastels</span></div>
+                    <div>Lightness &gt; 0.80 (steps 100-200) → chroma × 0.6 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Light containers</span></div>
+                    <div>Lightness 0.65-0.77 (steps 300-400) → chroma × 1.1 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Mid boost</span></div>
+                    <div>Lightness &lt; 0.30 (steps 750-850) → chroma × 0.65 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Dark surfaces</span></div>
+                    <div>Lightness &lt; 0.20 (steps 900-1000) → chroma × 0.35 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Very dark</span></div>
+                </div>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Why This Matters</h3>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>Avoids impossible colors</b> – Prevents out-of-gamut errors</li>
+                    <li><b>Natural appearance</b> – Pastels shouldn't be neon, darks shouldn't be muddy</li>
+                    <li><b>Dark mode optimization</b> – Mid-tone boost (1.1×) improves visibility on dark backgrounds</li>
+                    <li><b>Consistent perception</b> – All colors feel balanced across the scale</li>
                 </ul>
             </section>
 
@@ -179,7 +255,22 @@ export function Docs() {
             {/* Export */}
             <section id="export" className="preview-card" style={section}>
                 <h2 style={{ ...title, fontSize: 18 }}>Exports</h2>
-                <p style={body}>Multiple formats are supported: CSS, SCSS, Tailwind, JSON and Figma JSON.</p>
+                <p style={body}>Multiple formats are supported for cross-platform compatibility:</p>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>CSS Variables</b> – Standard CSS custom properties with <code>:root</code> and <code>[data-theme="dark"]</code></li>
+                    <li><b>Tailwind Config</b> – Choose between v3 (JavaScript) or v4 (CSS <code>@theme</code>)</li>
+                    <li><b>SCSS Variables</b> – Sass/SCSS <code>$variable-name</code> format</li>
+                    <li><b>JSON</b> – Complete token and scale data for programmatic use</li>
+                    <li><b>Figma Tokens</b> – Compatible with Figma Tokens plugin</li>
+                </ul>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Tailwind Version Selector</h3>
+                <p style={body}>
+                    The Tailwind export includes a version toggle:
+                </p>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>v3</b>: JavaScript config (<code>tailwind.config.js</code>) with <code>theme.extend.colors</code></li>
+                    <li><b>v4</b>: CSS-first approach with <code>@theme</code> directive (requires Tailwind 4.0+)</li>
+                </ul>
             </section>
 
             {/* A11y */}

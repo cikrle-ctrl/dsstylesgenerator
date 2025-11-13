@@ -8,16 +8,27 @@ export interface AccordionProps {
     icon?: ReactNode;
     children: ReactNode;
     defaultExpanded?: boolean;
+    isExpanded?: boolean;
+    onToggle?: () => void;
 }
 
-export const Accordion = ({ title, icon, children, defaultExpanded = false }: AccordionProps) => {
-    const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+export const Accordion = ({ title, icon, children, defaultExpanded = false, isExpanded: controlledExpanded, onToggle }: AccordionProps) => {
+    const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+    const isExpanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
+
+    const handleToggle = () => {
+        if (onToggle) {
+            onToggle();
+        } else {
+            setInternalExpanded(!internalExpanded);
+        }
+    };
 
     return (
         <div className="accordion">
             <button
                 className="accordion__header"
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={handleToggle}
                 aria-expanded={isExpanded}
             >
                 <div className="accordion__title">

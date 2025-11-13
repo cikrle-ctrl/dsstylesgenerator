@@ -22,6 +22,7 @@ import { Button } from './components/ui/Button';
 
 function App() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [openAccordion, setOpenAccordion] = useState<string | null>('core');
     const {
         inputs,
         setPrimaryColor,
@@ -33,6 +34,10 @@ function App() {
         setRadiusStrategy,
         setShadowStrategy,
     } = useThemeStore();
+
+    const handleAccordionToggle = (id: string) => {
+        setOpenAccordion(openAccordion === id ? null : id);
+    };
 
     return (
         <>
@@ -50,7 +55,12 @@ function App() {
                         <p className="control-panel__subtitle">Design System Generator</p>
                     </div>
 
-                    <Accordion title="Core Colors" icon={<Palette />} defaultExpanded={true}>
+                    <Accordion 
+                        title="Core Colors" 
+                        icon={<Palette />} 
+                        isExpanded={openAccordion === 'core'}
+                        onToggle={() => handleAccordionToggle('core')}
+                    >
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <ColorInput
                                 label="Primary"
@@ -78,7 +88,12 @@ function App() {
                         </div>
                     </Accordion>
 
-                    <Accordion title="Semantic Colors" icon={<Sparkles />} defaultExpanded={false}>
+                    <Accordion 
+                        title="Semantic Colors" 
+                        icon={<Sparkles />}
+                        isExpanded={openAccordion === 'semantic'}
+                        onToggle={() => handleAccordionToggle('semantic')}
+                    >
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <ColorInput
                                 label="Error"
@@ -103,7 +118,12 @@ function App() {
                         </div>
                     </Accordion>
 
-                    <Accordion title="Surfaces & Shadows" icon={<Box />} defaultExpanded={false}>
+                    <Accordion 
+                        title="Surfaces & Shadows" 
+                        icon={<Box />}
+                        isExpanded={openAccordion === 'surfaces'}
+                        onToggle={() => handleAccordionToggle('surfaces')}
+                    >
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, marginBottom: '8px', color: 'var(--color-on-surface-variant)' }}>
@@ -136,8 +156,14 @@ function App() {
                         </div>
                     </Accordion>
 
-                    <AdvancedControls />
-                    <ExportPanel />
+                    <AdvancedControls 
+                        isExpanded={openAccordion === 'advanced'}
+                        onToggle={() => handleAccordionToggle('advanced')}
+                    />
+                    <ExportPanel 
+                        isExpanded={openAccordion === 'export'}
+                        onToggle={() => handleAccordionToggle('export')}
+                    />
                     
                     <div style={{ 
                         marginTop: 'auto', 

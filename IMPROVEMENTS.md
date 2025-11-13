@@ -89,15 +89,30 @@ const warmer = applyTemperatureShift(scales.primary, 5); // 5° warmer
 ---
 
 ### 7. **Export Formats** ✅
-**Location:** `components/ExportPanel.tsx` (NEW)
+**Location:** `components/ExportPanel.tsx`
 **Supported Formats:**
 1. **CSS Variables** - `:root` and `[data-theme="dark"]` with all tokens
-2. **Tailwind Config** - `module.exports` with colors object
+2. **Tailwind Config** - **v3** (JavaScript `module.exports`) or **v4** (CSS `@theme` directive) with version toggle
+   - v3: `tailwind.config.js` with `theme.extend.colors` object
+   - v4: CSS file with `@theme { --color-primary-500: #xxx; }` format
 3. **SCSS Variables** - `$color-primary` style variables
 4. **JSON** - Complete tokens and scales data
 5. **Figma Tokens** - Figma plugin compatible format
 
-**Usage:** Click button to download tokens in desired format.
+**Tailwind Version Selector Implementation:**
+```typescript
+const [tailwindVersion, setTailwindVersion] = useState<TailwindVersion>('v4');
+
+const generateTailwindV3 = (): string => {
+    // JavaScript config: module.exports = { theme: { extend: { colors: {...} } } }
+};
+
+const generateTailwindV4 = (): string => {
+    // CSS @theme: @theme { --color-primary-500: #xxx; }
+};
+```
+
+**Usage:** Click button to download tokens in desired format. For Tailwind, use the toggle to select v3 (JavaScript) or v4 (CSS).
 
 ---
 

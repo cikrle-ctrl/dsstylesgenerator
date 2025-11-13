@@ -30,6 +30,33 @@
   background: var(--color-surface-variant);
   border-right: 1px solid var(--color-outline-subtle);
   overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100vh;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Better scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-default) transparent;
+}
+
+/* Webkit scrollbar styling */
+.control-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.control-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.control-panel::-webkit-scrollbar-thumb {
+  background-color: var(--color-outline-default);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.control-panel::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-outline-hover);
 }
 
 .control-panel__header {
