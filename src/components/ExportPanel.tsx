@@ -1,15 +1,7 @@
-import { useState } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import { Accordion } from './ui/Accordion';
 import { Download } from 'lucide-react';
 import { Button } from './ui/Button';
-import { Checkbox } from './ui/Checkbox';
-import { getContrast } from '../logic/contrastChecker';
-import './HeaderToolbar.css'; // Import segmented control styles
-
-type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma' | 'csv';
-type TailwindVersion = 'v3' | 'v4';
-type ThemeMode = 'light' | 'dark';
 
 interface ExportPanelProps {
     isExpanded?: boolean;
@@ -18,223 +10,101 @@ interface ExportPanelProps {
 
 export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
     const { tokens, scales } = useThemeStore();
-    const [tailwindVersion, setTailwindVersion] = useState<TailwindVersion>('v4');
-    const [figmaMode, setFigmaMode] = useState<ThemeMode>('light');
-    const [figmaIncludeScales, setFigmaIncludeScales] = useState(true);
-    const [figmaIncludeAliases, setFigmaIncludeAliases] = useState(true);
-    const [figmaIncludeSurface, setFigmaIncludeSurface] = useState(true);
 
-    const generateCSS = (): string => {
-        let css = ':root {\n  /* Light Mode */\n';
-        Object.entries(tokens.light).forEach(([key, value]) => {
-            css += `  ${key}: ${value};\n`;
-        });
-        css += '\n  /* Surface Tokens */\n';
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            css += `  ${key}: ${value};\n`;
-        });
-        css += '}\n\n[data-theme="dark"] {\n';
-        Object.entries(tokens.dark).forEach(([key, value]) => {
-            css += `  ${key}: ${value};\n`;
-        });
-        css += '}\n';
-        return css;
-    };
-
-    const generateTailwindV3 = (): string => {
-        const config = {
-            theme: {
-                extend: {
-                    colors: {} as Record<string, Record<string, string>>
-                }
-            }
-        };
-
-        // Konverze scales do Tailwind formátu
-        Object.entries(scales).forEach(([colorName, scale]) => {
-            config.theme.extend.colors[colorName] = {};
-            Object.entries(scale).forEach(([step, hex]) => {
-                config.theme.extend.colors[colorName][step] = hex;
-            });
-        });
-
-        return `module.exports = ${JSON.stringify(config, null, 2)}`;
-    };
-
-    const generateTailwindV4 = (): string => {
-        let css = '@theme {\n';
+    const generateFigmaVariables = (): string => {
+        // W3C Design Tokens Format for Figma Variables
+        // Struktura: každý token má $type a $value, může mít $description
         
-        // Color scales
-        Object.entries(scales).forEach(([colorName, scale]) => {
-            Object.entries(scale).forEach(([step, hex]) => {
-                css += `  --color-${colorName}-${step}: ${hex};\n`;
-            });
-        });
-
-        css += '\n  /* Semantic tokens - Light */\n';
-        Object.entries(tokens.light).forEach(([key, value]) => {
-            const cleanKey = key.replace('--', '');
-            css += `  --${cleanKey}: ${value};\n`;
-        });
-
-        css += '\n  /* Surface tokens */\n';
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            const cleanKey = key.replace('--', '');
-            css += `  --${cleanKey}: ${value};\n`;
-        });
-
-        css += '}\n\n@media (prefers-color-scheme: dark) {\n  @theme {\n';
-        Object.entries(tokens.dark).forEach(([key, value]) => {
-            const cleanKey = key.replace('--', '');
-            css += `    --${cleanKey}: ${value};\n`;
-        });
-        css += '  }\n}';
-
-        return css;
-    };
-
-    const generateTailwind = (): string => {
-        return tailwindVersion === 'v3' ? generateTailwindV3() : generateTailwindV4();
-    };
-
-    const generateSCSS = (): string => {
-        let scss = '// Light Mode\n';
-        Object.entries(tokens.light).forEach(([key, value]) => {
-            scss += `$${key.replace('--', '')}: ${value};\n`;
-        });
-        scss += '\n// Dark Mode\n';
-        Object.entries(tokens.dark).forEach(([key, value]) => {
-            scss += `$${key.replace('--', '')}-dark: ${value};\n`;
-        });
-        scss += '\n// Surface Tokens\n';
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            scss += `$${key.replace('--', '')}: ${value};\n`;
-        });
-        return scss;
-    };
-
-    const generateJSON = (): string => {
-        return JSON.stringify({ tokens, scales }, null, 2);
-    };
-
-    const generateFigma = (): string => {
-        // W3C Design Tokens compatible JSON for Figma Variables Import/Export sample
-        const modeTokens = figmaMode === 'light' ? tokens.light : tokens.dark;
-
-        // Helper to sanitize names (remove leading --)
-        const clean = (k: string) => k.replace(/^--/, '');
-
-        // Build color group from semantic tokens (only --color-* keys)
-        type W3CStringVal = { $value: string };
-        type W3CNumVal = { $value: number };
-        type W3CAliasVal = { $value: string };
-
-        const colorGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, W3CStringVal | W3CAliasVal>;
-        Object.entries(modeTokens).forEach(([key, value]) => {
-            if (key.startsWith('--color-')) {
-                const tokenName = clean(key).replace('color-', '');
-                if (figmaIncludeAliases) {
-                    // If aliases enabled, check if we can reference a scale step
-                    let aliasRef: string | null = null;
-                    Object.entries(scales).forEach(([scaleName, scaleColors]) => {
-                        if (!aliasRef && Object.values(scaleColors).includes(value)) {
-                            const step = Object.keys(scaleColors).find(s => (scaleColors as Record<string, string>)[s] === value);
-                            if (step) aliasRef = `{scale.${scaleName}.${step}}`;
-                        }
-                    });
-                    colorGroup[tokenName] = aliasRef ? { $value: aliasRef } : { $value: value };
-                } else {
-                    colorGroup[tokenName] = { $value: value };
-                }
-            }
-        });
-
-        // Build number group from surface numeric tokens (radius, border widths)
-        const numberGroup = ({ $type: 'number' } as const) as { $type: 'number' } & Record<string, W3CNumVal>;
-        if (figmaIncludeSurface) {
-            Object.entries(tokens.surface).forEach(([key, value]) => {
-                const lower = key.toLowerCase();
-                if (lower.includes('radius') || lower.includes('border-width')) {
-                    const m = String(value).match(/(-?\d+(?:\.\d+)?)/);
-                    if (m) numberGroup[clean(key).replace('--', '')] = { $value: Number(m[1]) };
-                }
-            });
-        }
-
-        // Build color scales under a separate group
-        const scaleGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, Record<string, W3CStringVal>>;
-        if (figmaIncludeScales) {
-            (Object.keys(scales) as Array<keyof typeof scales>).forEach((scaleName) => {
-                const scale = scales[scaleName] as Record<string, string>;
-                const group: Record<string, W3CStringVal> = {};
-                Object.entries(scale).forEach(([step, hex]) => {
-                    group[step] = { $value: hex };
-                });
-                scaleGroup[scaleName] = group;
-            });
-        }
-
-        const designTokens: Record<string, unknown> = {
-            color: colorGroup,
+        type ColorToken = {
+            $type: 'color';
+            $value: string;
+            $description?: string;
         };
 
-        if (figmaIncludeSurface && Object.keys(numberGroup).length > 1) {
-            designTokens.number = numberGroup;
-        }
+        type DimensionToken = {
+            $type: 'dimension';
+            $value: string;
+            $description?: string;
+        };
 
-        if (figmaIncludeScales) {
-            designTokens.scale = scaleGroup;
-        }
+        type ShadowToken = {
+            $type: 'shadow';
+            $value: string;
+            $description?: string;
+        };
+
+        type TokenGroup = {
+            [key: string]: ColorToken | DimensionToken | ShadowToken | TokenGroup;
+        };
+
+        const designTokens: TokenGroup = {};
+
+        // 1. Color Scales (0-1000)
+        const scalesGroup: TokenGroup = {};
+        (Object.keys(scales) as Array<keyof typeof scales>).forEach((scaleName) => {
+            const scale = scales[scaleName] as Record<string, string>;
+            const scaleGroup: TokenGroup = {};
+            Object.entries(scale).forEach(([step, hex]) => {
+                scaleGroup[step] = {
+                    $type: 'color',
+                    $value: hex
+                };
+            });
+            scalesGroup[scaleName] = scaleGroup;
+        });
+        designTokens.scales = scalesGroup;
+
+        // 2. Light Mode Semantic Tokens
+        const lightGroup: TokenGroup = {};
+        Object.entries(tokens.light).forEach(([key, value]) => {
+            const cleanKey = key.replace('--color-', '').replace('--', '');
+            if (key.startsWith('--color-')) {
+                lightGroup[cleanKey] = {
+                    $type: 'color',
+                    $value: value
+                };
+            }
+        });
+        designTokens.light = lightGroup;
+
+        // 3. Dark Mode Semantic Tokens  
+        const darkGroup: TokenGroup = {};
+        Object.entries(tokens.dark).forEach(([key, value]) => {
+            const cleanKey = key.replace('--color-', '').replace('--', '');
+            if (key.startsWith('--color-')) {
+                darkGroup[cleanKey] = {
+                    $type: 'color',
+                    $value: value
+                };
+            }
+        });
+        designTokens.dark = darkGroup;
+
+        // 4. Surface Tokens (radius, shadows, borders)
+        const surfaceGroup: TokenGroup = {};
+        Object.entries(tokens.surface).forEach(([key, value]) => {
+            const cleanKey = key.replace('--', '');
+            const lower = key.toLowerCase();
+            
+            if (lower.includes('radius') || lower.includes('border-width')) {
+                surfaceGroup[cleanKey] = {
+                    $type: 'dimension',
+                    $value: value
+                };
+            } else if (lower.includes('shadow')) {
+                surfaceGroup[cleanKey] = {
+                    $type: 'shadow',
+                    $value: value
+                };
+            }
+        });
+        designTokens.surface = surfaceGroup;
 
         return JSON.stringify(designTokens, null, 2);
     };
 
-    const generateCSV = (): string => {
-        const modeTokens = figmaMode === 'light' ? tokens.light : tokens.dark;
-        const bg = figmaMode === 'light' ? (scales.neutral as Record<string, string>)['0'] : (scales.neutral as Record<string, string>)['1000'];
-        
-        let csv = 'Token,Value,Type,Contrast vs Background,WCAG Level\n';
-        
-        // Semantic colors
-        Object.entries(modeTokens).forEach(([key, value]) => {
-            if (key.startsWith('--color-')) {
-                const contrast = getContrast(value, bg);
-                const wcag = contrast >= 7 ? 'AAA' : contrast >= 4.5 ? 'AA' : 'FAIL';
-                csv += `${key},${value},color,${contrast.toFixed(2)},${wcag}\n`;
-            }
-        });
-
-        // Surface tokens (shadows, etc)
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            const type = key.includes('radius') || key.includes('border') ? 'dimension' : 'other';
-            csv += `${key},${value},${type},,\n`;
-        });
-
-        // Scales
-        Object.entries(scales).forEach(([scaleName, scale]) => {
-            Object.entries(scale as Record<string, string>).forEach(([step, hex]) => {
-                const contrast = getContrast(hex, bg);
-                const wcag = contrast >= 7 ? 'AAA' : contrast >= 4.5 ? 'AA' : 'FAIL';
-                csv += `--scale-${scaleName}-${step},${hex},color,${contrast.toFixed(2)},${wcag}\n`;
-            });
-        });
-
-        return csv;
-    };
-
-    const generateExport = (format: ExportFormat): string => {
-        switch (format) {
-            case 'css': return generateCSS();
-            case 'tailwind': return generateTailwind();
-            case 'scss': return generateSCSS();
-            case 'json': return generateJSON();
-            case 'figma': return generateFigma();
-            case 'csv': return generateCSV();
-        }
-    };
-
     const downloadFile = (content: string, filename: string) => {
-        const blob = new Blob([content], { type: 'text/plain' });
+        const blob = new Blob([content], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -243,18 +113,9 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
         URL.revokeObjectURL(url);
     };
 
-    const handleExport = (format: ExportFormat) => {
-        const content = generateExport(format);
-        const extensions: Record<ExportFormat, string> = {
-            css: 'css',
-            tailwind: tailwindVersion === 'v3' ? 'js' : 'css',
-            scss: 'scss',
-            json: 'json',
-            figma: 'json',
-            csv: 'csv'
-        };
-        const suffix = (format === 'figma' || format === 'csv') ? `-${figmaMode}` : '';
-        downloadFile(content, `theme-tokens${suffix}.${extensions[format]}`);
+    const handleExport = () => {
+        const content = generateFigmaVariables();
+        downloadFile(content, 'figma-variables.json');
     };
 
     return (
@@ -264,172 +125,34 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             isExpanded={isExpanded}
             onToggle={onToggle}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <Button 
-                    onClick={() => handleExport('css')}
+                    onClick={handleExport}
                     variant="primary"
-                    size="medium"
+                    size="large"
                     fullWidth
+                    icon={<Download size={18} />}
                 >
-                    CSS Variables
+                    Figma Variables
                 </Button>
                 
-                {/* Tailwind s výběrem verze */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <Button 
-                            onClick={() => handleExport('tailwind')}
-                            variant="primary"
-                            size="medium"
-                            style={{ flex: 1 }}
-                        >
-                            Tailwind Config
-                        </Button>
-                        <div role="group" aria-label="Tailwind Version" className="seg">
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={tailwindVersion === 'v3'}
-                                onClick={() => setTailwindVersion('v3')}
-                                className="seg__btn"
-                            >
-                                v3
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={tailwindVersion === 'v4'}
-                                onClick={() => setTailwindVersion('v4')}
-                                className="seg__btn"
-                            >
-                                v4
-                            </Button>
-                        </div>
-                    </div>
-                    <div style={{ 
-                        fontSize: '11px', 
-                        color: 'var(--color-on-surface-variant)', 
-                        paddingLeft: '4px',
-                        lineHeight: '1.3'
-                    }}>
-                        {tailwindVersion === 'v3' ? 'JavaScript config (tailwind.config.js)' : 'CSS @theme directive (Tailwind v4)'}
-                    </div>
-                </div>
-                <Button 
-                    onClick={() => handleExport('scss')}
-                    variant="secondary"
-                    size="medium"
-                    fullWidth
-                >
-                    SCSS Variables
-                </Button>
-                <Button 
-                    onClick={() => handleExport('json')}
-                    variant="ghost"
-                    size="medium"
-                    fullWidth
-                >
-                    JSON
-                </Button>
-                
-                {/* Figma Export with Mode selector and checkboxes */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', borderRadius: '8px', background: 'var(--color-surface-variant)' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <Button 
-                            onClick={() => handleExport('figma')}
-                            variant="ghost"
-                            size="medium"
-                            style={{ flex: 1 }}
-                        >
-                            Figma Variables (W3C)
-                        </Button>
-                        <div role="group" aria-label="Figma Mode" className="seg">
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'light'}
-                                onClick={() => setFigmaMode('light')}
-                                className="seg__btn"
-                            >
-                                Light
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'dark'}
-                                onClick={() => setFigmaMode('dark')}
-                                className="seg__btn"
-                            >
-                                Dark
-                            </Button>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '6px' }}>
-                        <Checkbox
-                            checked={figmaIncludeScales}
-                            onChange={setFigmaIncludeScales}
-                            label="Include color scales (0-1000)"
-                        />
-                        <Checkbox
-                            checked={figmaIncludeAliases}
-                            onChange={setFigmaIncludeAliases}
-                            label="Use aliases (references to scales)"
-                        />
-                        <Checkbox
-                            checked={figmaIncludeSurface}
-                            onChange={setFigmaIncludeSurface}
-                            label="Include surface tokens (radius, borders)"
-                        />
-                    </div>
-                    <div style={{ 
-                        fontSize: '11px', 
-                        color: 'var(--color-on-surface-variant)', 
-                        paddingTop: '4px',
-                        lineHeight: '1.3'
-                    }}>
-                        Single-mode JSON (W3C spec). Import via Figma Variables plugin.
-                    </div>
-                </div>
-
-                {/* CSV Export with Mode selector */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <Button 
-                            onClick={() => handleExport('csv')}
-                            variant="ghost"
-                            size="medium"
-                            style={{ flex: 1 }}
-                        >
-                            CSV Report (Contrast Audit)
-                        </Button>
-                        <div role="group" aria-label="CSV Mode" className="seg">
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'light'}
-                                onClick={() => setFigmaMode('light')}
-                                className="seg__btn"
-                            >
-                                Light
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'dark'}
-                                onClick={() => setFigmaMode('dark')}
-                                className="seg__btn"
-                            >
-                                Dark
-                            </Button>
-                        </div>
-                    </div>
-                    <div style={{ 
-                        fontSize: '11px', 
-                        color: 'var(--color-on-surface-variant)', 
-                        paddingLeft: '4px',
-                        lineHeight: '1.3'
-                    }}>
-                        Token list with WCAG contrast ratios
+                <div style={{ 
+                    fontSize: '12px', 
+                    color: 'var(--color-on-surface-variant)', 
+                    lineHeight: '1.5',
+                    padding: '12px',
+                    background: 'var(--color-surface-variant)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--color-outline-subtle)'
+                }}>
+                    <strong>📦 W3C Design Tokens Format</strong>
+                    <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+                        <li>Color scales (0-1000) for all palettes</li>
+                        <li>Light & dark mode semantic tokens</li>
+                        <li>Surface tokens (radius, shadows, borders)</li>
+                    </ul>
+                    <div style={{ marginTop: '8px', fontSize: '11px', opacity: 0.8 }}>
+                        Import to Figma using the Variables Import plugin
                     </div>
                 </div>
             </div>

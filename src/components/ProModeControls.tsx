@@ -79,22 +79,6 @@ export function ProModeControls() {
 
             {advancedSettings.proMode && (
                 <div style={{ marginTop: 8 }}>
-                    <div
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: '120px 1fr 1fr',
-                            gap: 8,
-                            marginBottom: 8,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: 'var(--color-on-surface-variant)',
-                        }}
-                    >
-                        <div>Color</div>
-                        <div>Light Mode Tone</div>
-                        <div>Dark Mode Tone</div>
-                    </div>
-
                     {colors.map((color) => {
                         const lightValue = advancedSettings.customTones?.[color]?.light ?? '';
                         const darkValue = advancedSettings.customTones?.[color]?.dark ?? '';
@@ -102,13 +86,60 @@ export function ProModeControls() {
                         return (
                             <div
                                 key={color}
-                                style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: 8, marginBottom: 8, alignItems: 'center' }}
+                                style={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    gap: 8, 
+                                    marginBottom: 16,
+                                    padding: '12px',
+                                    background: 'var(--color-surface-variant)',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--color-outline-subtle)'
+                                }}
                             >
-                                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-on-surface-heading)', textTransform: 'capitalize' }}>
+                                <div style={{ 
+                                    fontSize: 13, 
+                                    fontWeight: 600, 
+                                    color: 'var(--color-on-surface-heading)', 
+                                    textTransform: 'capitalize',
+                                    marginBottom: '4px'
+                                }}>
                                     {color}
                                 </div>
-                                <Select value={lightValue === '' ? '' : String(lightValue)} onChange={(v) => handleToneChange(color, 'light', v)} options={toneOptions} />
-                                <Select value={darkValue === '' ? '' : String(darkValue)} onChange={(v) => handleToneChange(color, 'dark', v)} options={toneOptions} />
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ 
+                                            display: 'block', 
+                                            fontSize: '11px', 
+                                            fontWeight: 500, 
+                                            color: 'var(--color-on-surface-variant)',
+                                            marginBottom: '4px'
+                                        }}>
+                                            Light Mode
+                                        </label>
+                                        <Select 
+                                            value={lightValue === '' ? '' : String(lightValue)} 
+                                            onChange={(v) => handleToneChange(color, 'light', v)} 
+                                            options={toneOptions} 
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ 
+                                            display: 'block', 
+                                            fontSize: '11px', 
+                                            fontWeight: 500, 
+                                            color: 'var(--color-on-surface-variant)',
+                                            marginBottom: '4px'
+                                        }}>
+                                            Dark Mode
+                                        </label>
+                                        <Select 
+                                            value={darkValue === '' ? '' : String(darkValue)} 
+                                            onChange={(v) => handleToneChange(color, 'dark', v)} 
+                                            options={toneOptions} 
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         );
                     })}

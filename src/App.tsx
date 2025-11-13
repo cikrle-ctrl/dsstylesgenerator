@@ -15,7 +15,7 @@ import { HeaderToolbar } from './components/HeaderToolbar';
 import { Docs } from './pages/Docs';
 import { ColorInput } from './components/ui/ColorInput';
 import { Accordion } from './components/ui/Accordion';
-import { Palette, Sparkles, Box, Shuffle } from 'lucide-react';
+import { Palette, Sparkles, Box, Shuffle, X } from 'lucide-react';
 import { Select } from './components/ui/Select';
 import { Button } from './components/ui/Button';
 
@@ -51,8 +51,17 @@ function App() {
                 {/* LEFT PANEL (CONTROLS) */}
                 <div className={`control-panel ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
                     <div className="control-panel__header">
-                        <h2 className="control-panel__title">ThemeEngine</h2>
-                        <p className="control-panel__subtitle">Design System Generator</p>
+                        <div>
+                            <h2 className="control-panel__title">ThemeEngine</h2>
+                            <p className="control-panel__subtitle">Design System Generator</p>
+                        </div>
+                        <button 
+                            className="control-panel__close"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            aria-label="Close menu"
+                        >
+                            <X size={20} />
+                        </button>
                     </div>
 
                     <Accordion 
