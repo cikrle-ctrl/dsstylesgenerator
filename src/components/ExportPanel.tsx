@@ -153,6 +153,11 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             name: string;
             type: 'COLOR';
             values: string[]; // 6 hodnot pro 6 módů
+            codeSyntax: {
+                WEB: string;
+                IOS: string;
+                ANDROID: string;
+            };
         };
         
         type FigmaVariablesExport = {
@@ -275,10 +280,27 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             // Vytvoříme array hodnot pro všech 6 módů
             const values = allTokens.map(tokens => tokens[tokenKey] || '#000000');
             
+            // Vytvoříme codeSyntax pro různé platformy
+            // WEB: var(--color-primary) -> nahradíme / za -
+            const webVar = `var(--color-${cleanName})`;
+            
+            // iOS: PrimaryColor.primary -> UpperCamelCase kategorie + property
+            const iosClassName = category.charAt(0).toUpperCase() + category.slice(1) + 'Color';
+            const iosProperty = tokenName.replace(/-/g, '_');
+            const iosVar = `${iosClassName}.${iosProperty}`;
+            
+            // ANDROID: color_primary_primary -> snake_case
+            const androidVar = `color_${cleanName.replace(/-/g, '_')}`;
+            
             return {
                 name: formattedName,
                 type: 'COLOR',
-                values
+                values,
+                codeSyntax: {
+                    WEB: webVar,
+                    IOS: iosVar,
+                    ANDROID: androidVar
+                }
             };
         });
 
