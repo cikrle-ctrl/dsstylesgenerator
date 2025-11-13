@@ -11,7 +11,7 @@ A visual theme builder that generates complete design tokens and color scales (0
 | 1 | Adaptive Chroma | `colorModule.ts` + `toneContrastSystem.ts` | Automatic saturation reduction at extreme tone values |
 | 2 | Perceptual Spacing | `colorModule.ts` | Non-linear lightness steps with easing |
 | 3 | Pure Neutrals | `AdvancedControls.tsx` | Toggle for pure gray neutrals (chroma = 0) |
-| 4 | Adaptive Container | `tokenMapper.ts` | Dynamic container color selection for 3:1 contrast |
+| 4 | Intelligent Color Selection | `tokenMapper.ts` + `contrastChecker.ts` | Dynamic contrast-based shade selection (4.5:1 / 7:1 / 9:1) |
 | 5 | Saturation/Temperature | `AdvancedControls.tsx` | Sliders for global saturation and temperature |
 | 6 | A11y Badges | `PalettePreview.tsx` | AAA/AA/FAIL indicators with colors |
 | 7 | Export Formats | `ExportPanel.tsx` | CSS, Tailwind, SCSS, JSON, Figma tokens |
@@ -21,6 +21,7 @@ A visual theme builder that generates complete design tokens and color scales (0
 | 11 | Material Design 3 HCT | `toneContrastSystem.ts` | Tone-based contrast system |
 | 12 | UI Components | Multiple | Complete UI for all capabilities |
 | 13 | Figma Plugin | `figma-plugin/` | Custom plugin for Variables import with mode support |
+| 14 | EyeDropper Tool | `ColorPicker.tsx` | Browser-native color picker from screen |
 
 ---
 
@@ -86,6 +87,36 @@ A visual theme builder that generates complete design tokens and color scales (0
 ---
 
 ## 🔬 Material Design 3 HCT System
+
+### Intelligent Contrast-Based Color Selection
+
+**How it works:**
+Instead of fixed tone values, the system **dynamically finds the optimal shade** by measuring actual WCAG contrast against the background:
+
+```typescript
+// OLD (Fixed tones)
+Light Default:  primary-500 (always)
+Light High:     primary-550 (always)
+
+// NEW (Intelligent contrast-based)
+Default mode:     Find shade closest to 4.5:1 contrast ratio
+High contrast:    Find shade closest to 7.0:1 contrast ratio  
+Extra-high:       Find shade closest to 9.0:1 contrast ratio
+```
+
+**Algorithm:**
+1. Determine background color (neutral-0 for light, neutral-1000 for dark)
+2. Scan all shades in scale (0, 50, 100, ..., 1000)
+3. Measure WCAG contrast ratio for each shade
+4. Select shade with contrast **closest to target**
+5. Prefer mid-tones (200-800) for optimal saturation
+
+**Benefits:**
+- ✅ **WCAG compliant** - Automatically hits 4.5:1 (AA), 7.0:1 (AAA), 9.0:1 (Extra)
+- ✅ **Works for any color** - No manual tone guessing
+- ✅ **Perceptually balanced** - Uses HCT color theory
+- ✅ **Container colors intelligent** - Auto-selects 3:1 contrast
+- ✅ **Mode aware** - Adapts for light/dark backgrounds
 
 ### Tone-Based Contrast
 

@@ -184,16 +184,41 @@ export function Docs() {
 
             {/* Contrast */}
             <section id="contrast" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes</h2>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Default</b> – Text 4.5:1, UI 3:1, subtle surface states.</li>
-                    <li><b>High-contrast</b> – Text 7:1, stronger states, more colorful containers (no grayscale).</li>
-                    <li><b>Extra-high</b> – 7:1+ with maximum readability and controlled colorfulness.</li>
-                </ul>
-                <p style={{ ...body, marginTop: 8 }}>
-                    In contrast modes we preserve colorfulness: containers and <code>surface-variant</code> are gently tinted
-                    from the primary scale, while ensuring required WCAG ratios for on-colors.
+                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes & Intelligent color selection</h2>
+                <p style={body}>
+                    The system uses <b>intelligent contrast-based color selection</b> instead of fixed tone values.
+                    For each mode, it dynamically finds the optimal shade by measuring actual WCAG contrast against the background.
                 </p>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Target Contrast Ratios</h3>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>Default</b> – 4.5:1 contrast (WCAG AA for text), 3:1 for containers</li>
+                    <li><b>High-contrast</b> – 7.0:1 contrast (WCAG AAA for text), stronger visual hierarchy</li>
+                    <li><b>Extra-high</b> – 9.0:1 contrast (maximum readability), bold color definition</li>
+                </ul>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>How It Works</h3>
+                <ol style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>Determine background</b> – Uses neutral-0 for light mode, neutral-1000 for dark mode</li>
+                    <li><b>Scan all shades</b> – Tests every step in scale (0, 50, 100, ..., 1000)</li>
+                    <li><b>Measure contrast</b> – Calculates WCAG contrast ratio for each shade vs background</li>
+                    <li><b>Find closest match</b> – Selects shade with contrast nearest to target ratio</li>
+                    <li><b>Prefer mid-tones</b> – Favors range 200-800 for optimal saturation balance</li>
+                </ol>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Benefits</h3>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>WCAG compliant</b> – Automatically achieves required contrast ratios</li>
+                    <li><b>Works for any color</b> – No manual tone guessing or hardcoded values</li>
+                    <li><b>Perceptually balanced</b> – Uses HCT color theory principles</li>
+                    <li><b>Container intelligence</b> – Auto-selects lighter/darker variants with 3:1 contrast</li>
+                    <li><b>Mode aware</b> – Adapts calculations for light/dark backgrounds</li>
+                    <li><b>Colorful high contrast</b> – Preserves color identity while maximizing readability</li>
+                </ul>
+                <div style={{ background: 'var(--color-primary-container)', padding: 12, borderRadius: 8, marginTop: 12 }}>
+                    <p style={{ ...body, color: 'var(--color-on-primary-container)', margin: 0 }}>
+                        <b>Example:</b> In default light mode, instead of always using primary-500, 
+                        the system scans shades 200-800 and picks the one closest to 4.5:1 contrast with white background.
+                        This might be primary-450 for a bright color or primary-600 for a pastel.
+                    </p>
+                </div>
             </section>
 
             {/* Tokens */}
