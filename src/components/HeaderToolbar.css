@@ -61,12 +61,9 @@
         margin-left: 0;
     }
 
-    .toolbar__menuToggle {
-        margin-left: 4px;
-    }
+    .toolbar__menuToggle { margin-left: 4px; }
 }
-
-/* Hidden by default on desktop */
-.toolbar__menuToggle {
-    display: none;
+/* Hidden on desktop and larger */
+@media (min-width: 769px) {
+    .toolbar__menuToggle { display: none; }
 }
