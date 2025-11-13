@@ -213,6 +213,13 @@ function getTokens(
     const isLight = mode === 'light';
     const n = scales.neutral;
 
+    // Vypočítáme accent kontrast pro použití níže (Focus token)
+    const accentContrast = (() => {
+        if (contrast === 'extra-high') return 9.0;
+        if (contrast === 'high-contrast') return 7.0;
+        return 4.5; // default
+    })();
+
     const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary, customTones);
     const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary, customTones);
     const errorSet = createTokenSet(scales, 'error', mode, contrast, stayTrueToInputColor, inputColors?.error, customTones);
@@ -247,36 +254,42 @@ function getTokens(
         '--color-on-surface-inverse': isLight ? n['0'] : n['1000'],
         '--color-primary-inverse': isLight ? scales.primary['300'] : scales.primary['500'],
 
-        // Outline (Ohraničení) - Krok 6D: Statická mapování pro Okraje
-        // Subtle ~2:1, Default ~3:1, Strong ~4.5:1
+        // Outline (Ohraničení) - DYNAMICKÉ podle kontrastu
+        // Používají neutral škálu, ale cílový kontrast se mění podle režimu
         ...(() => {
             const surfaceHex = isLight ? n['0'] : n['950'];
             
-            // border-subtle: Nejméně viditelný okraj (oddělovač)
-            const subtle = findBestContrast(surfaceHex, isLight ? [n['100'], n['150'], n['200']] : [n['850'], n['800'], n['750']], 2.0);
+            // Cílové kontrasty pro outlines podle režimu
+            const subtleTarget = 2.0; // Vždy 2:1 (sotva viditelné)
+            const defaultTarget = contrast === 'extra-high' ? 4.5 : contrast === 'high-contrast' ? 3.5 : 3.0;
+            const hoverTarget = contrast === 'extra-high' ? 5.0 : contrast === 'high-contrast' ? 4.0 : 3.5;
+            const pressedTarget = contrast === 'extra-high' ? 6.0 : contrast === 'high-contrast' ? 4.5 : 4.0;
+            const strongTarget = contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 5.5 : 4.5;
             
-            // border-default: Výchozí okraj (např. u surface-variant)
-            const deflt = findBestContrast(surfaceHex, isLight ? [n['200'], n['250'], n['300']] : [n['800'], n['750'], n['700']], 3.0);
-            
-            // border-default-hover: Zvýraznění okraje při najetí
-            const hover = findBestContrast(surfaceHex, isLight ? [n['300'], n['350'], n['400']] : [n['700'], n['650'], n['600']], 3.0);
-            
-            const pressed = findBestContrast(surfaceHex, isLight ? [n['400'], n['450'], n['500']] : [n['600'], n['550'], n['500']], 3.0);
-            
-            // border-strong: Vysoce viditelný okraj (kontrastní)
-            const strong = findBestContrast(surfaceHex, isLight ? [n['500'], n['550'], n['600']] : [n['500'], n['450'], n['400']], contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 4.5 : 4.5);
+            // Light mode: rozsahy pro neutral (100-600)
+            // Dark mode: rozsahy pro neutral (400-900)
+            const subtleRange: [number, number] = isLight ? [100, 200] : [800, 900];
+            const defaultRange: [number, number] = isLight ? [200, 400] : [600, 800];
+            const hoverRange: [number, number] = isLight ? [300, 500] : [500, 700];
+            const pressedRange: [number, number] = isLight ? [400, 600] : [400, 600];
+            const strongRange: [number, number] = isLight ? [500, 700] : [300, 500];
             
             return {
-                '--color-outline-subtle': subtle,
-                '--color-outline-default': deflt,
-                '--color-outline-strong': strong,
-                '--color-outline-hover': hover,
-                '--color-outline-pressed': pressed,
+                '--color-outline-subtle': n[findOptimalStepByContrast(n, surfaceHex, subtleTarget, subtleRange)],
+                '--color-outline-default': n[findOptimalStepByContrast(n, surfaceHex, defaultTarget, defaultRange)],
+                '--color-outline-hover': n[findOptimalStepByContrast(n, surfaceHex, hoverTarget, hoverRange)],
+                '--color-outline-pressed': n[findOptimalStepByContrast(n, surfaceHex, pressedTarget, pressedRange)],
+                '--color-outline-strong': n[findOptimalStepByContrast(n, surfaceHex, strongTarget, strongRange)],
             } as CssTokenMap;
         })(),
         
-        // border-focus: Dynamický token, odkazuje na již vypočítanou primary-default
-        '--color-focus': isLight ? scales.info['500'] : scales.info['400'],
+        // Focus: Vždy z Primary color (ne Info!)
+        '--color-focus': scales.primary[findOptimalStepByContrast(
+            scales.primary,
+            isLight ? n['0'] : n['950'],
+            accentContrast,
+            isLight ? [400, 700] : [300, 600]
+        )],
 
         // Ostatní
         '--color-shadow': isLight ? n['1000'] : n['1000'],
