@@ -194,19 +194,74 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
 
         // Vytvoříme proměnné pro export
         const variables: FigmaVariable[] = tokenNames.map(tokenKey => {
-            // Odstranění --color- prefixu a formátování názvu
+            // Odstranění --color- prefixu
             const cleanName = tokenKey.replace('--color-', '');
             
-            // Určíme kategorii (první část názvu před pomlčkou)
-            const parts = cleanName.split('-');
-            const category = ['primary', 'secondary', 'error', 'warning', 'success', 'info'].includes(parts[0]) 
-                ? parts[0] 
-                : parts.includes('surface') || parts.includes('background') || parts.includes('outline')
-                    ? 'surface'
-                    : 'other';
+            // Určíme kategorii a název logicky
+            let category: string;
+            let tokenName: string;
+            
+            // Semantic colors s On-variants
+            if (cleanName.startsWith('on-primary')) {
+                category = 'primary';
+                tokenName = cleanName; // on-primary, on-primary-container atd.
+            } else if (cleanName.startsWith('on-secondary')) {
+                category = 'secondary';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('on-error')) {
+                category = 'error';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('on-warning')) {
+                category = 'warning';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('on-success')) {
+                category = 'success';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('on-info')) {
+                category = 'info';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('primary')) {
+                category = 'primary';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('secondary')) {
+                category = 'secondary';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('error')) {
+                category = 'error';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('warning')) {
+                category = 'warning';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('success')) {
+                category = 'success';
+                tokenName = cleanName;
+            } else if (cleanName.startsWith('info')) {
+                category = 'info';
+                tokenName = cleanName;
+            }
+            // Outline a Focus do kategorie outline
+            else if (cleanName.startsWith('outline') || cleanName === 'focus') {
+                category = 'outline';
+                tokenName = cleanName;
+            }
+            // Surface tokeny
+            else if (cleanName.startsWith('surface') || 
+                     cleanName.startsWith('background') || 
+                     cleanName.startsWith('on-surface') ||
+                     cleanName.startsWith('inverse') ||
+                     cleanName.startsWith('disabled') ||
+                     cleanName.startsWith('on-disabled')) {
+                category = 'surface';
+                tokenName = cleanName;
+            }
+            // Ostatní
+            else {
+                category = 'other';
+                tokenName = cleanName;
+            }
             
             // Formátujeme název ve formátu "category/tokenName"
-            const formattedName = `${category}/${cleanName}`;
+            const formattedName = `${category}/${tokenName}`;
             
             // Vytvoříme array hodnot pro všech 6 módů
             const values = allTokens.map(tokens => tokens[tokenKey] || '#000000');
