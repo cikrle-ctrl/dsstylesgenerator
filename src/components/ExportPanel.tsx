@@ -201,8 +201,20 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             let category: string;
             let tokenName: string;
             
+            // Disabled tokeny - vlastní kategorie
+            if (cleanName.startsWith('disabled') || cleanName.startsWith('on-disabled')) {
+                category = 'disabled';
+                tokenName = cleanName;
+            }
+            // Inverse tokeny - vlastní kategorie
+            else if (cleanName.startsWith('inverse') || 
+                     cleanName.startsWith('on-surface-inverse') ||
+                     cleanName === 'primary-inverse') {
+                category = 'inverse';
+                tokenName = cleanName;
+            }
             // Semantic colors s On-variants
-            if (cleanName.startsWith('on-primary')) {
+            else if (cleanName.startsWith('on-primary')) {
                 category = 'primary';
                 tokenName = cleanName; // on-primary, on-primary-container atd.
             } else if (cleanName.startsWith('on-secondary')) {
@@ -247,10 +259,7 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             // Surface tokeny
             else if (cleanName.startsWith('surface') || 
                      cleanName.startsWith('background') || 
-                     cleanName.startsWith('on-surface') ||
-                     cleanName.startsWith('inverse') ||
-                     cleanName.startsWith('disabled') ||
-                     cleanName.startsWith('on-disabled')) {
+                     cleanName.startsWith('on-surface')) {
                 category = 'surface';
                 tokenName = cleanName;
             }
