@@ -65,6 +65,26 @@ function generateInitialState() {
     return { inputs, scales, tokens, ui };
 }
 
+// Helper function to generate neutrals based on source
+function generateNeutralsFromSource(
+    source: 'primary' | 'secondary' | 'custom' | 'pure',
+    primaryColor: string,
+    secondaryColor: string,
+    customColor?: string
+) {
+    if (source === 'pure') {
+        return generatePureNeutrals();
+    }
+    
+    const tintColor = source === 'secondary' 
+        ? secondaryColor 
+        : source === 'custom' && customColor 
+            ? customColor 
+            : primaryColor;
+    
+    return generateTintedNeutrals(tintColor, 0.02);
+}
+
 // --- Definice TS Interface ---
 interface ThemeState {
     inputs: ReturnType<typeof generateInitialState>['inputs'];
@@ -90,6 +110,17 @@ interface ThemeState {
         temperatureShift: number;
         harmonyMode: 'none' | 'analogous' | 'complementary' | 'triadic';
         stayTrueToInputColor: boolean;
+        proMode: boolean;
+        customTones?: {
+            primary?: { light?: number; dark?: number };
+            secondary?: { light?: number; dark?: number };
+            error?: { light?: number; dark?: number };
+            warning?: { light?: number; dark?: number };
+            success?: { light?: number; dark?: number };
+            info?: { light?: number; dark?: number };
+        };
+        neutralTintSource: 'primary' | 'secondary' | 'custom' | 'pure';
+        customNeutralTint?: string;
     };
     
     // Akce
@@ -119,6 +150,8 @@ export const useThemeStore = create<ThemeState>((set) => ({
         temperatureShift: 0,
         harmonyMode: 'none',
         stayTrueToInputColor: false,
+        proMode: false,
+        neutralTintSource: 'primary',
     },
 
     // --- Akce ---
@@ -141,7 +174,8 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 boostedScales, 
                 mode, 
                 state.advancedSettings.stayTrueToInputColor,
-                state.inputs.colors
+                state.inputs.colors,
+                state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );
             return {
                 ui: { ...state.ui, contrastMode: mode },
@@ -222,7 +256,8 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
-                newInputs.colors
+                newInputs.colors,
+                state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );
             const newTokens = {
                 ...state.tokens,
@@ -359,12 +394,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
             // Pokud se změnilo stayTrueToInputColor, NEPŘEGENERUJ škály (zůstávají stejné)
             // Jen přegenerujeme tokeny s novým mappingem níže
             
-            // Pure neutrals
-            if (updatedSettings.usePureNeutrals) {
-                newScales.neutral = generatePureNeutrals();
-            } else {
-                newScales.neutral = generateTintedNeutrals(state.inputs.colors.primary);
-            }
+            // Neutral tinting podle zdroje
+            newScales.neutral = generateNeutralsFromSource(
+                updatedSettings.neutralTintSource,
+                state.inputs.colors.primary,
+                state.inputs.colors.secondary,
+                updatedSettings.customNeutralTint
+            );
             
             // Saturation multiplier
             if (updatedSettings.saturationMultiplier !== 1.0) {
@@ -395,7 +431,8 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 updatedSettings.stayTrueToInputColor,
-                state.inputs.colors
+                state.inputs.colors,
+                state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );
             
             return {

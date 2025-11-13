@@ -27,6 +27,16 @@ type InputColors = {
     info: string;
 };
 
+// Typ pro custom tone overrides (Profi režim)
+type CustomTones = {
+    primary?: { light?: number; dark?: number };
+    secondary?: { light?: number; dark?: number };
+    error?: { light?: number; dark?: number };
+    warning?: { light?: number; dark?: number };
+    success?: { light?: number; dark?: number };
+    info?: { light?: number; dark?: number };
+};
+
 // Pomocná funkce pro generování sady tokenů (Primary, Secondary, Error...)
 function createTokenSet(
     scales: AllScales,
@@ -34,7 +44,8 @@ function createTokenSet(
     mode: 'light' | 'dark',
     contrast: ContrastMode,
     stayTrueToInputColor: boolean,
-    inputColor?: string
+    inputColor?: string,
+    customTones?: CustomTones
 ): CssTokenMap {
     const isLight = mode === 'light';
     const s = scales[name]; // např. scales.primary
@@ -52,13 +63,27 @@ function createTokenSet(
 
     // Základní krok pro akcent - najdi optimální podle kontrastu
     // Pokud je stayTrueToInputColor, najdi nejbližší krok k input barvě (300-600)
+    // Pokud je customTones (Profi režim), použij uživatelský tón
     // Jinak použij inteligentní hledání podle kontrastu
     const baseStep = (() => {
+        // 1. Profi režim - vlastní tóny (pouze pro semantic colors, ne neutral)
+        if (customTones && name !== 'neutral' && customTones[name as keyof typeof customTones]) {
+            const customTone = mode === 'light' 
+                ? customTones[name as keyof typeof customTones]?.light 
+                : customTones[name as keyof typeof customTones]?.dark;
+            if (customTone !== undefined) {
+                // Clamp to valid step
+                const clampedTone = Math.min(1000, Math.max(0, Math.round(customTone / 50) * 50));
+                return String(clampedTone);
+            }
+        }
+        
+        // 2. Stay true to input color
         if (stayTrueToInputColor && inputColor) {
             return findClosestStepInScale(inputColor, s, 300, 600);
         }
         
-        // Inteligentní výběr: najdi krok s kontrastem nejblíže cílové hodnotě
+        // 3. Inteligentní výběr: najdi krok s kontrastem nejblíže cílové hodnotě
         // Preferujeme střední tóny (200-800) pro balanc sytosti a kontrastu
         return findOptimalStepByContrast(s, backgroundHex, targetContrast, [200, 800]);
     })();
@@ -171,18 +196,19 @@ function getTokens(
     mode: 'light' | 'dark', 
     contrast: ContrastMode,
     stayTrueToInputColor: boolean,
-    inputColors?: InputColors
+    inputColors?: InputColors,
+    customTones?: CustomTones
 ): CssTokenMap {
     const isLight = mode === 'light';
     const n = scales.neutral;
     const p = scales.primary;
 
-    const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary);
-    const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary);
-    const errorSet = createTokenSet(scales, 'error', mode, contrast, stayTrueToInputColor, inputColors?.error);
-    const warningSet = createTokenSet(scales, 'warning', mode, contrast, stayTrueToInputColor, inputColors?.warning);
-    const successSet = createTokenSet(scales, 'success', mode, contrast, stayTrueToInputColor, inputColors?.success);
-    const infoSet = createTokenSet(scales, 'info', mode, contrast, stayTrueToInputColor, inputColors?.info);
+    const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary, customTones);
+    const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary, customTones);
+    const errorSet = createTokenSet(scales, 'error', mode, contrast, stayTrueToInputColor, inputColors?.error, customTones);
+    const warningSet = createTokenSet(scales, 'warning', mode, contrast, stayTrueToInputColor, inputColors?.warning, customTones);
+    const successSet = createTokenSet(scales, 'success', mode, contrast, stayTrueToInputColor, inputColors?.success, customTones);
+    const infoSet = createTokenSet(scales, 'info', mode, contrast, stayTrueToInputColor, inputColors?.info, customTones);
 
     // Základní tokeny podle finální specifikace
     const baseTokens: CssTokenMap = {
@@ -286,10 +312,11 @@ export function generateMappedTokens(
     scales: AllScales, 
     contrast: ContrastMode = 'default',
     stayTrueToInputColor = false,
-    inputColors?: InputColors
+    inputColors?: InputColors,
+    customTones?: CustomTones
 ) {
     return {
-        light: getTokens(scales, 'light', contrast, stayTrueToInputColor, inputColors),
-        dark: getTokens(scales, 'dark', contrast, stayTrueToInputColor, inputColors),
+        light: getTokens(scales, 'light', contrast, stayTrueToInputColor, inputColors, customTones),
+        dark: getTokens(scales, 'dark', contrast, stayTrueToInputColor, inputColors, customTones),
     };
 }

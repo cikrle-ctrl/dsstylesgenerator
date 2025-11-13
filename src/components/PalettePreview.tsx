@@ -2,6 +2,7 @@
 import './PalettePreview.css';
 import './PreviewCard.css';
 import { getContrast } from '../logic/contrastChecker';
+import { isInSRGBGamut } from '../logic/gamutChecker';
 
 type ShadeScale = Record<string, string>;
 type Scales = {
@@ -53,6 +54,7 @@ const Cell = ({ label, sublabel, token, mode, tokens, scope, onToken }: {
     const onMap = mode === 'light' ? tokens.light : tokens.dark;
     const onColor = onToken ? onMap[onToken] : undefined;
     const contrast = onColor && colorValue ? getContrast(colorValue, onColor) : undefined;
+    const inGamut = colorValue ? isInSRGBGamut(colorValue) : true;
     
     return (
         <div style={{
@@ -73,6 +75,31 @@ const Cell = ({ label, sublabel, token, mode, tokens, scope, onToken }: {
                 {label}
             </div>
             <div style={{ fontSize: '10px', opacity: 0.7, fontFamily: 'monospace' }}>{sublabel}</div>
+            
+            {/* Gamut warning badge */}
+            {!inGamut && (
+                <div style={{ 
+                    position: 'absolute', 
+                    top: '6px', 
+                    left: '6px', 
+                    fontSize: '9px',
+                    background: '#ff9800',
+                    color: '#000',
+                    padding: '3px 5px',
+                    borderRadius: '3px',
+                    fontWeight: '600',
+                    lineHeight: '1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '2px'
+                }}
+                title="Outside sRGB gamut - may display differently on older monitors"
+                >
+                    ⚠️ P3
+                </div>
+            )}
+            
+            {/* Contrast badge */}
             {contrast !== undefined && (
                 <div style={{ 
                     position: 'absolute', 

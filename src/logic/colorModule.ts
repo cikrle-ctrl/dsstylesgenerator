@@ -101,19 +101,18 @@ export function generateShades(baseColorHex: string): ShadeScale {
 /**
  * Generuje TÓNOVANOU neutrální škálu
  */
-export function generateTintedNeutrals(baseColorHex: string): ShadeScale {
+export function generateTintedNeutrals(baseColorHex: string, chromaIntensity: number = 0.02): ShadeScale {
     const baseOklch = oklch(baseColorHex); // <-- OPRAVA
     if (!baseOklch) return {} as ShadeScale;
 
     const baseHue = baseOklch.h;
-    const TINT_CHROMA = 0.02;
 
     const scale: Partial<ShadeScale> = {};
     for (const [step, lightness] of Object.entries(lightnessSteps)) {
         const newColor = {
             mode: 'oklch' as const,
             l: lightness,
-            c: TINT_CHROMA,
+            c: chromaIntensity,
             h: baseHue,
         };
         scale[step as keyof ShadeScale] = formatHex(clampChroma(newColor, 'oklch')); // <-- OPRAVA
