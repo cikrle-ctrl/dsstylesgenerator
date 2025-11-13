@@ -2,29 +2,30 @@
 import { type Oklch, formatHex, oklch, clampChroma } from 'culori'; // <-- TOTO JE TA OPRAVA
 
 // Naše definice kroků světlosti (0-1000, po 50)
-// S perceptuálním easingem pro lepší vizuální odstupňování
+// S perceptuálním easingem (power 0.9) pro lepší vizuální odstupňování
+// Algoritmus: L = 1.0 - (step/1000)^0.9
 const lightnessSteps = {
-    '0': 1.0,      // Nejsvětlejší - bílá
-    '50': 0.98,
-    '100': 0.95,
-    '150': 0.92,
-    '200': 0.88,
-    '250': 0.83,
-    '300': 0.77,
-    '350': 0.71,
-    '400': 0.65,
-    '450': 0.59,
-    '500': 0.53,   // Střední tón
-    '550': 0.47,
-    '600': 0.41,
-    '650': 0.36,
-    '700': 0.31,
-    '750': 0.27,
-    '800': 0.23,
-    '850': 0.19,
-    '900': 0.15,
-    '950': 0.10,
-    '1000': 0.05,  // Nejtmavší - černá
+    '0': 1.0,      // Absolutně bílá (L=1)
+    '50': 0.985,   // Velmi světlé pastely
+    '100': 0.96,   // Light containers začátek
+    '150': 0.93,
+    '200': 0.89,   // Light containers konec
+    '250': 0.845,
+    '300': 0.79,   // Light base začátek
+    '350': 0.73,
+    '400': 0.67,
+    '450': 0.61,
+    '500': 0.55,   // Střední tón (Light base konec, Dark base začátek)
+    '550': 0.49,
+    '600': 0.43,
+    '650': 0.38,   // Dark base konec
+    '700': 0.33,   // Dark containers začátek
+    '750': 0.28,
+    '800': 0.24,
+    '850': 0.20,   // Dark containers konec
+    '900': 0.16,
+    '950': 0.11,   // Velmi tmavé surface
+    '1000': 0.05,  // Absolutně černá (L=0.05 pro sRGB bezpečnost)
 };
 
 type ShadeScale = Record<keyof typeof lightnessSteps, string>;
@@ -73,19 +74,41 @@ export function generateShades(baseColorHex: string): ShadeScale {
     const scale: Partial<ShadeScale> = {};
     
     for (const [step, lightness] of Object.entries(lightnessSteps)) {
-        // Adaptivní chroma: optimalizováno pro light i dark mode
+        // Adaptivní chroma: parabolická křivka pro fyzické limity sRGB gamutu
+        // Zabezpečuje, že světlé a tmavé tóny nejsou "ořezány" (gamut clipping)
         let chromaMultiplier = 1.0;
         
-        if (lightness > 0.90) { // Velmi světlé (0, 50) - pro light mode pozadí
-            chromaMultiplier = 0.3;
-        } else if (lightness > 0.80) { // Světlé (100, 150, 200) - containers v light mode
-            chromaMultiplier = 0.6;
-        } else if (lightness >= 0.65 && lightness <= 0.77) { // Mid-tones (300-400) - dark mode akcenty
-            chromaMultiplier = 1.1; // Boost pro dark mode viditelnost
-        } else if (lightness < 0.20) { // Velmi tmavé (900-1000) - dark mode pozadí
-            chromaMultiplier = 0.35;
-        } else if (lightness < 0.30) { // Tmavé (750-850) - dark mode surfaces
-            chromaMultiplier = 0.65;
+        // Velmi světlé (L > 0.92): exponenciální pokles pro pastely
+        if (lightness > 0.92) {
+            chromaMultiplier = 0.25; // Kroky 0, 50, 100
+        } 
+        // Světlé (0.85 < L ≤ 0.92): Light mode containers
+        else if (lightness > 0.85) {
+            chromaMultiplier = 0.5; // Kroky 150, 200
+        } 
+        // Horní mid-tones (0.70 < L ≤ 0.85): Light akcenty přechod
+        else if (lightness > 0.70) {
+            chromaMultiplier = 0.85; // Kroky 250, 300
+        }
+        // Mid-tones (0.55 ≤ L ≤ 0.70): Maximum chroma boost pro viditelnost
+        else if (lightness >= 0.55 && lightness <= 0.70) {
+            chromaMultiplier = 1.15; // Kroky 350, 400, 450, 500 — ideální pro dark mode akcenty
+        }
+        // Dolní mid-tones (0.38 < L < 0.55): Plná chroma
+        else if (lightness > 0.38) {
+            chromaMultiplier = 1.0; // Kroky 550, 600
+        }
+        // Tmavší tóny (0.28 < L ≤ 0.38): Postupný pokles
+        else if (lightness > 0.28) {
+            chromaMultiplier = 0.75; // Kroky 650, 700
+        }
+        // Tmavé (0.20 < L ≤ 0.28): Dark containers začátek
+        else if (lightness > 0.20) {
+            chromaMultiplier = 0.55; // Kroky 750, 800
+        }
+        // Velmi tmavé (L ≤ 0.20): Dark mode pozadí a surfaces
+        else {
+            chromaMultiplier = 0.3; // Kroky 850, 900, 950, 1000
         }
         
         const newColor = {
@@ -93,7 +116,7 @@ export function generateShades(baseColorHex: string): ShadeScale {
             l: lightness,
             c: baseChroma * chromaMultiplier,
         };
-        scale[step as keyof ShadeScale] = formatHex(clampChroma(newColor, 'oklch')); // <-- OPRAVA
+        scale[step as keyof ShadeScale] = formatHex(clampChroma(newColor, 'oklch'));
     }
     return scale as ShadeScale;
 }
