@@ -253,11 +253,14 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             return mapped[mode];
         });
 
-        // Sbíráme všechny unikátní názvy tokenů
+        // Sbíráme všechny unikátní názvy COLOR tokenů (bez shadows, radius atd.)
         const tokenNamesSet = new Set<string>();
         allTokens.forEach(tokens => {
             Object.keys(tokens).forEach(key => {
-                if (key.startsWith('--color-')) {
+                // Pouze barevné tokeny, vynecháme shadow, backdrop
+                if (key.startsWith('--color-') && 
+                    !key.includes('shadow') && 
+                    !key.includes('backdrop')) {
                     tokenNamesSet.add(key);
                 }
             });
