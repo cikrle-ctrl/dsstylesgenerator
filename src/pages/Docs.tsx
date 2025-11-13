@@ -21,11 +21,16 @@ export function Docs() {
         { id: 'color-theory', label: 'Color theory & OKLCH' },
         { id: 'scales', label: 'Color scales' },
         { id: 'adaptive-chroma', label: 'Adaptive chroma' },
+        { id: 'logic', label: 'Generation logic' },
         { id: 'contrast', label: 'Contrast modes' },
+        { id: 'containers-on', label: 'Containers & On-colors' },
+        { id: 'outlines', label: 'Outlines' },
         { id: 'tokens', label: 'Design tokens' },
         { id: 'surface', label: 'Surface & Radius & Outline' },
         { id: 'advanced', label: 'Advanced settings' },
+        { id: 'toolbar', label: 'Toolbar & Modes' },
         { id: 'export', label: 'Exports' },
+        { id: 'naming', label: 'Token naming' },
         { id: 'a11y', label: 'Accessibility' },
         { id: 'files', label: 'File structure' },
         { id: 'harmony', label: 'Color Harmony Generator' },
@@ -182,43 +187,101 @@ export function Docs() {
                 </ul>
             </section>
 
+            {/* Generation logic details */}
+            <section id="logic" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Generation logic</h2>
+                <p style={body}>Color roles are not hardcoded to specific steps; they are chosen dynamically from the scale based on contrast targets and mode.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginTop: 8 }}>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b>Base (Primary/Secondary)</b>
+                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
+                            <li>Light mode: prefer steps <b>300–500</b></li>
+                            <li>Dark mode: prefer steps <b>500–700</b></li>
+                            <li>Pick the step that meets the target contrast; if none, choose the highest-contrast candidate</li>
+                        </ul>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b>Containers</b>
+                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
+                            <li>Light mode: subtle range <b>100–300</b></li>
+                            <li>Dark mode: subtle range <b>700–900</b></li>
+                            <li>Target ~<b>3:1</b> contrast against the surface</li>
+                        </ul>
+                    </div>
+                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                        <b>Hover/Pressed</b>
+                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
+                            <li>Hover: ±50 toward surface; Pressed: ±100</li>
+                            <li>Clamped to 0–1000; respects mode (lighter in light, darker in dark)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
             {/* Contrast */}
             <section id="contrast" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes & Intelligent color selection</h2>
-                <p style={body}>
-                    The system uses <b>intelligent contrast-based color selection</b> instead of fixed tone values.
-                    For each mode, it dynamically finds the optimal shade by measuring actual WCAG contrast against the background.
-                </p>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Target Contrast Ratios</h3>
+                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes & selection algorithm</h2>
+                <p style={body}>We compute WCAG contrast for every candidate shade and choose the one that best satisfies the target.</p>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Targets</h3>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Default</b> – 4.5:1 contrast (WCAG AA for text), 3:1 for containers</li>
-                    <li><b>High-contrast</b> – 7.0:1 contrast (WCAG AAA for text), stronger visual hierarchy</li>
-                    <li><b>Extra-high</b> – 9.0:1 contrast (maximum readability), bold color definition</li>
+                    <li><b>Default</b>: Text 4.5:1, Containers ~3:1</li>
+                    <li><b>High</b>: Text 7:1, Containers ≥3.5:1</li>
+                    <li><b>Extra-high</b>: Text 9:1, Containers ≥4:1</li>
                 </ul>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>How It Works</h3>
+                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Algorithm</h3>
                 <ol style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Determine background</b> – Uses neutral-0 for light mode, neutral-1000 for dark mode</li>
-                    <li><b>Scan all shades</b> – Tests every step in scale (0, 50, 100, ..., 1000)</li>
-                    <li><b>Measure contrast</b> – Calculates WCAG contrast ratio for each shade vs background</li>
-                    <li><b>Find closest match</b> – Selects shade with contrast nearest to target ratio</li>
-                    <li><b>Prefer mid-tones</b> – Favors range 200-800 for optimal saturation balance</li>
+                    <li>Gather candidate steps for the role (e.g., 300–500 for base in light)</li>
+                    <li>Measure contrast versus the actual surface color</li>
+                    <li>Pick the first that meets ≥ target; if none meet, pick the highest contrast</li>
                 </ol>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Benefits</h3>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>WCAG compliant</b> – Automatically achieves required contrast ratios</li>
-                    <li><b>Works for any color</b> – No manual tone guessing or hardcoded values</li>
-                    <li><b>Perceptually balanced</b> – Uses HCT color theory principles</li>
-                    <li><b>Container intelligence</b> – Auto-selects lighter/darker variants with 3:1 contrast</li>
-                    <li><b>Mode aware</b> – Adapts calculations for light/dark backgrounds</li>
-                    <li><b>Colorful high contrast</b> – Preserves color identity while maximizing readability</li>
-                </ul>
                 <div style={{ background: 'var(--color-primary-container)', padding: 12, borderRadius: 8, marginTop: 12 }}>
                     <p style={{ ...body, color: 'var(--color-on-primary-container)', margin: 0 }}>
-                        <b>Example:</b> In default light mode, instead of always using primary-500, 
-                        the system scans shades 200-800 and picks the one closest to 4.5:1 contrast with white background.
-                        This might be primary-450 for a bright color or primary-600 for a pastel.
+                        This eliminates intermittent AA/AAA failures by enforcing a minimum threshold with a safe fallback.
                     </p>
                 </div>
+            </section>
+
+            {/* Containers & On-colors */}
+            <section id="containers-on" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Containers & On-colors</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>Containers</h3>
+                        <ul style={{ ...body, paddingLeft: 18 }}>
+                            <li>Light mode: pick within 100–300 to keep containers subtle</li>
+                            <li>Dark mode: pick within 700–900 for subtle elevated blocks</li>
+                            <li>Contrast target ~3:1 against surface, hover/pressed shift by ±50/±100</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>On-color for Base</h3>
+                        <ul style={{ ...body, paddingLeft: 18 }}>
+                            <li>Dark base tones (≥ 400) → light text first (white priority)</li>
+                            <li>Light base tones (&lt; 400) → dark text first (black priority)</li>
+                            <li>Always enforce ≥ target contrast; fallback is max contrast</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>On-color for Containers</h3>
+                        <ul style={{ ...body, paddingLeft: 18 }}>
+                            <li>Light mode containers → prefer dark text (black-first list)</li>
+                            <li>Dark mode containers → prefer light text (white-first list)</li>
+                            <li>Applied for normal/hover/pressed variants</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            {/* Outlines */}
+            <section id="outlines" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Outlines</h2>
+                <p style={body}>Outline colors are derived dynamically from the surface, not fixed palette picks.</p>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><b>Subtle</b>: ~2:1 vs surface (dividers)</li>
+                    <li><b>Default</b>: ~3:1 (borders, inputs)</li>
+                    <li><b>Strong</b>: ~4.5:1 (focus/active emphasis)</li>
+                    <li>Hover/pressed outline variants aim for ~3:1 or better</li>
+                </ul>
             </section>
 
             {/* Tokens */}
@@ -270,10 +333,34 @@ export function Docs() {
             {/* Advanced */}
             <section id="advanced" className="preview-card" style={section}>
                 <h2 style={{ ...title, fontSize: 18 }}>Advanced settings</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>Pro Mode (Tone Overrides)</h3>
+                        <p style={body}>Manually override tone steps for roles (0–1000 in steps of 50). Use <i>Auto</i> to return to algorithmic selection.</p>
+                    </div>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>Neutral Tint Source</h3>
+                        <ul style={{ ...body, paddingLeft: 18 }}>
+                            <li><b>Primary</b>: neutrals tinted from primary hue</li>
+                            <li><b>Secondary</b>: neutrals tinted from secondary hue</li>
+                            <li><b>Custom</b>: pick a custom tint via color picker</li>
+                            <li><b>Pure</b>: achromatic grayscale neutrals</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style={{ ...title, fontSize: 16 }}>Semantic Colors</h3>
+                        <p style={body}>Error/Warning/Success/Info scales are generated the same way as primary/secondary. Their containers and on-colors follow the same rules.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Toolbar & Modes */}
+            <section id="toolbar" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Toolbar & Modes</h2>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li>Pure neutrals, Saturation multiplier, Temperature shift</li>
-                    <li>Harmony mode (analogous/complementary/triadic)</li>
-                    <li>Stay true to input color (map accent to nearest step)</li>
+                    <li><b>Theme</b>: Light / Dark toggle switches <code>data-theme</code></li>
+                    <li><b>Contrast</b>: Default / High / Extra-high switch <code>data-contrast</code></li>
+                    <li><b>Preview toggles</b>: Hover, Toast, Modal for quick state checks</li>
                 </ul>
             </section>
 
@@ -295,6 +382,17 @@ export function Docs() {
                 <ul style={{ ...body, paddingLeft: 18 }}>
                     <li><b>v3</b>: JavaScript config (<code>tailwind.config.js</code>) with <code>theme.extend.colors</code></li>
                     <li><b>v4</b>: CSS-first approach with <code>@theme</code> directive (requires Tailwind 4.0+)</li>
+                </ul>
+            </section>
+
+            {/* Naming */}
+            <section id="naming" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Token naming</h2>
+                <ul style={{ ...body, paddingLeft: 18 }}>
+                    <li><code>--color-primary</code>, <code>--color-primary-container</code>, <code>--color-on-primary</code>, <code>--color-on-primary-container</code></li>
+                    <li><code>--color-surface</code>, <code>--color-surface-variant</code>, <code>--color-surface-hover</code>, <code>--color-surface-pressed</code></li>
+                    <li><code>--color-outline-subtle</code>, <code>--color-outline-default</code>, <code>--color-outline-strong</code></li>
+                    <li>State variants: <code>-hover</code>, <code>-pressed</code>; Dark mode overrides via <code>[data-theme="dark"]</code></li>
                 </ul>
             </section>
 

@@ -79,7 +79,7 @@ export function ColorPicker({ value, onChange, onClose }: ColorPickerProps) {
   const pickColorFromScreen = async () => {
     if (!hasEyeDropper) return;
     try {
-      // @ts-ignore - EyeDropper is not in TypeScript types yet
+      // @ts-expect-error - EyeDropper is not in TypeScript types yet
       const eyeDropper = new EyeDropper();
       const result = await eyeDropper.open();
       if (result?.sRGBHex) {

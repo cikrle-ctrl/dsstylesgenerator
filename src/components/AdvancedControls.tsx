@@ -9,6 +9,8 @@ import { Settings } from 'lucide-react';
 import { Checkbox } from './ui/Checkbox';
 import { Slider } from './ui/Slider';
 import { Select } from './ui/Select';
+import { ProModeControls } from './ProModeControls';
+import { NeutralTintControls } from './NeutralTintControls';
 
 type HarmonyMode = 'none' | 'analogous' | 'complementary' | 'triadic';
 
@@ -169,6 +171,26 @@ export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps
                     <strong>💡 Tip:</strong> Controls respect perceptual color limits (OKLCH).
                     Saturation and temperature adjustments apply adaptive chroma to avoid clipping.
                 </div>
+
+                {/* Divider */}
+                <div style={{ 
+                    height: '1px', 
+                    background: 'var(--color-outline-subtle)', 
+                    margin: '8px 0' 
+                }} />
+
+                {/* Pro Mode Controls */}
+                <ProModeControls />
+
+                {/* Divider */}
+                <div style={{ 
+                    height: '1px', 
+                    background: 'var(--color-outline-subtle)', 
+                    margin: '8px 0' 
+                }} />
+
+                {/* Neutral Tint Controls */}
+                <NeutralTintControls />
 
             </div>
         </Accordion>

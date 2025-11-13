@@ -20,7 +20,15 @@
   --app-border-color: #e0e0e0;
 }
 
-/* 3. Základní styly pro body */
+/* 3. Základní layout reset a body styly */
+/* Ensure predictable sizing and lock the app to viewport height */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100dvh;
+  overflow: hidden; /* prevent page-level scroll; panels handle their own */
+}
+
 body {
   margin: 0;
   background-color: var(--app-bg);

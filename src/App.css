@@ -8,8 +8,9 @@
   display: grid;
   /* Dvousloupcový layout: levý sidebar a hlavní obsah */
   grid-template-columns: 320px 1fr; 
-  height: 100vh;
-  overflow: hidden;
+  height: 100dvh; /* more stable on mobile */
+  /* Avoid clipping children; individual panels handle their own scrolling */
+  overflow: visible;
   background-color: var(--app-bg);
 }
 
@@ -17,7 +18,7 @@
 .main-content {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -26,18 +27,22 @@
   display: flex;
   flex-direction: column;
   padding: 24px 20px;
+  box-sizing: border-box; /* include padding in 100dvh height */
   /* Token-based background so it adapts to light/dark/contrast */
   background: var(--color-surface-variant);
   border-right: 1px solid var(--color-outline-subtle);
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 100vh;
+  height: 100dvh; /* Fixed height místo max-height */
   /* Smooth scrolling */
   scroll-behavior: smooth;
   /* Better scrollbar styling */
   scrollbar-width: thin;
   scrollbar-color: var(--color-outline-default) transparent;
 }
+
+/* Allow grid children to shrink and not force overflow */
+.app-layout > * { min-height: 0; min-width: 0; }
 
 /* Webkit scrollbar styling */
 .control-panel::-webkit-scrollbar {
@@ -240,7 +245,8 @@
     top: 0;
     left: 0;
     width: 320px;
-    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
     z-index: 1000;
     transform: translateX(-100%);
     transition: transform 0.3s ease;

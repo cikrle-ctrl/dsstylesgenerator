@@ -270,7 +270,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
 
     setSecondaryColor: (color: string) =>
         set((state) => {
-            let newScales = { ...state.scales, secondary: generateShades(color) };
+            const newScales = { ...state.scales, secondary: generateShades(color) };
             
             // Aplikuj contrast boost pokud je nastaven
             if (state.ui.contrastMode !== 'default') {
@@ -291,7 +291,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setErrorColor: (color: string) =>
         set((state) => {
-            let newScales = { ...state.scales, error: generateShades(color) };
+            const newScales = { ...state.scales, error: generateShades(color) };
             
             // Aplikuj contrast boost pokud je nastaven
             if (state.ui.contrastMode !== 'default') {
@@ -312,7 +312,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setWarningColor: (color: string) =>
         set((state) => {
-            let newScales = { ...state.scales, warning: generateShades(color) };
+            const newScales = { ...state.scales, warning: generateShades(color) };
             
             // Aplikuj contrast boost pokud je nastaven
             if (state.ui.contrastMode !== 'default') {
@@ -333,7 +333,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setSuccessColor: (color: string) =>
         set((state) => {
-            let newScales = { ...state.scales, success: generateShades(color) };
+            const newScales = { ...state.scales, success: generateShades(color) };
             
             // Aplikuj contrast boost pokud je nastaven
             if (state.ui.contrastMode !== 'default') {
@@ -354,7 +354,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
         }),
     setInfoColor: (color: string) =>
         set((state) => {
-            let newScales = { ...state.scales, info: generateShades(color) };
+            const newScales = { ...state.scales, info: generateShades(color) };
             
             // Aplikuj contrast boost pokud je nastaven
             if (state.ui.contrastMode !== 'default') {

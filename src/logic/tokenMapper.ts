@@ -84,18 +84,48 @@ function createTokenSet(
         }
         
         // 3. Inteligentní výběr: najdi krok s kontrastem nejblíže cílové hodnotě
-        // Preferujeme střední tóny (200-800) pro balanc sytosti a kontrastu
-        return findOptimalStepByContrast(s, backgroundHex, targetContrast, [200, 800]);
+        // Pro light mode preferujeme 300-500, pro dark mode 500-700
+        const range: [number, number] = isLight ? [300, 500] : [500, 700];
+        return findOptimalStepByContrast(s, backgroundHex, targetContrast, range);
     })();
 
-    // Container: najdi světlejší/tmavší variantu s nižším kontrastem (3:1)
-    const containerTargetContrast = contrast === 'extra-high' ? 3.0 : 3.0;
+    // Container: světlé (100-300) pro light mode, tmavé (700-900) pro dark mode
+    // V high/extra-high kontrastu se rozsah může měnit podle potřeby kontrastu s on-container
+    const containerTargetContrast = (() => {
+        if (contrast === 'extra-high') return 7.0; // Vyšší kontrast pro extra-high
+        if (contrast === 'high-contrast') return 4.5; // Střední kontrast pro high
+        return 3.0; // Základní jemný kontrast pro default
+    })();
+    
     const containerStep = (() => {
-        // Pro container preferujeme světlejší/tmavší tóny
         if (isLight) {
-            return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [100, 400]);
+            // Light mode: světlé tóny 100-300
+            // Logika: Čím tmavší je baseStep, tím světlejší musí být container
+            const baseStepNum = parseInt(baseStep, 10);
+            if (baseStepNum >= 600) {
+                // Tmavá primary (600+) → nejsvětlejší container (100-150)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [100, 150]);
+            } else if (baseStepNum >= 400) {
+                // Střední primary (400-599) → střední světlý container (150-250)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [150, 250]);
+            } else {
+                // Světlá primary (0-399) → tmavší světlý container (200-300)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [200, 300]);
+            }
         } else {
-            return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [600, 900]);
+            // Dark mode: tmavé tóny 700-900
+            // Logika: Čím světlejší je baseStep, tím tmavší musí být container
+            const baseStepNum = parseInt(baseStep, 10);
+            if (baseStepNum <= 400) {
+                // Světlá primary (0-400) → nejtmavší container (850-900)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [850, 900]);
+            } else if (baseStepNum <= 600) {
+                // Střední primary (401-600) → střední tmavý container (750-850)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [750, 850]);
+            } else {
+                // Tmavá primary (601+) → světlejší tmavý container (700-800)
+                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [700, 800]);
+            }
         }
     })();
     const containerColor = s[containerStep];
@@ -134,14 +164,21 @@ function createTokenSet(
         [`--color-${name}`]: s[baseStep],
         [`--color-on-${name}`]: findBestContrast(
             s[baseStep],
-            [n['0'], n['1000'], s['0'], s['1000']], // Možnosti textu
-            contrast === 'extra-high' ? 8.5 : contrast === 'high-contrast' ? 7.0 : 4.5 // Extra-high: 8.5:1, High: 7:1
+            // Pro tmavé/sytější barvy (400+) použij pouze bílou a světlé tóny
+            // Pro světlé barvy (<400) použij pouze černou a tmavé tóny
+            parseInt(baseStep, 10) >= 400 
+                ? [n['0'], s['0'], s['50'], s['100']]  // Pouze světlé možnosti
+                : [n['1000'], s['1000'], s['950'], s['900']],  // Pouze tmavé možnosti
+            contrast === 'extra-high' ? 8.5 : contrast === 'high-contrast' ? 7.0 : 4.5
         ),
         [`--color-${name}-container`]: containerColor,
         [`--color-on-${name}-container`]: findBestContrast(
             containerColor,
-            [s['700'], s['800'], s['900'], s['1000'], s['100'], s['200'], s['300'], s['0'], n['0'], n['1000']], // Rozšířené možnosti
-            contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5 // High/Extra: 7:1 pro text
+            // V light: preferuj tmavé; v dark: preferuj světlé
+            isLight
+                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
+                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
+            contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
         ),
 
         // Fix varianty (stejné pro Light i Dark mode) + stavy
@@ -171,13 +208,17 @@ function createTokenSet(
         [`--color-${name}-container-hover`]: containerHover,
         [`--color-on-${name}-container-hover`]: findBestContrast(
             containerHover,
-            [s['700'], s['800'], s['900'], s['1000'], s['100'], s['200'], s['300'], s['0'], n['0'], n['1000']],
+            isLight
+                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
+                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
             contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
         ),
         [`--color-${name}-container-pressed`]: containerPressed,
         [`--color-on-${name}-container-pressed`]: findBestContrast(
             containerPressed,
-            [s['700'], s['800'], s['900'], s['1000'], s['100'], s['200'], s['300'], s['0'], n['0'], n['1000']],
+            isLight
+                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
+                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
             contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
         ),
         
@@ -233,32 +274,23 @@ function getTokens(
         '--color-on-surface-inverse': isLight ? n['0'] : n['1000'],
         '--color-primary-inverse': isLight ? scales.primary['300'] : scales.primary['500'],
 
-        // Outline (Ohraničení) - zvýrazněné v kontrastních režimech
-        '--color-outline-subtle': (
-            contrast === 'extra-high' ? (isLight ? n['300'] : n['700']) :
-            contrast === 'high-contrast' ? (isLight ? n['250'] : n['750']) :
-            (isLight ? n['200'] : n['800'])
-        ),
-        '--color-outline-default': (
-            contrast === 'extra-high' ? (isLight ? n['600'] : n['400']) :
-            contrast === 'high-contrast' ? (isLight ? n['500'] : n['500']) :
-            (isLight ? n['400'] : n['600'])
-        ),
-        '--color-outline-strong': (
-            contrast === 'extra-high' ? (isLight ? n['850'] : n['150']) :
-            contrast === 'high-contrast' ? (isLight ? n['800'] : n['200']) :
-            (isLight ? n['700'] : n['300'])
-        ),
-        '--color-outline-hover': (
-            contrast === 'extra-high' ? (isLight ? n['600'] : n['400']) :
-            contrast === 'high-contrast' ? (isLight ? n['550'] : n['450']) :
-            (isLight ? n['500'] : n['500'])
-        ),
-        '--color-outline-pressed': (
-            contrast === 'extra-high' ? (isLight ? n['700'] : n['300']) :
-            contrast === 'high-contrast' ? (isLight ? n['650'] : n['350']) :
-            (isLight ? n['600'] : n['400'])
-        ),
+        // Outline (Ohraničení) - odvoď podle kontrastu k aktuální surface
+        // Subtle ~2:1, Default ~3:1, Strong ~4.5:1
+        ...(() => {
+            const surfaceHex = (contrast === 'high-contrast' || contrast === 'extra-high') ? (isLight ? n['0'] : n['1000']) : (isLight ? n['0'] : n['900']);
+            const subtle = findBestContrast(surfaceHex, isLight ? [n['200'], n['250'], n['300'], n['350']] : [n['800'], n['750'], n['700'], n['650']], 2.0);
+            const deflt = findBestContrast(surfaceHex, isLight ? [n['400'], n['450'], n['500']] : [n['600'], n['550'], n['500']], 3.0);
+            const strong = findBestContrast(surfaceHex, isLight ? [n['700'], n['750'], n['800'], n['850']] : [n['300'], n['250'], n['200'], n['150']], contrast === 'extra-high' ? 4.5 : 4.5);
+            const hover = findBestContrast(surfaceHex, isLight ? [n['500'], n['550']] : [n['500'], n['450']], 3.0);
+            const pressed = findBestContrast(surfaceHex, isLight ? [n['600'], n['650']] : [n['400'], n['350']], 3.0);
+            return {
+                '--color-outline-subtle': subtle,
+                '--color-outline-default': deflt,
+                '--color-outline-strong': strong,
+                '--color-outline-hover': hover,
+                '--color-outline-pressed': pressed,
+            } as CssTokenMap;
+        })(),
         '--color-focus': isLight ? scales.info['500'] : scales.info['400'],
 
         // Ostatní

@@ -58,6 +58,7 @@ export function findBestContrast(
 /**
  * Najde optimální krok ve škále, který má kontrast nejblíže cílové hodnotě
  * vzhledem k background barvě (typicky neutral-0 pro light nebo neutral-1000 pro dark)
+ * DŮLEŽITÉ: Vrací pouze kroky, které SPLŇUJÍ minimální targetContrast!
  */
 export function findOptimalStepByContrast(
     scale: Record<string, string>,
@@ -68,17 +69,38 @@ export function findOptimalStepByContrast(
     const [minStep, maxStep] = preferredRange;
     let bestStep = '500';
     let bestDiff = Infinity;
+    let foundValid = false;
 
     for (const [step, color] of Object.entries(scale)) {
         const stepNum = parseInt(step, 10);
         if (stepNum < minStep || stepNum > maxStep) continue;
 
         const contrast = getContrast(backgroundHex, color);
-        const diff = Math.abs(contrast - targetContrast);
-
-        if (diff < bestDiff) {
-            bestDiff = diff;
-            bestStep = step;
+        
+        // KRITICKÉ: Pouze kroky které splňují minimální kontrast
+        if (contrast >= targetContrast) {
+            const diff = Math.abs(contrast - targetContrast);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestStep = step;
+                foundValid = true;
+            }
+        }
+    }
+    
+    // Fallback: pokud žádný krok nesplňuje minimální kontrast,
+    // vrať krok s nejvyšším kontrastem v rozsahu
+    if (!foundValid) {
+        let maxContrast = 0;
+        for (const [step, color] of Object.entries(scale)) {
+            const stepNum = parseInt(step, 10);
+            if (stepNum < minStep || stepNum > maxStep) continue;
+            
+            const contrast = getContrast(backgroundHex, color);
+            if (contrast > maxContrast) {
+                maxContrast = contrast;
+                bestStep = step;
+            }
         }
     }
 
