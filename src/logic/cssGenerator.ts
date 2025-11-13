@@ -55,8 +55,8 @@ export function generateCssString(scales: Scales, tokens: Tokens): string {
     }${formatScale(scales.info, 'info')
     }}\n\n`;
     
-    // Světlé a povrchové tokeny
-    const lightRoot = `:root {\n${formatTokens(tokens.light)}${formatTokens(tokens.surface)}}\n\n`;
+    // Světlé tokeny - jak :root tak explicitní [data-theme="light"]
+    const lightRoot = `:root, [data-theme="light"] {\n${formatTokens(tokens.light)}${formatTokens(tokens.surface)}}\n\n`;
     
     // Tmavé tokeny
     const darkRoot = `[data-theme="dark"] {\n${formatTokens(tokens.dark)}}\n\n`;

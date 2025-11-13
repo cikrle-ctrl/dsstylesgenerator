@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { DemoButton } from './DemoButton';
 import { DemoChip } from './DemoChip';
 import { DemoTextField } from './DemoTextField';
@@ -48,17 +47,13 @@ export const LivePreview = () => {
     };
 
     // Zajistíme, že atributy na rootu se synchronizují s výběrem
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', themeMode);
-        document.documentElement.setAttribute('data-contrast', contrastMode);
-    }, [themeMode, contrastMode]);
-
-    
+    // POZNÁMKA: ThemeInjector už nastavuje document.documentElement, takže tady to není potřeba
+    // useEffect removed - ThemeInjector handles global attributes
 
     return (
         <section className="lp">
             <div
-                data-theme={themeMode === 'dark' ? 'dark' : undefined}
+                data-theme={themeMode}  // Vždy nastavíme mód (light nebo dark)
                 data-contrast={contrastMode}
                 className="lp__card preview-card preview-root"
                 style={getModeStyles()}
