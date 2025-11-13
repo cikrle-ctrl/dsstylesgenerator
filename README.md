@@ -20,6 +20,7 @@ A visual theme builder that generates complete design tokens and color scales (0
 | 10 | Live Preview | `LivePreview.tsx` | Combinable Theme (Light/Dark) + Contrast modes |
 | 11 | Material Design 3 HCT | `toneContrastSystem.ts` | Tone-based contrast system |
 | 12 | UI Components | Multiple | Complete UI for all capabilities |
+| 13 | Figma Plugin | `figma-plugin/` | Custom plugin for Variables import with mode support |
 
 ---
 
@@ -72,6 +73,15 @@ A visual theme builder that generates complete design tokens and color scales (0
 **Tailwind Version Selector:**
 - **v3**: JavaScript config file (`tailwind.config.js`) with `theme.extend.colors` object
 - **v4**: CSS-first approach with `@theme` directive and CSS custom properties
+
+### 🔌 Figma Plugin
+**Custom plugin for direct Figma integration:**
+- 📥 Import colors as **Figma Variables** (not just styles)
+- 🌓 Full support for **Light/Dark/High Contrast** modes
+- 🔄 Palette swapping capability
+- 📦 Import both color scales and semantic tokens
+
+👉 See [`figma-plugin/README.md`](./figma-plugin/README.md) for installation and usage
 
 ---
 
