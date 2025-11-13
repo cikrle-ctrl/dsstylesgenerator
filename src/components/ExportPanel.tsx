@@ -9,98 +9,86 @@ interface ExportPanelProps {
 }
 
 export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
-    const { tokens, scales } = useThemeStore();
+    const { scales } = useThemeStore();
 
     const generateFigmaVariables = (): string => {
-        // W3C Design Tokens Format for Figma Variables
-        // Struktura: každý token má $type a $value, může mít $description
+        // Import generateMappedTokens pro generování tokenů
+        const { generateMappedTokens } = require('../logic/tokenMapper');
         
-        type ColorToken = {
-            $type: 'color';
-            $value: string;
-            $description?: string;
+        // Struktura pro Figma Variables JSON
+        type FigmaVariable = {
+            name: string;
+            type: 'COLOR';
+            values: string[]; // 6 hodnot pro 6 módů
+        };
+        
+        type FigmaVariablesExport = {
+            collectionName: string;
+            modes: string[];
+            variables: FigmaVariable[];
         };
 
-        type DimensionToken = {
-            $type: 'dimension';
-            $value: string;
-            $description?: string;
-        };
+        // Generujeme tokeny pro všech 6 módů
+        const modesConfig = [
+            { mode: 'light' as const, contrast: 'default' as const },      // Light
+            { mode: 'dark' as const, contrast: 'default' as const },       // Dark
+            { mode: 'light' as const, contrast: 'high-contrast' as const },  // LightHigh
+            { mode: 'dark' as const, contrast: 'high-contrast' as const },   // DarkHigh
+            { mode: 'light' as const, contrast: 'extra-high' as const },   // LightExtraHigh
+            { mode: 'dark' as const, contrast: 'extra-high' as const },    // DarkExtraHigh
+        ];
 
-        type ShadowToken = {
-            $type: 'shadow';
-            $value: string;
-            $description?: string;
-        };
+        // Vygenerujeme tokeny pro každý mód
+        const allTokens = modesConfig.map(({ mode, contrast }) => {
+            const mapped = generateMappedTokens(scales, contrast, false);
+            return mapped[mode];
+        });
 
-        type TokenGroup = {
-            [key: string]: ColorToken | DimensionToken | ShadowToken | TokenGroup;
-        };
-
-        const designTokens: TokenGroup = {};
-
-        // 1. Color Scales (0-1000)
-        const scalesGroup: TokenGroup = {};
-        (Object.keys(scales) as Array<keyof typeof scales>).forEach((scaleName) => {
-            const scale = scales[scaleName] as Record<string, string>;
-            const scaleGroup: TokenGroup = {};
-            Object.entries(scale).forEach(([step, hex]) => {
-                scaleGroup[step] = {
-                    $type: 'color',
-                    $value: hex
-                };
+        // Sbíráme všechny unikátní názvy tokenů
+        const tokenNamesSet = new Set<string>();
+        allTokens.forEach(tokens => {
+            Object.keys(tokens).forEach(key => {
+                if (key.startsWith('--color-')) {
+                    tokenNamesSet.add(key);
+                }
             });
-            scalesGroup[scaleName] = scaleGroup;
         });
-        designTokens.scales = scalesGroup;
 
-        // 2. Light Mode Semantic Tokens
-        const lightGroup: TokenGroup = {};
-        Object.entries(tokens.light).forEach(([key, value]) => {
-            const cleanKey = key.replace('--color-', '').replace('--', '');
-            if (key.startsWith('--color-')) {
-                lightGroup[cleanKey] = {
-                    $type: 'color',
-                    $value: value
-                };
-            }
-        });
-        designTokens.light = lightGroup;
+        const tokenNames = Array.from(tokenNamesSet).sort();
 
-        // 3. Dark Mode Semantic Tokens  
-        const darkGroup: TokenGroup = {};
-        Object.entries(tokens.dark).forEach(([key, value]) => {
-            const cleanKey = key.replace('--color-', '').replace('--', '');
-            if (key.startsWith('--color-')) {
-                darkGroup[cleanKey] = {
-                    $type: 'color',
-                    $value: value
-                };
-            }
-        });
-        designTokens.dark = darkGroup;
-
-        // 4. Surface Tokens (radius, shadows, borders)
-        const surfaceGroup: TokenGroup = {};
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            const cleanKey = key.replace('--', '');
-            const lower = key.toLowerCase();
+        // Vytvoříme proměnné pro export
+        const variables: FigmaVariable[] = tokenNames.map(tokenKey => {
+            // Odstranění --color- prefixu a formátování názvu
+            const cleanName = tokenKey.replace('--color-', '');
             
-            if (lower.includes('radius') || lower.includes('border-width')) {
-                surfaceGroup[cleanKey] = {
-                    $type: 'dimension',
-                    $value: value
-                };
-            } else if (lower.includes('shadow')) {
-                surfaceGroup[cleanKey] = {
-                    $type: 'shadow',
-                    $value: value
-                };
-            }
+            // Určíme kategorii (první část názvu před pomlčkou)
+            const parts = cleanName.split('-');
+            const category = ['primary', 'secondary', 'error', 'warning', 'success', 'info'].includes(parts[0]) 
+                ? parts[0] 
+                : parts.includes('surface') || parts.includes('background') || parts.includes('outline')
+                    ? 'surface'
+                    : 'other';
+            
+            // Formátujeme název ve formátu "category/tokenName"
+            const formattedName = `${category}/${cleanName}`;
+            
+            // Vytvoříme array hodnot pro všech 6 módů
+            const values = allTokens.map(tokens => tokens[tokenKey] || '#000000');
+            
+            return {
+                name: formattedName,
+                type: 'COLOR',
+                values
+            };
         });
-        designTokens.surface = surfaceGroup;
 
-        return JSON.stringify(designTokens, null, 2);
+        const figmaExport: FigmaVariablesExport = {
+            collectionName: 'Color Palette',
+            modes: ['Light', 'Dark', 'LightHigh', 'DarkHigh', 'LightExtraHigh', 'DarkExtraHigh'],
+            variables
+        };
+
+        return JSON.stringify(figmaExport, null, 2);
     };
 
     const downloadFile = (content: string, filename: string) => {
@@ -145,14 +133,14 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
                     borderRadius: '8px',
                     border: '1px solid var(--color-outline-subtle)'
                 }}>
-                    <strong>📦 W3C Design Tokens Format</strong>
+                    <strong>📦 Figma Variables Format</strong>
                     <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-                        <li>Color scales (0-1000) for all palettes</li>
-                        <li>Light & dark mode semantic tokens</li>
-                        <li>Surface tokens (radius, shadows, borders)</li>
+                        <li>6 modes: Light, Dark, LightHigh, DarkHigh, LightExtraHigh, DarkExtraHigh</li>
+                        <li>All semantic color tokens organized by category</li>
+                        <li>Ready for Figma Variables import</li>
                     </ul>
                     <div style={{ marginTop: '8px', fontSize: '11px', opacity: 0.8 }}>
-                        Import to Figma using the Variables Import plugin
+                        Import directly to Figma using Variables panel → Import
                     </div>
                 </div>
             </div>

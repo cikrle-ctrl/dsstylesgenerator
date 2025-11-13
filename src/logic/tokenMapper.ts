@@ -17,7 +17,7 @@
  * - Light/Dark módy
  * - Support pro high contrast režimy
  */
-import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
+import { findBestContrast, findOptimalStepByContrast, getContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
 
 type ShadeScale = Record<string, string>;
@@ -155,13 +155,29 @@ function createTokenSet(
     const fixPressed = s['600'];
     
     // C. GetOnColor (Pro text na barevném pozadí)
-    // Kandidáti: neutral-0 (bílá), neutral-1000 (černá)
-    // Vrací tu, která má lepší kontrast a splňuje minimum
+    // VŽDY jen neutral-0 (bílá) nebo neutral-1000 (černá)
+    // Vrací tu, která má LEPŠÍ kontrast
     const getOnColor = (bgColor: string): string => {
+        const contrastWhite = getContrast(bgColor, n['0']);
+        const contrastBlack = getContrast(bgColor, n['1000']);
+        
+        // Vrať tu s lepším kontrastem
+        return contrastWhite > contrastBlack ? n['0'] : n['1000'];
+    };
+    
+    // D. GetOnContainerColor (Pro text na container pozadí)
+    // Preferuj hodnoty ze škály: 900 > 1000 > 800 > 100 > 0
+    // Light mode: preferuj tmavé (900, 1000, 800)
+    // Dark mode: preferuj světlé (100, 0)
+    const getOnContainerColor = (bgColor: string): string => {
+        const candidates = isLight 
+            ? [s['900'], s['1000'], s['800'], s['700'], n['1000'], n['900'], n['0']]
+            : [s['100'], s['0'], s['200'], s['300'], n['0'], n['100'], n['1000']];
+        
         return findBestContrast(
             bgColor,
-            [n['0'], n['1000']], // Vždy jen bílá nebo černá
-            accentContrast // Použij stejný kontrast jako pro akcenty
+            candidates,
+            accentContrast
         );
     };
 
@@ -173,7 +189,7 @@ function createTokenSet(
         
         // Container
         [`--color-${name}-container`]: containerColor,
-        [`--color-on-${name}-container`]: getOnColor(containerColor),        
+        [`--color-on-${name}-container`]: getOnContainerColor(containerColor),        
         // Fix varianty (fix = 400 vždy)
         [`--color-${name}-fix`]: s['400'],
         [`--color-${name}-fix-hover`]: fixHover,
@@ -192,9 +208,9 @@ function createTokenSet(
         
         // Container hover/pressed
         [`--color-${name}-container-hover`]: containerHover,
-        [`--color-on-${name}-container-hover`]: getOnColor(containerHover),
+        [`--color-on-${name}-container-hover`]: getOnContainerColor(containerHover),
         [`--color-${name}-container-pressed`]: containerPressed,
-        [`--color-on-${name}-container-pressed`]: getOnColor(containerPressed),
+        [`--color-on-${name}-container-pressed`]: getOnContainerColor(containerPressed),
     };
     return tokens;
 }

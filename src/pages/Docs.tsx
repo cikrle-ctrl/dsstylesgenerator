@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import { getContrast } from '../logic/contrastChecker';
-import { ColorHarmonyVisualizer } from '../components/ColorHarmonyVisualizer';
 
 const title = {
     marginTop: 0,
@@ -14,32 +13,21 @@ const body = {
     margin: 0
 } as const;
 const section = {
-    marginBottom: 16
+    marginBottom: 24
 } as const;
 
 export function Docs() {
     const sections = useMemo(() => ([
-        { id: 'how', label: 'How it works' },
-        { id: 'color-theory', label: 'Color theory & OKLCH' },
-        { id: 'scales', label: 'Color scales' },
-        { id: 'adaptive-chroma', label: 'Adaptive chroma' },
-        { id: 'logic', label: 'Generation logic' },
-        { id: 'contrast', label: 'Contrast modes' },
-        { id: 'containers-on', label: 'Containers & On-colors' },
-        { id: 'outlines', label: 'Outlines' },
-        { id: 'tokens', label: 'Design tokens' },
-        { id: 'surface', label: 'Surface & Radius & Outline' },
-        { id: 'advanced', label: 'Advanced settings' },
-        { id: 'toolbar', label: 'Toolbar & Modes' },
-        { id: 'export', label: 'Exports' },
-        { id: 'naming', label: 'Token naming' },
-        { id: 'audit', label: 'Contrast audit' },
-        { id: 'a11y', label: 'Accessibility' },
-        { id: 'files', label: 'File structure' },
-        { id: 'harmony', label: 'Color Harmony Generator' },
+        { id: 'introduction', label: '1. Introduction' },
+        { id: 'quick-start', label: '2. Quick Start' },
+        { id: 'how-it-works', label: '3. How It Works' },
+        { id: 'token-reference', label: '4. Token Reference' },
+        { id: 'advanced', label: '5. Advanced Features' },
+        { id: 'recipes', label: '6. Practical Recipes' },
+        { id: 'forced-colors', label: '7. forced-colors Support' },
     ]), []);
 
-    const [activeId, setActiveId] = useState<string>('how');
+    const [activeId, setActiveId] = useState<string>('introduction');
     const [q, setQ] = useState('');
 
     useEffect(() => {
@@ -58,20 +46,19 @@ export function Docs() {
 
     const filtered = useMemo(() => sections.filter(s => s.label.toLowerCase().includes(q.toLowerCase())), [q, sections]);
 
-    // Pull live tokens/mode to compute runtime audit
     const { tokens, ui } = useThemeStore();
     const tokenMap = ui.themeMode === 'light' ? tokens.light : tokens.dark;
     const contrastTargetText = ui.contrastMode === 'extra-high' ? 9.0 : ui.contrastMode === 'high-contrast' ? 7.0 : 4.5;
-    const contrastTargetContainer = ui.contrastMode === 'extra-high' ? 4.0 : ui.contrastMode === 'high-contrast' ? 3.5 : 3.0;
+    const contrastTargetContainer = ui.contrastMode === 'extra-high' ? 7.0 : ui.contrastMode === 'high-contrast' ? 4.5 : 3.0;
 
     const audits = [
-        { role: 'Primary text', fg: '--color-on-primary', bg: '--color-primary', target: contrastTargetText },
+        { role: 'Primary', fg: '--color-on-primary', bg: '--color-primary', target: contrastTargetText },
         { role: 'Primary container', fg: '--color-on-primary-container', bg: '--color-primary-container', target: contrastTargetText },
-        { role: 'Secondary text', fg: '--color-on-secondary', bg: '--color-secondary', target: contrastTargetText },
-        { role: 'Secondary container', fg: '--color-on-secondary-container', bg: '--color-secondary-container', target: contrastTargetText },
-        { role: 'On surface', fg: '--color-on-surface-heading', bg: '--color-surface', target: contrastTargetText },
-        { role: 'Outline default vs surface', fg: '--color-outline-default', bg: '--color-surface', target: 3.0 },
-        { role: 'Container contrast vs surface', fg: '--color-primary-container', bg: '--color-surface', target: contrastTargetContainer },
+        { role: 'Secondary', fg: '--color-on-secondary', bg: '--color-secondary', target: contrastTargetText },
+        { role: 'Error', fg: '--color-on-error', bg: '--color-error', target: contrastTargetText },
+        { role: 'Surface heading', fg: '--color-on-surface-heading', bg: '--color-surface', target: contrastTargetText },
+        { role: 'Outline default', fg: '--color-outline-default', bg: '--color-surface', target: 3.0 },
+        { role: 'Container vs surface', fg: '--color-primary-container', bg: '--color-surface', target: contrastTargetContainer },
     ].map(item => {
         const fgHex = tokenMap[item.fg];
         const bgHex = tokenMap[item.bg];
@@ -82,448 +69,803 @@ export function Docs() {
 
     return (
         <div style={{ padding: 24, maxWidth: 1280, margin: '0 auto' }}>
-                        <style>{`
-                            .docs-grid{display:grid;grid-template-columns:1fr;gap:16px}
-                            @media(min-width:1100px){.docs-grid{grid-template-columns:minmax(0,1fr) 300px}}
-                            .docs-toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 24px);overflow:auto}
-                            .docs-toc a{color:var(--color-on-surface-heading);text-decoration:none;display:block;padding:10px 12px;border-radius:8px}
-                            .docs-toc a:hover{background:var(--color-surface-hover)}
-                              .docs-toc a[aria-current="true"]{background:var(--color-primary-container);color:var(--color-on-primary-container);font-weight:600}
-                            .docs-search{display:block;width:100%;box-sizing:border-box;height:36px;border:1px solid var(--color-outline-subtle);background:var(--color-surface);color:var(--color-on-surface-heading);border-radius:8px;padding:0 12px}
-                            .docs-search:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-focus)}
-                        `}</style>
-            
-            <h1 style={{ ...title, fontSize: 24 }}>Documentation</h1>
-            <p style={{ ...body, marginBottom: 20 }}>
-                A complete guide to how the theme builder works: scale generation, token mapping,
-                contrast modes, customization, exports, and tools for accessibility verification.
+            <style>{`
+                .docs-grid{display:grid;grid-template-columns:1fr;gap:20px}
+                @media(min-width:1100px){.docs-grid{grid-template-columns:minmax(0,1fr) 280px}}
+                .docs-toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}
+                .docs-toc a{color:var(--color-on-surface-heading);text-decoration:none;display:block;padding:8px 12px;border-radius:6px;font-size:14px}
+                .docs-toc a:hover{background:var(--color-surface-hover)}
+                .docs-toc a[aria-current="true"]{background:var(--color-primary-container);color:var(--color-on-primary-container);font-weight:600}
+                .docs-search{display:block;width:100%;box-sizing:border-box;height:36px;border:1px solid var(--color-outline-subtle);background:var(--color-surface);color:var(--color-on-surface-heading);border-radius:8px;padding:0 12px;margin-bottom:12px}
+                .docs-search:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-focus)}
+                .code-block{background:var(--color-surface-variant);padding:16px;border-radius:8px;font-family:monospace;font-size:13px;overflow-x:auto;margin:12px 0;line-height:1.5}
+                .info-box{padding:16px;border-radius:10px;margin:16px 0;border:1px solid var(--color-outline-subtle)}
+                .info-box.primary{background:var(--color-primary-container);color:var(--color-on-primary-container);border-color:var(--color-primary)}
+                .info-box.warning{background:var(--color-warning-container);color:var(--color-on-warning-container);border-color:var(--color-warning)}
+                .info-box.error{background:var(--color-error-container);color:var(--color-on-error-container);border-color:var(--color-error)}
+            `}</style>
+
+            <h1 style={{ ...title, fontSize: 32, marginBottom: 8 }}>DS Styles Generator</h1>
+            <p style={{ ...body, fontSize: 18, marginBottom: 32, maxWidth: 800 }}>
+                Professional design token generator built on OKLCH color space, perceptual uniformity, and contrast-first accessibility.
             </p>
+
             <div className="docs-grid">
-              <div>
-            {/* How it works */}
-            <section id="how" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>How the app works</h2>
-                <ol style={{ ...body, paddingLeft: 18 }}>
-                    <li>
-                        <b>Inputs</b> – Pick primary/secondary colors and surface strategies. Inputs are managed by Zustand
-                        (<code>src/store/themeStore.ts</code>).
-                    </li>
-                    <li>
-                        <b>Scale generation</b> – <code>colorModule.ts</code> produces a 0→1000 scale (step 50) in OKLCH.
-                        We use a perceptual <i>lightness</i> curve and <i>adaptive chroma</i> for natural results.
-                    </li>
-                    <li>
-                        <b>Token mapping</b> – The <code>generateMappedTokens()</code> in
-                        <code> tokenMapper.ts</code> creates semantic tokens for light/dark and contrast modes.
-                    </li>
-                    <li>
-                        <b>Live Preview</b> – Components read CSS custom properties and reflect resulting styles. Toggles update
-                        <code>data-theme</code> and <code>data-contrast</code> on the container.
-                    </li>
-                </ol>
-            </section>
+                <div>
+                    {/* 1. INTRODUCTION */}
+                    <section id="introduction" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>1. Introduction</h2>
 
-            {/* Contrast Audit */}
-            <section id="audit" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Contrast audit (live)</h2>
-                <p style={{ ...body, marginBottom: 10 }}>Values update with your current theme, mode and contrast settings.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
-                    {audits.map(a => (
-                        <div key={a.role} style={{ border: '1px solid var(--color-outline-subtle)', borderRadius: 10, overflow: 'hidden' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--color-surface-variant)' }}>
-                                <span style={{ color: 'var(--color-on-surface-heading)', fontWeight: 600 }}>{a.role}</span>
-                                <span style={{
-                                    padding: '2px 8px',
-                                    borderRadius: 999,
-                                    fontSize: 12,
-                                    color: a.pass ? 'var(--color-on-success-container)' : 'var(--color-on-error-container)',
-                                    background: a.pass ? 'var(--color-success-container)' : 'var(--color-error-container)'
-                                }}>{a.pass ? 'PASS' : 'FAIL'}</span>
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 20 }}>The Problem We Solve</h3>
+                        <p style={body}>
+                            Traditional palette generators (like "darken by 10%" or simple HSL shifts) fail in two critical ways:
+                        </p>
+                        <ul style={{ ...body, paddingLeft: 22, marginTop: 8 }}>
+                            <li><strong>Inconsistent perception:</strong> HSL/RGB lightness changes don't match human vision. A "10% darker blue" and "10% darker yellow" look completely different perceptually.</li>
+                            <li><strong>Unreliable accessibility:</strong> Static color assignments can't guarantee WCAG contrast ratios across different modes and user preferences.</li>
+                        </ul>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 20 }}>Our Approach: Three Pillars</h3>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, marginTop: 14 }}>
+                            <div className="info-box primary">
+                                <h4 style={{ margin: '0 0 10px', fontWeight: 700, fontSize: 16 }}>① Perceptual Uniformity (OKLCH)</h4>
+                                <p style={{ ...body, margin: 0, fontSize: 14 }}>
+                                    Generate colors in a space that matches human vision. Changing lightness doesn't affect perceived hue or saturation. Blue stays blue from light to dark.
+                                </p>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                                <div style={{ padding: 12 }}>
-                                    <div style={{ fontSize: 12, color: 'var(--color-on-surface-variant)', marginBottom: 6 }}>Foreground</div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <div style={{ width: 18, height: 18, borderRadius: 4, background: a.fgHex, border: '1px solid var(--color-outline-subtle)' }} />
-                                        <code style={{ fontSize: 12 }}>{a.fg} = {a.fgHex}</code>
-                                    </div>
-                                </div>
-                                <div style={{ padding: 12 }}>
-                                    <div style={{ fontSize: 12, color: 'var(--color-on-surface-variant)', marginBottom: 6 }}>Background</div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <div style={{ width: 18, height: 18, borderRadius: 4, background: a.bgHex, border: '1px solid var(--color-outline-subtle)' }} />
-                                        <code style={{ fontSize: 12 }}>{a.bg} = {a.bgHex}</code>
-                                    </div>
-                                </div>
+                            <div className="info-box primary">
+                                <h4 style={{ margin: '0 0 10px', fontWeight: 700, fontSize: 16 }}>② Accessibility First (Contrast-Driven)</h4>
+                                <p style={{ ...body, margin: 0, fontSize: 14 }}>
+                                    Colors are dynamically selected to meet precise WCAG contrast ratios (4.5:1, 7:1, or 9:1). Not static picks—algorithmic guarantees.
+                                </p>
                             </div>
-                            <div style={{ padding: '8px 12px', borderTop: '1px solid var(--color-outline-subtle)', display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ color: 'var(--color-on-surface-variant)' }}>Contrast ratio</span>
-                                <span style={{ fontWeight: 700, color: 'var(--color-on-surface-heading)' }}>{a.ratio}:1</span>
-                            </div>
-                            <div style={{ padding: '8px 12px', borderTop: '1px solid var(--color-outline-subtle)', display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ color: 'var(--color-on-surface-variant)' }}>Target</span>
-                                <span style={{ fontWeight: 600 }}>{a.target}:1</span>
+                            <div className="info-box primary">
+                                <h4 style={{ margin: '0 0 10px', fontWeight: 700, fontSize: 16 }}>③ Semantic Scale (0-1000)</h4>
+                                <p style={{ ...body, margin: 0, fontSize: 14 }}>
+                                    Intuitive 21-step scale from white (0) to black (1000). Friendly to design systems and tools like Tailwind. Fine-grained control.
+                                </p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </section>
+                    </section>
 
-            {/* Color Theory */}
-            <section id="color-theory" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Color theory & OKLCH</h2>
-                <p style={body}>
-                    This system uses <b>OKLCH</b> (Oklab Lightness-Chroma-Hue), a perceptually uniform color space.
-                    Unlike HSL or RGB, OKLCH ensures equal visual steps between colors.
-                </p>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Why OKLCH?</h3>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Perceptual uniformity</b> – Equal numeric changes = equal visual changes</li>
-                    <li><b>Independent lightness</b> – Change hue/chroma without affecting perceived brightness</li>
-                    <li><b>Better gradients</b> – Smooth color transitions without muddy mid-tones</li>
-                    <li><b>Predictable contrast</b> – Lightness directly correlates with WCAG contrast</li>
-                </ul>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>OKLCH Components</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginTop: 8 }}>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b style={{ color: 'var(--color-primary)' }}>L (Lightness)</b>
-                        <p style={{ ...body, margin: '4px 0 0' }}>0.0 = black, 1.0 = white. Matches human perception.</p>
-                    </div>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b style={{ color: 'var(--color-secondary)' }}>C (Chroma)</b>
-                        <p style={{ ...body, margin: '4px 0 0' }}>0 = gray, higher = more vivid. Typical range: 0-0.4.</p>
-                    </div>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b style={{ color: 'var(--color-error)' }}>H (Hue)</b>
-                        <p style={{ ...body, margin: '4px 0 0' }}>0-360° on color wheel. Red≈30°, Blue≈260°, Green≈145°.</p>
-                    </div>
-                </div>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Physical Color Limits</h3>
-                <p style={body}>
-                    Not all hue/chroma/lightness combinations are physically possible. For example, "bright light blue at 95% lightness"
-                    exceeds the sRGB gamut. Our system automatically reduces chroma at extreme lightness values (adaptive chroma).
-                </p>
-            </section>
+                    {/* 2. QUICK START */}
+                    <section id="quick-start" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>2. Quick Start</h2>
 
-            {/* Scales */}
-            <section id="scales" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Color scales and generation</h2>
-                <p style={body}>
-                    Scales are generated in OKLCH: each step targets a specific lightness. The system uses a <b>0-1000 scale</b> with
-                    21 steps (0, 50, 100...1000) for finer granularity than Material Design 3's 0-100 scale.
-                </p>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Lightness Distribution</h3>
-                <p style={body}>
-                    Lightness values follow a <b>perceptual curve</b> (power 0.9) for better visual distribution:
-                </p>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>0-200</b>: Very light tones (backgrounds, containers in light mode)</li>
-                    <li><b>300-600</b>: Mid-tones (primary accents, interactive elements)</li>
-                    <li><b>700-1000</b>: Dark tones (backgrounds in dark mode, text on light)</li>
-                </ul>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Scale Generation Logic</h3>
-                <p style={body}>
-                    <code>generateShades(baseColorHex)</code> in <code>colorModule.ts</code>:
-                </p>
-                <ol style={{ ...body, paddingLeft: 18 }}>
-                    <li>Parse input color to OKLCH</li>
-                    <li>For each step (0-1000), apply target lightness</li>
-                    <li>Apply adaptive chroma multiplier based on lightness</li>
-                    <li>Clamp to valid sRGB gamut using <code>clampChroma()</code></li>
-                    <li>Convert back to hex color</li>
-                </ol>
-            </section>
+                        <ol style={{ ...body, paddingLeft: 22, marginTop: 12 }}>
+                            <li style={{ marginBottom: 10 }}><strong>Step 1:</strong> Pick your primary color using the color picker in the left panel</li>
+                            <li style={{ marginBottom: 10 }}><strong>Step 2:</strong> Choose a color harmony (complementary, analogous, triadic) or set secondary manually</li>
+                            <li style={{ marginBottom: 10 }}><strong>Step 3:</strong> Explore 6 accessibility modes using the top toolbar: Light/Dark × Default/High/Extra-High</li>
+                            <li style={{ marginBottom: 10 }}><strong>Step 4:</strong> Click "Export" → "Figma Variables" and copy the output</li>
+                            <li style={{ marginBottom: 10 }}><strong>Step 5:</strong> Use semantic tokens in your CSS</li>
+                        </ol>
 
-            {/* Adaptive Chroma */}
-            <section id="adaptive-chroma" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Adaptive chroma</h2>
-                <p style={body}>
-                    Adaptive chroma automatically reduces saturation at extreme lightness values to honor physical color limitations
-                    and create more natural-looking palettes.
-                </p>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Multiplier Rules</h3>
-                <div style={{ background: 'var(--color-surface-variant)', padding: 12, borderRadius: 8, fontFamily: 'monospace', fontSize: 13, marginTop: 8 }}>
-                    <div>Lightness &gt; 0.90 (steps 0, 50) → chroma × 0.3 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Very light pastels</span></div>
-                    <div>Lightness &gt; 0.80 (steps 100-200) → chroma × 0.6 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Light containers</span></div>
-                    <div>Lightness 0.65-0.77 (steps 300-400) → chroma × 1.1 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Mid boost</span></div>
-                    <div>Lightness &lt; 0.30 (steps 750-850) → chroma × 0.65 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Dark surfaces</span></div>
-                    <div>Lightness &lt; 0.20 (steps 900-1000) → chroma × 0.35 <span style={{ color: 'var(--color-on-surface-variant)' }}> // Very dark</span></div>
-                </div>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Why This Matters</h3>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Avoids impossible colors</b> – Prevents out-of-gamut errors</li>
-                    <li><b>Natural appearance</b> – Pastels shouldn't be neon, darks shouldn't be muddy</li>
-                    <li><b>Dark mode optimization</b> – Mid-tone boost (1.1×) improves visibility on dark backgrounds</li>
-                    <li><b>Consistent perception</b> – All colors feel balanced across the scale</li>
-                </ul>
-            </section>
+                        <h3 style={{ ...title, fontSize: 17, marginTop: 20 }}>Basic Usage Example</h3>
+                        <div className="code-block">
+{`body {
+  background-color: var(--color-background);
+  color: var(--color-on-surface-variant);
+}
 
-            {/* Generation logic details */}
-            <section id="logic" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Generation logic</h2>
-                <p style={body}>Color roles are not hardcoded to specific steps; they are chosen dynamically from the scale based on contrast targets and mode.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginTop: 8 }}>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b>Base (Primary/Secondary)</b>
-                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
-                            <li>Light mode: prefer steps <b>300–500</b></li>
-                            <li>Dark mode: prefer steps <b>500–700</b></li>
-                            <li>Pick the step that meets the target contrast; if none, choose the highest-contrast candidate</li>
+.button {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 1px solid var(--color-outline-default);
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+  color: var(--color-on-primary-hover);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}`}
+                        </div>
+                    </section>
+
+                    {/* 3. HOW IT WORKS */}
+                    <section id="how-it-works" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>3. Core Logic: How It Works</h2>
+
+                        {/* Part 1 */}
+                        <h3 style={{ ...title, fontSize: 20, marginTop: 24, borderBottom: '2px solid var(--color-outline-subtle)', paddingBottom: 8 }}>
+                            Part 1: Primitive Palette Generation (Scale 0-1000)
+                        </h3>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 16 }}>OKLCH Explained</h4>
+                        <p style={body}>
+                            OKLCH (Oklab Lightness-Chroma-Hue) is a perceptually uniform color space. Unlike HSL, equal numeric changes produce equal visual changes.
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginTop: 10 }}>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong style={{ color: 'var(--color-primary)' }}>L (Lightness)</strong>
+                                <p style={{ ...body, margin: '6px 0 0', fontSize: 13 }}>0.0 = black, 1.0 = white. Perceptually linear.</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong style={{ color: 'var(--color-secondary)' }}>C (Chroma)</strong>
+                                <p style={{ ...body, margin: '6px 0 0', fontSize: 13 }}>0 = gray, higher = more vivid. Range: 0-0.4.</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong style={{ color: 'var(--color-error)' }}>H (Hue)</strong>
+                                <p style={{ ...body, margin: '6px 0 0', fontSize: 13 }}>0-360° color wheel. Constant across lightness.</p>
+                            </div>
+                        </div>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Hue Preservation (Why Blue Stays Blue)</h4>
+                        <p style={body}>
+                            In HSL, changing lightness often shifts perceived hue. OKLCH maintains hue constancy: a blue input (#0066FF)
+                            remains perceptually blue from step 0 to 1000. No color drift.
+                        </p>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>"Adaptive Chroma"</h4>
+                        <p style={body}>
+                            Not all OKLCH combinations are physically possible in sRGB. Colors near white (0-200) or black (800-1000) must reduce
+                            chroma to avoid out-of-gamut errors. We apply a <strong>parabolic multiplier</strong>:
+                        </p>
+                        <div className="code-block">
+{`Lightness > 0.92 (steps 0-50)   → chroma × 0.25  // Very light pastels
+Lightness > 0.85 (steps 100-150) → chroma × 0.50  // Light containers
+Lightness 0.55-0.70 (350-500)    → chroma × 1.15  // MID-TONE BOOST (dark mode optimization!)
+Lightness 0.38-0.55 (550-600)    → chroma × 1.0   // Full chroma
+Lightness < 0.20 (900-1000)      → chroma × 0.30  // Very dark backgrounds`}
+                        </div>
+                        <p style={{ ...body, marginTop: 10 }}>
+                            The mid-tone boost (1.15×) at steps 350-500 improves color vibrancy in dark mode, where these steps become primary accents.
+                        </p>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Neutral (Gray) Palette Generation</h4>
+                        <ul style={{ ...body, paddingLeft: 20, marginTop: 8 }}>
+                            <li><strong>Tinted Neutrals:</strong> Uses primary color's hue with very low chroma (~0.02) for subtle warmth</li>
+                            <li><strong>Pure Neutrals:</strong> Achromatic gray (chroma = 0) for true neutral grayscale</li>
                         </ul>
-                    </div>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b>Containers</b>
-                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
-                            <li>Light mode: subtle range <b>100–300</b></li>
-                            <li>Dark mode: subtle range <b>700–900</b></li>
-                            <li>Target ~<b>3:1</b> contrast against the surface</li>
+
+                        {/* Part 2 */}
+                        <h3 style={{ ...title, fontSize: 20, marginTop: 28, borderBottom: '2px solid var(--color-outline-subtle)', paddingBottom: 8 }}>
+                            Part 2: Token Architecture (Primitive vs Semantic)
+                        </h3>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 16 }}>Primitive Tokens (Building Blocks)</h4>
+                        <p style={body}>
+                            Raw scale values like <code>primary-0</code>, <code>primary-500</code>, <code>primary-1000</code>.
+                            <strong> Never use these directly in your components!</strong> They're internal implementation details.
+                        </p>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 16 }}>Semantic Tokens (Public API)</h4>
+                        <p style={body}>
+                            Role-based tokens like <code>--color-primary</code>, <code>--color-surface</code>, <code>--color-on-primary</code>.
+                            These describe <em>purpose</em>, not value. This is your design system's public interface.
+                        </p>
+
+                        <div className="info-box warning">
+                            <strong style={{ fontSize: 15, display: 'block', marginBottom: 8 }}>⚠️ Why This Separation Matters</strong>
+                            <ul style={{ ...body, paddingLeft: 20, margin: '8px 0 0', fontSize: 14 }}>
+                                <li><strong>Maintainability:</strong> Change light/dark/contrast modes without touching component code</li>
+                                <li><strong>Flexibility:</strong> Same token adapts to 6 accessibility modes automatically</li>
+                                <li><strong>Clarity:</strong> Tokens communicate intent (<code>--color-primary</code>) not implementation (<code>primary-500</code>)</li>
+                            </ul>
+                        </div>
+
+                        {/* Part 3 */}
+                        <h3 style={{ ...title, fontSize: 20, marginTop: 28, borderBottom: '2px solid var(--color-outline-subtle)', paddingBottom: 8 }}>
+                            Part 3: Dynamic Mapping (The Magic ✨)
+                        </h3>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 16 }}>Six Accessibility Modes</h4>
+                        <div className="code-block">
+{`┌─────────────────────┬──────────┬──────────────┬──────────────────┐
+│ Mode                │ Theme    │ Text Target  │ Container Target │
+├─────────────────────┼──────────┼──────────────┼──────────────────┤
+│ Default             │ Light    │ 4.5:1 (AA)   │ 3.0:1            │
+│ High Contrast       │ Light    │ 7.0:1 (AAA)  │ 4.5:1            │
+│ Extra-High Contrast │ Light    │ 9.0:1        │ 7.0:1            │
+│ Default             │ Dark     │ 4.5:1 (AA)   │ 3.0:1            │
+│ High Contrast       │ Dark     │ 7.0:1 (AAA)  │ 4.5:1            │
+│ Extra-High Contrast │ Dark     │ 9.0:1        │ 7.0:1            │
+└─────────────────────┴──────────┴──────────────┴──────────────────┘`}
+                        </div>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Static Anchors (The Canvas)</h4>
+                        <p style={body}>
+                            Before dynamic mapping, we establish fixed "anchor" colors that define the canvas:
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 12 }}>
+                            <div>
+                                <strong>Light Mode</strong>
+                                <div className="code-block" style={{ marginTop: 8 }}>
+{`--background:      neutral-50
+--surface:         neutral-0
+--surface-variant: neutral-100
+--surface-hover:   neutral-50
+--surface-pressed: neutral-100`}
+                                </div>
+                            </div>
+                            <div>
+                                <strong>Dark Mode</strong>
+                                <div className="code-block" style={{ marginTop: 8 }}>
+{`--background:      neutral-1000
+--surface:         neutral-950
+--surface-variant: neutral-900
+--surface-hover:   neutral-900
+--surface-pressed: neutral-850`}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Algorithm 1: FindOptimalShade (Accents & Text)</h4>
+                        <p style={body}>
+                            <code>--color-primary</code> isn't hardcoded to <code>primary-500</code>. Instead, we iterate the <strong>entire scale</strong>
+                            (0-1000) and measure WCAG contrast against <code>--color-surface</code>. The <strong>first step that meets or exceeds</strong>
+                            the target contrast is selected.
+                        </p>
+                        <div className="code-block">
+{`// Pseudocode
+function findOptimalShade(scale, background, targetContrast, searchRange) {
+  for (step in searchRange) {
+    if (getContrast(scale[step], background) >= targetContrast) {
+      return step; // First match wins
+    }
+  }
+  return highestContrastStep; // Fallback if none meet target
+}
+
+// Light mode: search range [400-700]
+// Dark mode: search range [300-600]`}
+                        </div>
+                        <div className="info-box primary">
+                            <strong>Why restricted ranges?</strong> To prevent extreme picks. In light mode, we don't want <code>primary-1000</code>
+                            (pure black) even if it technically meets 4.5:1. Ranges ensure aesthetic balance.
+                        </div>
+
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Algorithm 2: FindOptimalContainer (Containers)</h4>
+                        <p style={body}>
+                            <code>--color-primary-container</code> uses the <strong>same algorithm</strong> but with:
+                        </p>
+                        <ul style={{ ...body, paddingLeft: 20, marginTop: 8 }}>
+                            <li><strong>Lower contrast target:</strong> 3.0:1 (Default), 4.5:1 (High), 7.0:1 (Extra-High)</li>
+                            <li><strong>Different ranges:</strong> Light mode [100-300], Dark mode [700-900]</li>
                         </ul>
-                    </div>
-                    <div style={{ padding: 12, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
-                        <b>Hover/Pressed</b>
-                        <ul style={{ ...body, paddingLeft: 18, marginTop: 6 }}>
-                            <li>Hover: ±50 toward surface; Pressed: ±100</li>
-                            <li>Clamped to 0–1000; respects mode (lighter in light, darker in dark)</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+                        <p style={{ ...body, marginTop: 10 }}>
+                            Result: Subtle, visually distinct backgrounds for chips, badges, alerts.
+                        </p>
 
-            {/* Contrast */}
-            <section id="contrast" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes & selection algorithm</h2>
-                <p style={body}>We compute WCAG contrast for every candidate shade and choose the one that best satisfies the target.</p>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Targets</h3>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Default</b>: Text 4.5:1, Containers ~3:1</li>
-                    <li><b>High</b>: Text 7:1, Containers ≥3.5:1</li>
-                    <li><b>Extra-high</b>: Text 9:1, Containers ≥4:1</li>
-                </ul>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Algorithm</h3>
-                <ol style={{ ...body, paddingLeft: 18 }}>
-                    <li>Gather candidate steps for the role (e.g., 300–500 for base in light)</li>
-                    <li>Measure contrast versus the actual surface color</li>
-                    <li>Pick the first that meets ≥ target; if none meet, pick the highest contrast</li>
-                </ol>
-                <div style={{ background: 'var(--color-primary-container)', padding: 12, borderRadius: 8, marginTop: 12 }}>
-                    <p style={{ ...body, color: 'var(--color-on-primary-container)', margin: 0 }}>
-                        This eliminates intermittent AA/AAA failures by enforcing a minimum threshold with a safe fallback.
-                    </p>
-                </div>
-            </section>
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Algorithm 3: GetOnColor (Text on Colored Backgrounds)</h4>
+                        <p style={body}>
+                            <code>--color-on-primary</code> must be readable on <code>--color-primary</code>. We compare:
+                        </p>
+                        <div className="code-block">
+{`function getOnColor(background) {
+  const contrastWhite = getContrast(background, neutral['0']);    // White
+  const contrastBlack = getContrast(background, neutral['1000']); // Black
+  
+  return contrastWhite > contrastBlack ? neutral['0'] : neutral['1000'];
+}
 
-            {/* Containers & On-colors */}
-            <section id="containers-on" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Containers & On-colors</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>Containers</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>Light mode: pick within 100–300 to keep containers subtle</li>
-                            <li>Dark mode: pick within 700–900 for subtle elevated blocks</li>
-                            <li>Contrast target ~3:1 against surface, hover/pressed shift by ±50/±100</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>On-color for Base</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>Dark base tones (≥ 400) → light text first (white priority)</li>
-                            <li>Light base tones (&lt; 400) → dark text first (black priority)</li>
-                            <li>Always enforce ≥ target contrast; fallback is max contrast</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>On-color for Containers</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>Light mode containers → prefer dark text (black-first list)</li>
-                            <li>Dark mode containers → prefer light text (white-first list)</li>
-                            <li>Applied for normal/hover/pressed variants</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+// Result: ALWAYS pure white OR pure black (never scale values!)`}
+                        </div>
 
-            {/* Outlines */}
-            <section id="outlines" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Outlines</h2>
-                <p style={body}>Outline colors are derived dynamically from the surface, not fixed palette picks.</p>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Subtle</b>: ~2:1 vs surface (dividers)</li>
-                    <li><b>Default</b>: ~3:1 (borders, inputs)</li>
-                    <li><b>Strong</b>: ~4.5:1 (focus/active emphasis)</li>
-                    <li>Hover/pressed outline variants aim for ~3:1 or better</li>
-                </ul>
-            </section>
+                        <h4 style={{ ...title, fontSize: 17, marginTop: 18 }}>Algorithm 4: GetOnContainerColor</h4>
+                        <p style={body}>
+                            <code>--color-on-primary-container</code> prefers <strong>scale values</strong> for visual richness instead of pure black/white:
+                        </p>
+                        <div className="code-block">
+{`// Light mode candidate order (prefers dark scale values first):
+[primary-900, primary-1000, primary-800, primary-700, ..., neutral-1000, neutral-0]
 
-            {/* Tokens */}
-            <section id="tokens" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Design tokens</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Accents</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>--color-primary, --color-secondary</li>
-                            <li>--color-<i>role</i>-container</li>
-                            <li>--color-<i>role</i>-hover / -pressed</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>On-colors</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>--color-on-<i>role</i>, --color-on-<i>role</i>-container</li>
-                            <li>Automaticky hledáme nejlepší kontrast (4.5:1 / 7:1)</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Surface & Outline</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>--color-surface, --color-surface-variant</li>
-                            <li>--color-outline-subtle/default/strong</li>
-                            <li>--color-surface-hover / -pressed</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Other</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li>--color-disabled, --color-on-disabled</li>
-                            <li>--color-focus (focus ring)</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+// Dark mode candidate order (prefers light scale values first):
+[primary-100, primary-0, primary-200, primary-300, ..., neutral-0, neutral-1000]
 
-            {/* Surface & Radius */}
-            <section id="surface" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Surface & Radius & Outline</h2>
-                <p style={body}>
-                    Surfaces and radii are generated in <code>surfaceAndRadius.ts</code>. Cards use larger radii for a cleaner look
-                    and no shadows (flat aesthetics). Hover/pressed states are subtle in default and stronger in contrast modes.
-                </p>
-            </section>
+// Pick first candidate that meets targetContrast`}
+                        </div>
+                        <p style={{ ...body, marginTop: 10 }}>
+                            Why? Visual hierarchy. Container text using <code>primary-900</code> feels more "branded" than generic black.
+                        </p>
 
-            {/* Advanced */}
-            <section id="advanced" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Advanced settings</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>Pro Mode (Tone Overrides)</h3>
-                        <p style={body}>Manually override tone steps for roles (0–1000 in steps of 50). Use <i>Auto</i> to return to algorithmic selection.</p>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>Neutral Tint Source</h3>
-                        <ul style={{ ...body, paddingLeft: 18 }}>
-                            <li><b>Primary</b>: neutrals tinted from primary hue</li>
-                            <li><b>Secondary</b>: neutrals tinted from secondary hue</li>
-                            <li><b>Custom</b>: pick a custom tint via color picker</li>
-                            <li><b>Pure</b>: achromatic grayscale neutrals</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 style={{ ...title, fontSize: 16 }}>Semantic Colors</h3>
-                        <p style={body}>Error/Warning/Success/Info scales are generated the same way as primary/secondary. Their containers and on-colors follow the same rules.</p>
-                    </div>
-                </div>
-            </section>
+                        {/* Live Audit */}
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 28 }}>Live Contrast Audit</h3>
+                        <p style={{ ...body, marginBottom: 14 }}>
+                            Real-time WCAG validation for current mode (<strong>{ui.themeMode}</strong>) and contrast
+                            (<strong>{ui.contrastMode}</strong>):
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 12 }}>
+                            {audits.map(a => (
+                                <div key={a.role} style={{ border: '1px solid var(--color-outline-subtle)', borderRadius: 10, overflow: 'hidden' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--color-surface-variant)' }}>
+                                        <span style={{ color: 'var(--color-on-surface-heading)', fontWeight: 600, fontSize: 14 }}>{a.role}</span>
+                                        <span style={{
+                                            padding: '3px 10px',
+                                            borderRadius: 999,
+                                            fontSize: 11,
+                                            fontWeight: 700,
+                                            letterSpacing: '0.5px',
+                                            color: a.pass ? 'var(--color-on-success-container)' : 'var(--color-on-error-container)',
+                                            background: a.pass ? 'var(--color-success-container)' : 'var(--color-error-container)'
+                                        }}>{a.pass ? 'PASS' : 'FAIL'}</span>
+                                    </div>
+                                    <div style={{ padding: '12px 14px' }}>
+                                        <div style={{ fontSize: 11, color: 'var(--color-on-surface-subtle)', marginBottom: 6 }}>Contrast Ratio</div>
+                                        <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-on-surface-heading)' }}>{a.ratio}:1</div>
+                                        <div style={{ fontSize: 12, color: 'var(--color-on-surface-variant)', marginTop: 4 }}>Target: ≥{a.target}:1</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-            {/* Toolbar & Modes */}
-            <section id="toolbar" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Toolbar & Modes</h2>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Theme</b>: Light / Dark toggle switches <code>data-theme</code></li>
-                    <li><b>Contrast</b>: Default / High / Extra-high switch <code>data-contrast</code></li>
-                    <li><b>Preview toggles</b>: Hover, Toast, Modal for quick state checks</li>
-                </ul>
-            </section>
+                    {/* 4. TOKEN REFERENCE */}
+                    <section id="token-reference" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>4. Token Reference</h2>
+                        <p style={body}>
+                            Complete dictionary of all semantic tokens generated by the system.
+                        </p>
 
-            {/* Export */}
-            <section id="export" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Exports</h2>
-                <p style={body}>Multiple formats are supported for cross-platform compatibility:</p>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>CSS Variables</b> – Standard CSS custom properties with <code>:root</code> and <code>[data-theme="dark"]</code></li>
-                    <li><b>Tailwind Config</b> – Choose between v3 (JavaScript) or v4 (CSS <code>@theme</code>)</li>
-                    <li><b>SCSS Variables</b> – Sass/SCSS <code>$variable-name</code> format</li>
-                    <li><b>JSON</b> – Complete token and scale data for programmatic use</li>
-                    <li><b>Figma Tokens</b> – Compatible with Figma Tokens plugin</li>
-                </ul>
-                <h3 style={{ ...title, fontSize: 16, marginTop: 12 }}>Tailwind Version Selector</h3>
-                <p style={body}>
-                    The Tailwind export includes a version toggle:
-                </p>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>v3</b>: JavaScript config (<code>tailwind.config.js</code>) with <code>theme.extend.colors</code></li>
-                    <li><b>v4</b>: CSS-first approach with <code>@theme</code> directive (requires Tailwind 4.0+)</li>
-                </ul>
-            </section>
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>A. Surfaces (Backgrounds & Layers)</h3>
+                        <div className="code-block">
+{`--color-background          // Outer page background ("behind" cards)
+                            // Light: neutral-50, Dark: neutral-1000
 
-            {/* Naming */}
-            <section id="naming" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Token naming</h2>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><code>--color-primary</code>, <code>--color-primary-container</code>, <code>--color-on-primary</code>, <code>--color-on-primary-container</code></li>
-                    <li><code>--color-surface</code>, <code>--color-surface-variant</code>, <code>--color-surface-hover</code>, <code>--color-surface-pressed</code></li>
-                    <li><code>--color-outline-subtle</code>, <code>--color-outline-default</code>, <code>--color-outline-strong</code></li>
-                    <li>State variants: <code>-hover</code>, <code>-pressed</code>; Dark mode overrides via <code>[data-theme="dark"]</code></li>
-                </ul>
-            </section>
+--color-surface              // Default component background (cards, modals, dialogs)
+                            // Light: neutral-0, Dark: neutral-950
 
-            {/* A11y */}
-            <section id="a11y" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Accessibility</h2>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li>WCAG contrast checks with correct relative luminance</li>
-                    <li>Colorblind Simulation (deuteranopia, protanopia, tritanopia, grayscale)</li>
-                    <li>Focus rings on all interactive elements</li>
-                </ul>
-            </section>
+--color-surface-variant      // Differentiated sections (darker on light, lighter on dark)
+                            // Light: neutral-100, Dark: neutral-900
 
-            {/* Files */}
-            <section id="files" className="preview-card" style={{ ...section, marginBottom: 24 }}>
-                <h2 style={{ ...title, fontSize: 18 }}>File structure</h2>
-                <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><code>src/logic/colorModule.ts</code> – scale generation</li>
-                    <li><code>src/logic/tokenMapper.ts</code> – token mapping</li>
-                    <li><code>src/logic/contrastChecker.ts</code> – WCAG calculations</li>
-                    <li><code>src/store/themeStore.ts</code> – state, modes, export</li>
-                    <li><code>src/components</code> – UI and Live Preview</li>
-                </ul>
-            </section>
+--color-surface-hover        // Surface hover state
+                            // Light: neutral-50, Dark: neutral-900
 
-                        {/* Harmony tools */}
-                        <div id="harmony" className="preview-card" style={{ marginBottom: 12 }}>
-                            <h2 style={{ ...title, fontSize: 18, marginBottom: 12 }}>Color Harmony Generator</h2>
-                            <p style={{ ...body, marginBottom: 10 }}>
-                                Automatic color combinations based on color theory. Useful for secondary colors or accents.
+--color-surface-pressed      // Surface pressed/active state
+                            // Light: neutral-100, Dark: neutral-850`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>B. On-Surface Content (Text on Backgrounds)</h3>
+                        <div className="code-block">
+{`--color-on-surface-heading   // Highest emphasis text (headings, titles)
+                            // Light: neutral-950, Dark: neutral-50
+
+--color-on-surface-variant   // Body text, standard content
+                            // Light: neutral-800, Dark: neutral-100
+
+--color-on-surface-subtle    // Placeholders, captions, secondary text
+                            // Light/Dark: neutral-500 (same for both!)`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>C. Outlines (Borders & Dividers)</h3>
+                        <div className="code-block">
+{`--color-outline-subtle       // Subtle dividers, card borders (~2:1 contrast)
+--color-outline-default      // Default input borders, separators (~3:1)
+--color-outline-hover        // Hover state for borders (~3.5:1)
+--color-outline-pressed      // Pressed/active state (~4:1)
+--color-outline-strong       // Strong emphasis borders (~4.5:1)
+
+// All dynamically calculated via FindBestContrast against --color-surface`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>D. States (Disabled)</h3>
+                        <div className="code-block">
+{`--color-disabled             // Disabled element background
+                            // Light: neutral-100, Dark: neutral-850
+
+--color-on-disabled          // Text on disabled elements (low contrast intentional)
+                            // Light: neutral-400, Dark: neutral-600`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>E. Accents (Primary, Secondary, Error, Warning, Success, Info)</h3>
+                        <p style={{ ...body, marginTop: 10 }}>
+                            Each accent color follows this pattern (example with <code>primary</code>):
+                        </p>
+                        <div className="code-block">
+{`--color-primary                      // Base accent (dynamic 4.5/7/9:1)
+--color-on-primary                   // Text on primary (white or black)
+--color-primary-container            // Subtle container (3/4.5/7:1)
+--color-on-primary-container         // Text on container (prefers scale values)
+
+// Interactive states
+--color-primary-hover                // Hover state (±50 step offset)
+--color-on-primary-hover
+--color-primary-pressed              // Pressed state (±100 step offset)
+--color-on-primary-pressed
+--color-primary-container-hover
+--color-on-primary-container-hover
+--color-primary-container-pressed
+--color-on-primary-container-pressed`}
+                        </div>
+                        <p style={{ ...body, marginTop: 10 }}>
+                            This exact structure repeats for: <code>secondary</code>, <code>error</code>, <code>warning</code>,
+                            <code>success</code>, <code>info</code>.
+                        </p>
+
+                        <h3 style={{ ...title, fontSize: 18, marginTop: 20 }}>F. Special Tokens</h3>
+                        <div className="code-block">
+{`--color-focus                // Focus ring (derived from Primary color, not Info!)
+                            // Uses FindOptimalShade with accent contrast target
+
+--color-shadow               // Drop shadow color
+                            // Light/Dark: neutral-1000 (always black for shadows)
+
+--color-backdrop             // Modal/dialog backdrop overlay
+                            // Opacity varies by contrast mode (0.4 / 0.6 / 0.75)`}
+                        </div>
+                    </section>
+
+                    {/* 5. ADVANCED FEATURES */}
+                    <section id="advanced" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>5. Advanced Features (Pro Mode)</h2>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 20 }}>"Stay True to Input Color"</h3>
+                        <p style={body}>
+                            <strong>What it does:</strong> Forces the algorithm to include your exact input hex value somewhere
+                            in the generated scale, bypassing dynamic contrast-based selection.
+                        </p>
+                        <p style={body}>
+                            <strong>When to use:</strong> Strict branding requirements where the precise corporate color must appear
+                            (e.g., Coca-Cola red #F40009 must be exact).
+                        </p>
+                        <div className="info-box error">
+                            <strong style={{ display: 'block', marginBottom: 6 }}>⚠️ Warning: Accessibility Trade-off</strong>
+                            <p style={{ ...body, margin: 0, fontSize: 14 }}>
+                                Enabling this <strong>may sacrifice guaranteed contrast compliance</strong>. The input color might not meet
+                                4.5:1 or 7:1 targets. Use only when brand identity outweighs accessibility guarantees, and manually verify
+                                contrasts in the audit section.
                             </p>
-                            <ColorHarmonyVisualizer showHeader={false} showNote={false} />
-                            <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 8, background: 'var(--color-warning-container)', color: 'var(--color-on-warning-container)', border: '1px solid var(--color-outline-subtle)' }}>
-                                <b>Note:</b> Don’t use harmony for semantic colors (error, warning, success). They should
-                                keep conventional meanings for usability.
-                            </div>
-                          </div>
-                            </div>
-                            {/* Sticky TOC */}
-                            <aside className="docs-toc">
-                                <div className="preview-card">
-                                    <h3 style={{ ...title, fontSize: 16, marginBottom: 10 }}>Contents</h3>
-                                    <input
-                                        className="docs-search"
-                                        placeholder="Search sections..."
-                                        value={q}
-                                        onChange={(e) => setQ(e.target.value)}
-                                        onKeyDown={(e) => { if (e.key === 'Enter' && filtered[0]) { document.getElementById(filtered[0].id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}
-                                        style={{ marginBottom: 10 }}
-                                    />
-                                    <nav>
-                                        {(q ? filtered : sections).map(s => (
-                                            <a key={s.id} href={`#${s.id}`} aria-current={activeId === s.id ? 'true' : undefined}>
-                                                {s.label}
-                                            </a>
-                                        ))}
-                                    </nav>
-                                </div>
-                            </aside>
                         </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Manual Tone Overrides (Pro Mode)</h3>
+                        <p style={body}>
+                            Pro Mode UI lets you manually "pin" specific scale steps to semantic tokens, completely overriding
+                            FindOptimalShade and FindOptimalContainer algorithms:
+                        </p>
+                        <div className="code-block">
+{`Primary Light:  400   // Forces --color-primary to use primary-400 in light mode
+Primary Dark:   600   // Forces --color-primary to use primary-600 in dark mode
+
+Container Light: 200  // Forces --color-primary-container to primary-200
+Container Dark:  800  // Forces --color-primary-container to primary-800`}
+                        </div>
+                        <p style={body}>
+                            Select <strong>"Auto"</strong> in dropdowns to restore algorithmic selection. Useful for design iteration
+                            and fine-tuning specific tokens without changing the entire system.
+                        </p>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Export: Figma Variables (W3C Design Tokens)</h3>
+                        <p style={body}>
+                            The export generates a JSON file compatible with W3C Design Tokens specification and Figma Variables import:
+                        </p>
+                        <div className="code-block">
+{`{
+  "scales": {
+    "primary": { "0": "#ffffff", "50": "#f0f4ff", ... },
+    "neutral": { ... }
+  },
+  "light": {
+    "color-primary": { "value": "{scales.primary.500}" },
+    "color-surface": { "value": "{scales.neutral.0}" },
+    ...
+  },
+  "dark": { ... },
+  "surface": { ... }
+}`}
+                        </div>
+                        <ul style={{ ...body, paddingLeft: 20, marginTop: 10 }}>
+                            <li>Aliases use <code>{`{scales.colorName.step}`}</code> syntax</li>
+                            <li>Separate collections for light/dark modes</li>
+                            <li>Import directly into Figma → Local Variables</li>
+                        </ul>
+                    </section>
+
+                    {/* 6. PRACTICAL RECIPES */}
+                    <section id="recipes" className="preview-card" style={section}>
+                        <h2 style={{ ...title, fontSize: 26 }}>6. Practical Recipes</h2>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 20 }}>Applying Themes with Data Attributes</h3>
+                        <p style={body}>
+                            Set <code>data-theme</code> and <code>data-contrast</code> attributes on your root HTML element
+                            to activate different modes:
+                        </p>
+                        <div className="code-block">
+{`<!-- Light mode, default contrast -->
+<html data-theme="light" data-contrast="default">
+
+<!-- Dark mode, high contrast -->
+<html data-theme="dark" data-contrast="high-contrast">
+
+<!-- Dark mode, extra-high contrast -->
+<html data-theme="dark" data-contrast="extra-high">`}
+                        </div>
+                        <p style={body}>
+                            CSS variables automatically switch values. No JavaScript required for theming!
+                        </p>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Recipe: Button Component</h3>
+                        <div className="code-block">
+{`.button {
+  /* Base styles */
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 1px solid var(--color-outline-default);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+  color: var(--color-on-primary-hover);
+  border-color: var(--color-outline-hover);
+}
+
+.button:active {
+  background-color: var(--color-primary-pressed);
+  color: var(--color-on-primary-pressed);
+  transform: scale(0.98);
+}
+
+.button:disabled {
+  background-color: var(--color-disabled);
+  color: var(--color-on-disabled);
+  border-color: var(--color-outline-subtle);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Secondary variant */
+.button--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+.button--secondary:hover {
+  background-color: var(--color-secondary-hover);
+  color: var(--color-on-secondary-hover);
+}
+
+/* Container variant (subtle) */
+.button--container {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+.button--container:hover {
+  background-color: var(--color-primary-container-hover);
+  color: var(--color-on-primary-container-hover);
+}`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Recipe: Card Component</h3>
+                        <div className="code-block">
+{`.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline-subtle);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-outline-default);
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.card__title {
+  color: var(--color-on-surface-heading);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.card__body {
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.card__caption {
+  color: var(--color-on-surface-subtle);
+  font-size: 13px;
+  margin-top: 12px;
+}`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Recipe: Input Field</h3>
+                        <div className="code-block">
+{`.input {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-heading);
+  border: 1px solid var(--color-outline-default);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--color-on-surface-subtle);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--color-outline-hover);
+  background-color: var(--color-surface);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-focus);
+  background-color: var(--color-surface);
+}
+
+.input:disabled {
+  background-color: var(--color-disabled);
+  color: var(--color-on-disabled);
+  border-color: var(--color-outline-subtle);
+  cursor: not-allowed;
+}
+
+.input--error {
+  border-color: var(--color-error);
+}
+.input--error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 20%, transparent);
+}`}
+                        </div>
+                    </section>
+
+                    {/* 7. FORCED-COLORS */}
+                    <section id="forced-colors" className="preview-card" style={{ marginBottom: 24 }}>
+                        <h2 style={{ ...title, fontSize: 26 }}>7. High Contrast: extra-high vs forced-colors</h2>
+
+                        <div className="info-box warning">
+                            <h3 style={{ margin: '0 0 10px', fontWeight: 700, fontSize: 16 }}>⚠️ Critical Distinction</h3>
+                            <ul style={{ ...body, paddingLeft: 20, margin: 0, fontSize: 14 }}>
+                                <li><strong>extra-high mode:</strong> Our custom-generated high-contrast theme (9:1 text, 7:1 containers)</li>
+                                <li><strong>forced-colors:</strong> OS-level override (Windows High Contrast Mode, browser forced colors)</li>
+                            </ul>
+                            <p style={{ ...body, marginTop: 10, marginBottom: 0, fontSize: 14 }}>
+                                These are <strong>not the same</strong>. extra-high is our palette; forced-colors replaces all colors with system palette.
+                            </p>
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>What is forced-colors Mode?</h3>
+                        <p style={body}>
+                            An OS-level accessibility feature (Windows High Contrast Mode, browser settings) that <strong>ignores all
+                            author-defined colors</strong> and forces a system-defined palette—typically black, white, yellow, and 1-2 accent colors.
+                        </p>
+                        <p style={body}>
+                            Activated by users who need <em>maximum</em> contrast or have specific visual impairments (e.g., cataracts, photophobia).
+                        </p>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>How to Support forced-colors</h3>
+                        <p style={body}>
+                            Use the <code>@media (forced-colors: active)</code> CSS query and replace custom colors with
+                            <strong> system color keywords</strong>:
+                        </p>
+                        <div className="code-block">
+{`@media (forced-colors: active) {
+  .button {
+    background-color: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonBorder;
+  }
+
+  .card {
+    background-color: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+  }
+
+  a {
+    color: LinkText;
+  }
+
+  .input {
+    background-color: Field;
+    color: FieldText;
+    border: 1px solid FieldText;
+  }
+
+  /* Critical: Focus rings */
+  .button:focus-visible,
+  .input:focus {
+    /* Transparent outlines are auto-colored by OS! */
+    outline: 3px solid transparent;
+    outline-offset: 2px;
+  }
+}`}
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>System Color Keywords</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, marginTop: 12 }}>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>Canvas</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Page background</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>CanvasText</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Text on Canvas</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>LinkText</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Hyperlinks</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>ButtonFace</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Button background</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>ButtonText</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Text on buttons</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>ButtonBorder</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Button borders</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>Field</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Input background</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>FieldText</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Text in inputs</p>
+                            </div>
+                            <div style={{ padding: 14, background: 'var(--color-surface-variant)', borderRadius: 8 }}>
+                                <strong>GrayText</strong>
+                                <p style={{ ...body, margin: '4px 0 0', fontSize: 13 }}>Disabled text</p>
+                            </div>
+                        </div>
+
+                        <div className="info-box primary" style={{ marginTop: 20 }}>
+                            <h4 style={{ margin: '0 0 10px', fontWeight: 700, fontSize: 15 }}>💡 Pro Tip: Transparent Outlines</h4>
+                            <p style={{ ...body, margin: 0, fontSize: 14 }}>
+                                Using <code>outline-color: transparent</code> is a clever trick: in forced-colors mode, the OS
+                                <strong> automatically replaces transparent with a visible color</strong>, ensuring focus rings
+                                remain visible for keyboard navigation. In normal mode, you control the color via <code>var(--color-focus)</code>.
+                            </p>
+                        </div>
+
+                        <h3 style={{ ...title, fontSize: 19, marginTop: 24 }}>Why This Matters</h3>
+                        <ul style={{ ...body, paddingLeft: 20 }}>
+                            <li>Our extra-high mode gives you control over specific contrast ratios (9:1 text)</li>
+                            <li>forced-colors is user-controlled and unpredictable—you don't choose the colors</li>
+                            <li>Supporting both ensures maximum accessibility: designer control + user override capability</li>
+                        </ul>
+                    </section>
+                </div>
+
+                {/* Sticky TOC */}
+                <aside className="docs-toc">
+                    <div className="preview-card">
+                        <h3 style={{ ...title, fontSize: 15, marginBottom: 12 }}>Contents</h3>
+                        <input
+                            className="docs-search"
+                            placeholder="Search..."
+                            value={q}
+                            onChange={(e) => setQ(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && filtered[0]) {
+                                    document.getElementById(filtered[0].id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            }}
+                        />
+                        <nav>
+                            {(q ? filtered : sections).map(s => (
+                                <a key={s.id} href={`#${s.id}`} aria-current={activeId === s.id ? 'true' : undefined}>
+                                    {s.label}
+                                </a>
+                            ))}
+                        </nav>
+                    </div>
+                </aside>
+            </div>
         </div>
     );
 }

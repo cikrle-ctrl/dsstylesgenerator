@@ -445,7 +445,7 @@ const OutlineAndOtherSection = ({ mode, tokens, scales }: { mode: 'light' | 'dar
                 <Cell mode={mode} label="Outline Strong" sublabel={getStepLabel('neutral', '--color-outline-strong')} token="--color-outline-strong" tokens={tokens} />
                 <Cell mode={mode} label="Outline Hover" sublabel={getStepLabel('neutral', '--color-outline-hover')} token="--color-outline-hover" tokens={tokens} />
                 <Cell mode={mode} label="Outline Pressed" sublabel={getStepLabel('neutral', '--color-outline-pressed')} token="--color-outline-pressed" tokens={tokens} />
-                <Cell mode={mode} label="Focus" sublabel={getStepLabel('info', '--color-focus')} token="--color-focus" tokens={tokens} />
+                <Cell mode={mode} label="Focus" sublabel={getStepLabel('primary', '--color-focus')} token="--color-focus" tokens={tokens} />
                 <Cell mode={mode} label="Disabled" sublabel={getStepLabel('neutral', '--color-disabled')} token="--color-disabled" tokens={tokens} onToken="--color-on-disabled" />
             </div>
             <div className="palette-outline-grid2" style={{

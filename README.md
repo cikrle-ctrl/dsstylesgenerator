@@ -1,116 +1,116 @@
 # 🎨 DS Styles Generator
 
-**Profesionální generátor design tokenů** s podporou Light/Dark módů, high contrast režimů a exportu do 6 formátů.
+**Professional design token generator** with Light/Dark modes, high contrast
+support, and Figma Variables export.
 
-Postavený na vědeckých principech **OKLCH color space**, **power 0.9 easing křivce** a **parabolické adaptivní chromě** pro perceptuálně rovnoměrné barevné škály.
+Built on scientific principles: **OKLCH color space**, **power 0.9 easing
+curve**, and **parabolic adaptive chroma** for perceptually uniform color
+scales.
 
-## 🚀 Rychlý start
+## 🚀 Quick Start
 
 ```bash
-# Instalace
+# Install dependencies
 npm install
 
-# Výv ojový server (localhost:5173)
+# Development server (localhost:5173)
 npm run dev
 
 # Production build
 npm run build
 ```
 
-## ✨ Klíčové funkce
+## ✨ Key Features
 
-### 🎨 Generování barevných škál
-- **21 kroků** (0-1000, po 50) pro každou barvu
-- **Power 0.9 easing** pro perceptuálně rovnoměrné rozložení
-- **Parabolická adaptivní chroma** respektující fyzické limity sRGB
-- **OKLCH color space** (perceptuálně jednotný, na rozdíl od HSL/RGB)
+### 🎨 Color Scale Generation
+- **21 steps** (0-1000, increments of 50) for each color
+- **Power 0.9 easing** for perceptually uniform distribution
+- **Parabolic adaptive chroma** respecting sRGB physical limits
+- **OKLCH color space** (perceptually uniform, unlike HSL/RGB)
 
-### 🌓 Režimy a kontrast
-- **Light / Dark módy** - kompletní podpora obou témat
-- **Default / High Contrast** - pro různé požadavky na přístupnost
-- **4 kombinace** - nezávislé přepínání tématu a kontrastu
-- **WCAG 2.1** - automatické splnění AA (4.5:1) nebo AAA (7:1) kontrastů
+### 🌓 Modes and Contrast
+- **Light / Dark modes** - complete support for both themes
+- **Default / High / Extra-High Contrast** - accessibility requirements
+- **6 combinations** - independent theme and contrast switching
+- **WCAG 2.1** - automatic AA (4.5:1) or AAA (7:1+) contrast compliance
 
-### 🎯 Inteligentní mapování tokenů
-- **Dynamické FindOptimalShade** - najde krok s požadovaným kontrastem
-- **Statické mapování** pro surface/text/disabled tokeny (dle algoritmu)
-- **GetOnColor** - automatický výběr textu na barevném pozadí
-- **FindBestContrast** - outline tokeny s přesným cílovým kontrastem (~2:1, 3:1, 4.5:1)
+### 🎯 Intelligent Token Mapping
+- **Dynamic FindOptimalShade** - finds step with required contrast
+- **Static mapping** for surface/text/disabled tokens (per algorithm)
+- **GetOnColor** - automatic text selection on colored backgrounds
+- **FindBestContrast** - outline tokens with precise target contrast
 
-### 📊 Export do 6 formátů
-1. **CSS Variables** - `:root` a `[data-theme="dark"]`
-2. **Tailwind v3** - JavaScript config s `theme.extend.colors`
-3. **Tailwind v4** - CSS `@theme` direktiva
-4. **SCSS** - proměnné s `$color-` prefix
-5. **JSON** - kompletní tokeny a škály
-6. **Figma W3C** - Design Tokens spec s aliasy ({scale.primary.500})
-7. **CSV Audit** - WCAG kontrasty s AA/AAA/FAIL označením
+### 📊 Figma Variables Export
+- **W3C Design Tokens** format with aliases
+- **Scales + Semantic tokens** structure
+- **Light/Dark modes** included
+- **Surface tokens** for backgrounds
 
-### 🧰 Pokročilé nástroje
+### 🧰 Advanced Tools
 
 #### Advanced Controls
-- ☑️ **Pure Neutrals** - čistá šedá bez barevného tónu
-- 🎚️ **Saturation** - globální multiplikátor 0.5× - 1.5×
-- 🌡️ **Temperature** - posun hue -15° až +15°
-- 🎨 **Harmony** - analogické, komplementární, triadické schéma
+- ☑️ **Pure Neutrals** - pure gray without color tint
+- 🎚️ **Saturation** - global multiplier 0.5× - 1.5×
+- 🌡️ **Temperature** - hue shift -15° to +15°
+- 🎨 **Harmony** - analogous, complementary, triadic schemes
 
 #### Neutral Tint Source
-- Výběr zdroje pro tónování neutral škály:
-  - **Primary** - používá primary barvu (default)
-  - **Secondary** - používá secondary barvu
-  - **Custom** - vlastní barva pro tónování
-  - **Pure** - žádné tónování (chroma = 0)
+- Source selection for neutral scale tinting:
+  - **Primary** - uses primary color (default)
+  - **Secondary** - uses secondary color
+  - **Custom** - custom color for tinting
+  - **Pure** - no tinting (chroma = 0)
 
 #### Pro Mode
-- 🎯 **Custom Tone Mapping** - manuální override kroků pro semantic tokeny
-- 🔍 **sRGB Gamut Warnings** - indikátory P3-wide barev
-- 🎨 **Stay True to Input** - zachová vstupní barvu ve škále
+- 🎯 **Custom Tone Mapping** - manual override steps for semantic tokens
+- 🔍 **sRGB Gamut Warnings** - P3-wide color indicators
+- 🎨 **Stay True to Input** - preserves input color in scale
 
-### 👁️ Vizuální nástroje
+### 👁️ Visual Tools
 - **Colorblind Simulation** - Deuteranopia, Protanopia, Tritanopia, Grayscale
-- **Color Harmony Visualizer** - živý náhled harmonických schémat
-- **Live Preview** - real-time preview všech tokenů na UI komponentech
-- **Scale Preview** - zobrazení všech 21 kroků každé škály
-- **Contrast Audit** - live výpočet WCAG kontrastů s PASS/FAIL badgesy
+- **Color Harmony Visualizer** - live preview of harmonic schemes
+- **Live Preview** - real-time preview of all tokens on UI components
+- **Scale Preview** - display of all 21 steps for each scale
+- **Contrast Audit** - live WCAG contrast calculation with PASS/FAIL badges
 
-### 📚 Dokumentace v aplikaci
-- **Docs Page** - kompletní interaktivní dokumentace
-- **Generation Logic** - vysvětlení algoritmu generování
-- **Contrast Modes** - jak funguje Default/High/Extra-High
-- **Token Naming** - konvence pojmenování tokenů
-- **Live Contrast Audit** - runtime kalkulace kontrastů
+### 📚 In-App Documentation
+- **Docs Page** - complete interactive documentation
+- **Generation Logic** - explanation of generation algorithm
+- **Contrast Modes** - how Default/High/Extra-High works
+- **Token Naming** - token naming conventions
+- **Live Contrast Audit** - runtime contrast calculations
 
-## 🔬 Technické detaily
+## 🔬 Technical Details
 
-### Barevné škály
+### Color Scales
 
 #### Power 0.9 Easing
 ```typescript
-// Algoritmus: L = 1.0 - (step/1000)^0.9
-// Větší kroky na krajích, menší uprostřed kde je oko citlivější
-0 → L=1.0     (bílá)
-500 → L=0.55  (střední tón)
-1000 → L=0.05 (téměř černá)
+// Algorithm: L = 1.0 - (step/1000)^0.9
+// Larger steps at extremes, smaller in middle where eye is more sensitive
+0 → L=1.0     (white)
+500 → L=0.55  (mid-tone)
+1000 → L=0.05 (near black)
 ```
 
-#### Parabolická adaptivní chroma
+#### Parabolic Adaptive Chroma
 ```typescript
-// Fyzické limity sRGB gamutu vyžadují redukci chromy na extrémech světlosti
-L > 0.92:              0.25× (kroky 0, 50, 100) - pastely
+// sRGB gamut physical limits require chroma reduction at lightness extremes
+L > 0.92:              0.25× (steps 0, 50, 100) - pastels
 0.85 < L ≤ 0.92:       0.5×  (150, 200) - light containers
-0.70 < L ≤ 0.85:       0.85× (250, 300) - přechod
-0.55 ≤ L ≤ 0.70:       1.15× (350-500) - MID-TONE BOOST pro dark mode!
-0.38 < L < 0.55:       1.0×  (550, 600) - plná chroma
-0.28 < L ≤ 0.38:       0.75× (650, 700) - pokles
+0.70 < L ≤ 0.85:       0.85× (250, 300) - transition
+0.55 ≤ L ≤ 0.70:       1.15× (350-500) - MID-TONE BOOST for dark mode!
+0.38 < L < 0.55:       1.0×  (550, 600) - full chroma
+0.28 < L ≤ 0.38:       0.75× (650, 700) - decrease
 0.20 < L ≤ 0.28:       0.55× (750, 800) - dark containers
 L ≤ 0.20:              0.3×  (850-1000) - dark backgrounds
 ```
 
-### Mapování tokenů
+### Token Mapping
 
-#### Statická mapování (Krok 4 + 6D z algoritmu)
+#### Static Mappings (Step 4 + 6D from algorithm)
 ```typescript
-// Surface tokeny (Krok 4)
+// Surface tokens (Step 4)
 Light Mode                  Dark Mode
 --background:      50       1000
 --surface:          0        950
@@ -118,46 +118,46 @@ Light Mode                  Dark Mode
 --surface-hover:    50      900
 --surface-pressed: 100      850
 
-// Text tokeny (Krok 6D)
+// Text tokens (Step 6D)
 --on-surface-heading:  950   50
 --on-surface-variant:  800  100
 --on-surface-subtle:   500  500
 
-// Disabled tokeny
+// Disabled tokens
 --disabled-surface:  100  850
 --on-disabled:       400  600
 ```
 
-#### Dynamická mapování
+#### Dynamic Mappings
 ```typescript
 // Accent colors - FindOptimalStepByContrast
 Default:     targetContrast = 4.5:1 (WCAG AA)
 High:        targetContrast = 7.0:1 (WCAG AAA)
 Extra-High:  targetContrast = 9.0:1
 
-// Containers - adaptivní podle base kroku
-Light: 100-300 (světlé), Dark: 700-900 (tmavé)
+// Containers - adaptive based on base step
+Light: 100-300 (light), Dark: 700-900 (dark)
 
-// On-colors - GetOnColor s minimum contrast enforcement
-Zajišťuje čitelnost textu na barevných pozadích
+// On-colors - GetOnColor with minimum contrast enforcement
+Ensures text readability on colored backgrounds
 ```
 
-### Outline tokeny
+### Outline Tokens
 ```typescript
-// FindBestContrast s přesnými cílovými kontrasty
---outline-subtle:  ~2:1  (jemné ohraničení)
---outline:         ~3:1  (standardní)
---outline-hover:   ~3:1  (interakce)
---outline-strong:  ~4.5:1 (výrazné)
+// FindBestContrast with precise target contrasts
+--outline-subtle:  ~2:1  (subtle border)
+--outline:         ~3:1  (standard)
+--outline-hover:   ~3:1  (interaction)
+--outline-strong:  ~4.5:1 (strong)
 ```
 
-## 📁 Struktura projektu
+## 📁 Project Structure
 
 ```
 src/
-├── components/          # React komponenty
-│   ├── ui/             # Primitivní UI komponenty (Button, ColorPicker, etc.)
-│   ├── Demo*.tsx       # Preview komponenty pro Live Preview
+├── components/          # React components
+│   ├── ui/             # Primitive UI components (Button, ColorPicker, etc.)
+│   ├── Demo*.tsx       # Preview components for Live Preview
 │   ├── AdvancedControls.tsx
 │   ├── ColorblindSimulator.tsx
 │   ├── ColorHarmonyVisualizer.tsx
@@ -171,52 +171,52 @@ src/
 │   ├── ThemeInjector.tsx
 │   └── TonalPalettePreview.tsx
 │
-├── logic/              # Business logika
-│   ├── colorModule.ts           # Generování škál, harmony, adaptive chroma
-│   ├── colorblindSimulator.ts   # Color matrix transformace
-│   ├── contrastChecker.ts       # WCAG contrast kalkulace
-│   ├── cssGenerator.ts          # Export do CSS/Tailwind/SCSS/JSON/Figma/CSV
-│   ├── gamutChecker.ts          # sRGB/P3 gamut validace
-│   ├── highContrastSupport.ts   # High contrast režim
-│   ├── surfaceAndRadius.ts      # Radius & shadow strategie
+├── logic/              # Business logic
+│   ├── colorModule.ts           # Scale generation, harmony, adaptive chroma
+│   ├── colorblindSimulator.ts   # Color matrix transformations
+│   ├── contrastChecker.ts       # WCAG contrast calculation
+│   ├── cssGenerator.ts          # Export to CSS/Tailwind/SCSS/JSON/Figma/CSV
+│   ├── gamutChecker.ts          # sRGB/P3 gamut validation
+│   ├── highContrastSupport.ts   # High contrast mode
+│   ├── surfaceAndRadius.ts      # Radius & shadow strategy
 │   ├── toneContrastSystem.ts    # Material Design 3 HCT system
 │   ├── tokenMapper.ts           # Semantic token mapping
 │   └── typographyModule.ts      # Typography tokens (Material/Apple)
 │
-├── pages/              # Stránky aplikace
-│   └── Docs.tsx       # Dokumentace s live audit
+├── pages/              # Application pages
+│   └── Docs.tsx       # Documentation with live audit
 │
 ├── store/              # State management
-│   └── themeStore.ts  # Zustand store (barvy, nastavení, režimy)
+│   └── themeStore.ts  # Zustand store (colors, settings, modes)
 │
-└── App.tsx            # Hlavní komponenta a routing
+└── App.tsx            # Main component and routing
 ```
 
-## 🎯 Použití
+## 🎯 Usage
 
-### 1. Základní setup
+### 1. Basic Setup
 ```tsx
-// 1. Nastav primary a secondary barvy v levém panelu
-// 2. Ostatní barvy (error, warning, success, info) se vygenerují automaticky
-// 3. Neutral škála se vytvoří s tinted neutrals (mírný tón z primary)
+// 1. Set primary and secondary colors in the left panel
+// 2. Other colors (error, warning, success, info) are auto-generated
+// 3. Neutral scale is created with tinted neutrals (slight tint from primary)
 ```
 
-### 2. Advanced Controls (volitelné)
+### 2. Advanced Controls (optional)
 ```tsx
-// Klikni na "Advanced Controls" pro rozšířené možnosti:
-- Pure Neutrals: ☑️ Vypne tónování neutral škály
-- Saturation: 🎚️ Globální multiplikátor sytosti
-- Temperature: 🌡️ Posun hue (teplejší/chladnější)
-- Harmony: 🎨 Auto-generování secondary (analogous/complementary/triadic)
+// Click "Advanced Controls" for extended options:
+- Pure Neutrals: ☑️ Disables neutral scale tinting
+- Saturation: 🎚️ Global saturation multiplier
+- Temperature: 🌡️ Hue shift (warmer/cooler)
+- Harmony: 🎨 Auto-generate secondary (analogous/complementary/triadic)
 ```
 
 ### 3. Live Preview
 ```tsx
-// Horní panel - nezávislé přepínání:
+// Top panel - independent switching:
 Theme:    [Light] [Dark]
 Contrast: [Default] [High Contrast]
 
-// Možné kombinace:
+// Possible combinations:
 ✅ Light + Default
 ✅ Light + High Contrast
 ✅ Dark + Default  
@@ -225,77 +225,77 @@ Contrast: [Default] [High Contrast]
 
 ### 4. Export
 ```tsx
-// Exportuj tokeny do preferovaného formátu:
+// Export tokens to your preferred format:
 [CSS Variables] [Tailwind v3] [Tailwind v4]
 [SCSS] [JSON] [Figma W3C] [CSV Audit]
 
 // Figma export - W3C Design Tokens spec:
-- Checkbox volby: scales / aliases / surface
+- Checkbox options: scales / aliases / surface
 - Light/Dark selector
-- Aliases ve formátu {scale.primary.500}
+- Aliases in format {scale.primary.500}
 
 // CSV Audit:
-- Všechny tokeny s kontrastem vs background
-- AA/AAA/FAIL označení
+- All tokens with contrast vs background
+- AA/AAA/FAIL labels
 ```
 
 ## 🧪 Vizualizace
 
 ### Color Harmony
-- **Analogous**: Primary + sousední barva (+30° hue)
-- **Complementary**: Primary + opačná barva (+180° hue)
-- **Triadic**: 3 rovnoměrně rozmístěné barvy (+120° intervaly)
+- **Analogous**: Primary + adjacent color (+30° hue)
+- **Complementary**: Primary + opposite color (+180° hue)
+- **Triadic**: 3 evenly distributed colors (+120° intervals)
 
 ### Colorblind Simulation
-- **None** - původní barvy
-- **Deuteranopia** - zelená slepota (nejčastější)
-- **Protanopia** - červená slepota
-- **Tritanopia** - modrá slepota (vzácná)
-- **Grayscale** - celková barvoslepost
+- **None** - original colors
+- **Deuteranopia** - green blindness (most common)
+- **Protanopia** - red blindness
+- **Tritanopia** - blue blindness (rare)
+- **Grayscale** - complete color blindness
 
 ### Tonal Palette (Material Design 3)
-- Zobrazení 0-100 tónů pro Primary/Secondary/Error
-- HCT tone-based kontrast systém
-- Používá se v Material Design 3
+- Display of 0-100 tones for Primary/Secondary/Error
+- HCT tone-based contrast system
+- Used in Material Design 3
 
-## 📚 Související dokumenty
+## 📚 Related Documents
 
-| Dokument | Účel |
+| Document | Purpose |
 |----------|------|
-| [QUICK_START.md](./QUICK_START.md) | 5-minutový rychlý start |
-| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | Implementační detaily všech feature |
-| [COLOR_THEORY.md](./COLOR_THEORY.md) | Teorie barev a OKLCH |
-| [MATERIAL_HCT_INTEGRATION.md](./MATERIAL_HCT_INTEGRATION.md) | Material Design 3 HCT systém |
-| [FEATURE_SHOWCASE.md](./FEATURE_SHOWCASE.md) | Přehled funkcí s příklady |
-| [TECHNICAL_REFERENCE.md](./TECHNICAL_REFERENCE.md) | API reference a architektura |
+| [QUICK_START.md](./QUICK_START.md) | 5-minute quick start |
+| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | Implementation details of all features |
+| [COLOR_THEORY.md](./COLOR_THEORY.md) | Color theory and OKLCH |
+| [MATERIAL_HCT_INTEGRATION.md](./MATERIAL_HCT_INTEGRATION.md) | Material Design 3 HCT system |
+| [FEATURE_SHOWCASE.md](./FEATURE_SHOWCASE.md) | Feature overview with examples |
+| [TECHNICAL_REFERENCE.md](./TECHNICAL_REFERENCE.md) | API reference and architecture |
 
 ## 🔧 Tech Stack
 
 - **React 19.2** + **TypeScript 5.8**
 - **Vite 7.2** - build tool
 - **Zustand** - state management
-- **Culori** - OKLCH color space manipulace
+- **Culori** - OKLCH color space manipulation
 - **React Router** - routing (Home / Docs)
 - **Lucide React** - ikony
 
-## 🎓 Principy
+## 🎓 Principles
 
-### 1. Perceptuální rovnoměrnost
-OKLCH zajišťuje, že změna lightness o 0.1 vypadá vizuálně stejně v celém spektru (na rozdíl od HSL kde ne).
+### 1. Perceptual Uniformity
+OKLCH ensures that a change in lightness by 0.1 looks visually the same across the entire spectrum (unlike HSL where it doesn't).
 
-### 2. Fyzické limity barev
-sRGB gamut má omezení - některé kombinace L/C/H nejsou zobrazitelné. Parabolická chroma to respektuje.
+### 2. Physical Color Limits
+sRGB gamut has constraints - some L/C/H combinations are not displayable. Parabolic chroma respects this.
 
 ### 3. Accessibility First
-Všechny tokeny splňují WCAG 2.1 kontrasty. High contrast mód garantuje AAA (7:1+).
+All tokens meet WCAG 2.1 contrast requirements. High contrast mode guarantees AAA (7:1+).
 
-### 4. Systémový přístup
-Tokeny nejsou náhodné - vycházejí z algoritmu a pravidel. Konzistentní napříč módy.
+### 4. Systematic Approach
+Tokens are not random - they derive from algorithms and rules. Consistent across modes.
 
-## 📄 Licence
+## 📄 License
 
 MIT
 
 ---
 
-**Postaveno na vědě, fyzice a přístupnosti.** 🚀✨
+**Built on science, physics, and accessibility.** 🚀✨
