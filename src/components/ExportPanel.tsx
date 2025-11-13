@@ -5,6 +5,7 @@ import { Download } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Checkbox } from './ui/Checkbox';
 import { getContrast } from '../logic/contrastChecker';
+import { generateMappedTokens } from '../logic/tokenMapper';
 import './HeaderToolbar.css'; // Import segmented control styles
 
 type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma' | 'figma-variables' | 'csv';
@@ -223,9 +224,6 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
     };
 
     const generateFigmaVariables = (): string => {
-        // Import generateMappedTokens pro generování tokenů
-        const { generateMappedTokens } = require('../logic/tokenMapper');
-        
         // Struktura pro Figma Variables JSON
         type FigmaVariable = {
             name: string;
