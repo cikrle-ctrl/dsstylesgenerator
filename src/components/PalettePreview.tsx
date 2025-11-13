@@ -147,11 +147,8 @@ const ColorRow = ({ name, mode, tokens, scales }: { name: string; mode: 'light' 
                 {name}
             </h4>
             
-            {/* Grid: 6 sloupců x 4 řádky (včetně Fix) */}
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(6, 1fr)', 
-                gap: '0',
+            {/* Grid: desktop 6 cols; tablet 3; mobile 2 (pairs: Color | OnColor) */}
+            <div className="palette-row-grid" style={{
                 border: '1px solid var(--color-outline-subtle)',
                 borderRadius: '8px',
                 overflow: 'hidden'
@@ -337,10 +334,7 @@ const SurfaceSection = ({ mode, tokens, scales }: { mode: 'light' | 'dark'; toke
             }}>
                 Surface
             </h4>
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(6, 1fr)', 
-                gap: '0',
+            <div className="palette-surface-grid" style={{
                 border: '1px solid var(--color-outline-subtle)',
                 borderRadius: '8px',
                 overflow: 'hidden'
@@ -377,10 +371,7 @@ const OnSurfaceSection = ({ mode, tokens, scales }: { mode: 'light' | 'dark'; to
             }}>
                 On Surface
             </h4>
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(5, 1fr)', 
-                gap: '0',
+            <div className="palette-onsurface-grid" style={{
                 border: '1px solid var(--color-outline-subtle)',
                 borderRadius: '8px',
                 overflow: 'hidden'
@@ -416,14 +407,11 @@ const OutlineAndOtherSection = ({ mode, tokens, scales }: { mode: 'light' | 'dar
             }}>
                 Outline & Other
             </h4>
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(7, 1fr)', 
-                gap: '0',
+            <div className="palette-outline-grid1" style={{
                 border: '1px solid var(--color-outline-subtle)',
                 borderRadius: '8px',
                 overflow: 'hidden',
-                marginBottom: '8px' 
+                marginBottom: '8px'
             }}>
                 <Cell mode={mode} label="Outline Subtle" sublabel={getStepLabel('neutral', '--color-outline-subtle')} token="--color-outline-subtle" tokens={tokens} />
                 <Cell mode={mode} label="Outline Default" sublabel={getStepLabel('neutral', '--color-outline-default')} token="--color-outline-default" tokens={tokens} />
@@ -433,10 +421,7 @@ const OutlineAndOtherSection = ({ mode, tokens, scales }: { mode: 'light' | 'dar
                 <Cell mode={mode} label="Focus" sublabel={getStepLabel('info', '--color-focus')} token="--color-focus" tokens={tokens} />
                 <Cell mode={mode} label="Disabled" sublabel={getStepLabel('neutral', '--color-disabled')} token="--color-disabled" tokens={tokens} onToken="--color-on-disabled" />
             </div>
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(6, 1fr)', 
-                gap: '0',
+            <div className="palette-outline-grid2" style={{
                 border: '1px solid var(--color-outline-subtle)',
                 borderRadius: '8px',
                 overflow: 'hidden'

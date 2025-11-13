@@ -33,6 +33,12 @@
         padding: 6px 10px;
         font-size: 13px;
     }
+
+    /* Mobile menu toggle visible on small screens */
+    .toolbar__menuToggle {
+        display: inline-flex;
+        margin-left: 8px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -54,4 +60,13 @@
     .toolbar__docbtn {
         margin-left: 0;
     }
+
+    .toolbar__menuToggle {
+        margin-left: 4px;
+    }
+}
+
+/* Hidden by default on desktop */
+.toolbar__menuToggle {
+    display: none;
 }

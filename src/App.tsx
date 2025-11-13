@@ -15,7 +15,7 @@ import { HeaderToolbar } from './components/HeaderToolbar';
 import { Docs } from './pages/Docs';
 import { ColorInput } from './components/ui/ColorInput';
 import { Accordion } from './components/ui/Accordion';
-import { Palette, Sparkles, Box, Shuffle, Menu, X } from 'lucide-react';
+import { Palette, Sparkles, Box, Shuffle } from 'lucide-react';
 import { Select } from './components/ui/Select';
 import { Button } from './components/ui/Button';
 
@@ -37,22 +37,9 @@ function App() {
     return (
         <>
             <ThemeInjector />
-            
-            {/* Mobile Hamburger Button */}
-            <button 
-                className="mobile-menu-toggle"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Toggle menu"
-            >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-            
-            {/* Mobile Overlay */}
+            {/* Mobile Overlay (doesn't cover toolbar) */}
             {isMobileMenuOpen && (
-                <div 
-                    className="mobile-overlay"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                />
+                <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)} />
             )}
             
             <div className="app-layout">
@@ -177,7 +164,10 @@ function App() {
 
                 {/* MIDDLE PANEL: routes */}
                 <div className="main-content">
-                    <HeaderToolbar />
+                    <HeaderToolbar 
+                        onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                        isMenuOpen={isMobileMenuOpen}
+                    />
                     <div className="live-preview">
                         <Routes>
                             <Route

@@ -191,16 +191,12 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  /* Keep below toolbar (toolbar z-index: 50) */
+  z-index: 40;
 }
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
-  /* Show hamburger button on mobile */
-  .mobile-menu-toggle {
-    display: flex;
-  }
-  
   /* Show overlay when menu is open */
   .mobile-overlay {
     display: block;
@@ -215,17 +211,18 @@
   .control-panel {
     position: fixed;
     top: 0;
-    left: -320px; /* Hidden off-screen */
+    left: 0;
     width: 320px;
     height: 100vh;
     z-index: 1000;
-    transition: left 0.3s ease;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
   }
   
   /* Show panel when mobile menu is open */
   .control-panel.mobile-open {
-    left: 0;
+    transform: translateX(0);
   }
   
   /* Main content takes full width on mobile */
@@ -234,20 +231,14 @@
   }
   
   /* Reduce padding on mobile */
-  .live-preview {
-    padding: 80px 16px 16px 16px; /* Extra top padding for hamburger button */
-  }
+  .live-preview { padding: 16px; }
   
   .content-container {
     gap: 16px;
   }
   
   /* Make control panel header more compact on mobile */
-  .control-panel__header {
-    padding-top: 60px; /* Space for close button */
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-  }
+  .control-panel__header { margin-bottom: 16px; padding-bottom: 16px; }
   
   .control-panel__title {
     font-size: 20px;
@@ -262,12 +253,10 @@
   /* Extra small phones */
   .control-panel {
     width: 280px;
-    left: -280px;
+    left: 0;
   }
   
-  .live-preview {
-    padding: 70px 12px 12px 12px;
-  }
+  .live-preview { padding: 12px; }
   
   .control-panel__title {
     font-size: 18px;

@@ -1,10 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../store/themeStore';
-import { Sun, Moon, FileText, Home } from 'lucide-react';
+import { Sun, Moon, FileText, Home, Menu, X } from 'lucide-react';
 import { Button } from './ui/Button';
 import './HeaderToolbar.css';
 
-export function HeaderToolbar() {
+type HeaderToolbarProps = {
+    onToggleMenu?: () => void;
+    isMenuOpen?: boolean;
+};
+
+export function HeaderToolbar({ onToggleMenu, isMenuOpen }: HeaderToolbarProps) {
     const themeMode = useThemeStore((s) => s.ui.themeMode);
     const contrastMode = useThemeStore((s) => s.ui.contrastMode);
     const setThemeMode = useThemeStore((s) => s.setThemeMode);
@@ -75,6 +80,18 @@ export function HeaderToolbar() {
                     {isDocs ? 'Back' : 'Docs'} {isDocs ? '' : ''}
                     {!isDocs && <span style={{ display: 'inline-flex', marginLeft: 8 }}><FileText size={16} /></span>}
                 </Button>
+
+                {/* Mobile menu toggle shown on small screens, aligned right */}
+                {onToggleMenu && (
+                    <Button
+                        variant="primary"
+                        size="small"
+                        className="toolbar__menuToggle"
+                        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                        onClick={onToggleMenu}
+                        icon={isMenuOpen ? <X size={16} /> : <Menu size={16} />}
+                    />
+                )}
             </div>
         </div>
     );
