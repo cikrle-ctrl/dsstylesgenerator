@@ -1,5 +1,22 @@
-// src/logic/surfaceAndRadius.ts
-
+/**
+ * surfaceAndRadius.ts
+ * ===================
+ * Generování surface tokenů (radius, shadows, borders).
+ * 
+ * Radius strategie:
+ * - none: Všechny rohy 0px (sharp design)
+ * - medium: 4px/8px/12px (Material Design like)
+ * - circular: 9999px pro UI, 16px pro karty (iOS like)
+ * 
+ * Shadow strategie:
+ * - none: Bez stínů (flat design)
+ * - subtle: Jemné stíny (Material Design)
+ * - strong: Výrazné stíny (card elevations)
+ * 
+ * Border widths:
+ * - default: 1px
+ * - strong: 2px
+ */
 type CssTokenMap = Record<string, string>;
 
 // --- Strategie pro Rádiusy ---

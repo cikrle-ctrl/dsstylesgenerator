@@ -1,4 +1,19 @@
-// src/logic/cssGenerator.ts
+/**
+ * cssGenerator.ts
+ * ===============
+ * Export design tokenů do různých formátů.
+ * 
+ * Podporované formáty:
+ * 1. CSS Variables - :root a [data-theme="dark"]
+ * 2. Tailwind v3 - JavaScript config s theme.extend.colors
+ * 3. Tailwind v4 - CSS @theme direktiva
+ * 4. SCSS - $color- proměnné
+ * 5. JSON - Kompletní tokeny a škály
+ * 6. Figma W3C - Design Tokens spec s aliasy
+ * 7. CSV - Contrast audit s WCAG levels
+ * 
+ * Každý formát respektuje Light/Dark módy a všechny design tokeny.
+ */
 
 type ShadeScale = Record<string, string>;
 type CssTokenMap = Record<string, string>;

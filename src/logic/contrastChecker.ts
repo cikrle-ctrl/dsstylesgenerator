@@ -1,4 +1,21 @@
-// src/logic/contrastChecker.ts
+/**
+ * contrastChecker.ts
+ * ==================
+ * WCAG 2.1 kontrast kalkulace a inteligentní výběr barev.
+ * 
+ * Klíčové funkce:
+ * - getContrast(): Vypočítá WCAG kontrast ratio mezi dvěma barvami
+ * - findOptimalStepByContrast(): Najde krok s kontrastem nejblíže targetu (s minimum enforcement)
+ * - findBestContrast(): Najde krok s kontrastem co nejblíže cíli (bez minimum, pro outlines)
+ * - getOnColor(): Automaticky najde text barvu s dostatečným kontrastem
+ * 
+ * WCAG 2.1 kontrasty:
+ * - 4.5:1 = AA (normální text)
+ * - 7:1 = AAA (normální text)
+ * - 3:1 = AA (velký text nebo UI komponenty)
+ * 
+ * @see https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html
+ */
 import { converter } from 'culori/fn';
 
 const rgb = converter('rgb');

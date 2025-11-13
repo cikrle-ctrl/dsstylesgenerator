@@ -1,194 +1,233 @@
 # 🚀 Quick Start Guide
 
-## 5-minute guide to DS Styles Generator
+**5-minutový průvodce pro DS Styles Generator**
 
-### 1️⃣ Set base colors (30 seconds)
+## 1️⃣ Nastav základní barvy (30 sekund)
+
 ```
-Left panel → Color Inputs
-├─ Primary: Your main brand color
-└─ Secondary: Complementary color (or use Harmony mode)
+Levý panel → Color Inputs
+├─ Primary: Tvoje hlavní brand barva
+└─ Secondary: Doplňková barva
 ```
 
-Tip: Other colors (Error, Warning, Success, Info) are auto-generated.
+**Tip**: Ostatní barvy (Error, Warning, Success, Info) se automaticky vygenerují.
+
+**Bonus**: Použij **Randomize** tlačítko pro inspiraci! 🎲
 
 ---
 
-### 2️⃣ Choose modes (10 seconds)
+## 2️⃣ Zvol režimy (10 sekund)
+
 ```
-Live Preview → Top buttons
-├─ Theme:    [Light] or [Dark]
-└─ Contrast: [Default] or [High Contrast]
+Horní toolbar → Režimy
+├─ Theme:    [Light] nebo [Dark]
+└─ Contrast: [Default] nebo [High Contrast]
 ```
 
-Combos:
-- Light + Default = Standard light mode
-- Dark + Default  = Standard dark mode
-- Light + High Contrast = For low-vision users (up to 21:1 contrast)
-- Dark + High Contrast  = Dark mode with max contrast
+### Možné kombinace:
+
+| Theme | Contrast | Použití |
+|-------|----------|---------|
+| Light | Default | Standardní světlý režim |
+| Light | High Contrast | Pro slabozraké (7:1+ kontrast) |
+| Dark | Default | Standardní tmavý režim |
+| Dark | High Contrast | Tmavý s max kontrastem |
+
+**Live Preview** ukazuje všechny komponenty v aktuální kombinaci! 👁️
 
 ---
 
-### 3️⃣ (Optional) Advanced settings (1 minute)
-```
-Left panel → Advanced Controls (click to expand)
+## 3️⃣ (Volitelné) Pokročilé nastavení (1-2 minuty)
 
-☑️ Pure Neutrals           → Remove color tint from grays
-🎚️ Saturation (0.5-1.5x)  → Global saturation
-🌡️ Temperature (-15°+15°)  → Cooler/warmer
-🎨 Harmony Mode            → Auto-generate secondary color
+```
+Levý panel → Advanced Controls (klikni pro rozbalení)
 ```
 
-Harmony modes:
-- Analogous → Adjacent colors (harmonious)
-- Complementary → Opposite colors (contrasty)
-- Triadic → 3 colors, 120° apart (balanced)
+### Dostupné kontroly:
+
+#### 🎨 Pure Neutrals
+☑️ Zapni pro čistou šedou bez barevného tónu  
+(Default: tinted neutrals s jemným nádechem primary)
+
+#### 🎚️ Saturation (0.5× - 1.5×)
+Globální multiplikátor sytosti všech barev
+- `0.5×` = Tlumené, minimalistické
+- `1.0×` = Původní (default)
+- `1.5×` = Živé, výrazné
+
+#### 🌡️ Temperature (-15° až +15°)
+Posun hue pro teplejší/chladnější tóny
+- Záporné = Chladnější (→ modrá)
+- Kladné = Teplejší (→ červená)
+
+#### 🎨 Harmony Mode
+Auto-generování secondary barvy:
+- **None** - Manual input
+- **Analogous** - Sousední barvy (+30° hue) - harmonické
+- **Complementary** - Opačné barvy (+180°) - kontrastní
+- **Triadic** - 3 barvy (+120° intervaly) - vyvážené
 
 ---
 
-### 4️⃣ Review visualizations (1 minute)
-Scroll down to check:
+## 4️⃣ Prozkoumej vizualizace (1 minuta)
 
-Color Harmony Generator
-- Shows automatically generated combinations
-- Use for inspiration or copy hex values
+### Scroll dolů pro:
 
-Colorblind Simulation
-- Choose vision type from dropdown
-- See how your colors appear for colorblind users
+#### 📊 Color Scales
+Všech 21 kroků (0-1000) pro každou barvu  
+Včetně hex hodnot a WCAG contrast badgů (AAA/AA/FAIL)
 
-Material Design 3 Tonal Palettes
-- Shows full tone palette (0-100)
-- ⚠️ indicates adaptive chroma reductions due to physical limits
+#### 🎨 Color Harmony
+Vizuální náhled harmonického schématu  
+(Pokud je zapnutý Harmony Mode)
 
-Complete Token Preview
-- 100+ tokens with real-time WCAG contrast badges
-- 🟢 AAA (≥7:1) | 🟡 AA (≥4.5:1) | 🔴 FAIL (<4.5:1)
+#### 👁️ Colorblind Simulation
+Before/After pro všechny sémantické barvy  
+Typy: Deuteranopia, Protanopia, Tritanopia, Grayscale
 
-Scale Preview
-- Full 0-1000 scales (step 50)
-- 21 shades per color
+#### 📏 Tonal Palette
+Material Design 3 HCT systém (0-100 tóny)
 
----
-
-### 5️⃣ Export (10 seconds)
-```
-Scroll to the bottom → Export Panel
-
-Click a format:
-├─ [CSS Variables]   → For vanilla CSS/HTML
-├─ [Tailwind Config] → For Tailwind CSS (v3 or v4)
-│   └─ Use toggle to select version:
-│       • v3 = JavaScript config (tailwind.config.js)
-│       • v4 = CSS @theme directive (for Tailwind v4+)
-├─ [SCSS Variables]  → For Sass/SCSS
-├─ [JSON]            → For JavaScript/TypeScript
-└─ [Figma Tokens]    → For the Figma plugin
-```
-
-The file downloads automatically.
-
-**Tailwind Version Selector:**
-- **v3** (default in older projects): Generates `theme.extend.colors` JavaScript object
-- **v4** (new CSS-first approach): Generates `@theme` block with CSS custom properties
-- Choose based on your Tailwind version - v4 is more modern but requires Tailwind 4.0+
+#### 🎯 Complete Tokens Preview
+Všechny 100+ tokenů s jejich hodnotami a kontrasty
 
 ---
 
-## 🎓 For advanced users
+## 5️⃣ Exportuj tokeny (30 sekund)
 
-When to use High Contrast?
-- Accessibility for low-vision users
-- WCAG AAA targets (7:1+ contrast)
-- Readability in bright sunlight
-- Not recommended as default for general use
-
-When to use Pure Neutrals?
-- When you want strictly gray neutrals (no tint)
-- Minimalist design
-- Backgrounds behind color photography
-- Not ideal when you want warm/cool grays (tinted are better)
-
-How to read AAA/AA/FAIL badges?
 ```
-🟢 AAA (≥7:1)   → Excellent. Enhanced contrast for text and UI.
-🟡 AA (≥4.5:1)  → OK. Standard contrast for normal text.
-🔴 FAIL (<4.5:1) → Not WCAG compliant, avoid for text.
+Dolní panel → Export Options
 ```
 
-Material Design 3 Tone System
-```
-Tone 0   = Black
-Tone 40  = Primary in light mode
-Tone 50  = Mid-tone
-Tone 80  = Primary in dark mode
-Tone 100 = White
-```
+### Dostupné formáty:
 
-Key tones highlighted: 40, 80, 90, 100.
+| Formát | Použití | Výstup |
+|--------|---------|--------|
+| **CSS Variables** | Vanilla CSS/HTML | `:root` + `[data-theme="dark"]` |
+| **Tailwind v3** | Tailwind CSS v3 | JavaScript config file |
+| **Tailwind v4** | Tailwind CSS v4 | CSS `@theme` direktiva |
+| **SCSS** | Sass/SCSS projekty | `$color-` proměnné |
+| **JSON** | Obecný export | Kompletní tokeny a škály |
+| **Figma W3C** | Figma Tokens plugin | W3C Design Tokens spec |
+| **CSV Audit** | Accessibility audit | WCAG kontrasty s AA/AAA/FAIL |
+
+### Figma Export (speciální)
+
+Checkbox volby:
+- ☑️ **Scales** - Všechny barevné škály (0-1000)
+- ☑️ **Aliases** - Semantic tokeny s aliasy `{scale.primary.500}`
+- ☑️ **Surface** - Surface/radius/shadow tokeny
+
+**Light/Dark selector** - exportuj tokeny pro konkrétní mód
+
+### CSV Audit Export
+
+- Seznam všech tokenů s hex hodnotami
+- WCAG kontrast ratio vs background
+- Level: **AA** / **AAA** / **FAIL**
+- Light/Dark selector
 
 ---
 
-## ⚡ Quick tips
+## 💡 Tipy a triky
 
-I want harmonious colors
-1) Set Primary
-2) Advanced Controls → Harmony Mode → Analogous
-3) Secondary is auto-generated
+### 🎯 Pro zachování input barvy
+```
+Advanced Controls → Pro Mode
+☑️ Stay True to Input Color
 
-Test colorblindness
-1) Scroll to Colorblind Simulation
-2) Dropdown → pick a type (Deuteranopia is most common)
-3) Compare Original vs Filtered
+→ Primary škála bude obsahovat přesně tvoji input barvu
+```
 
-Export to Tailwind
-1) Scroll to Export Panel
-2) Choose Tailwind version (v3 or v4) using the toggle next to the button
-3) Click [Tailwind Config]
-4) **v3**: Copy `theme-tokens.js` content into `tailwind.config.js` under `theme.extend.colors`
-5) **v4**: Import the `theme-tokens.css` file in your main CSS (requires Tailwind 4.0+)
+### 🎨 Pro custom neutral tint
+```
+Advanced Controls → Neutral Tint Source
+└─ Dropdown: [Primary] [Secondary] [Custom] [Pure]
 
-See all tokens
-1) Scroll to Complete Token Preview
-2) Sections:
-   - Color Rows (Primary, Secondary, Error...)
-   - Surface Section
-   - OnSurface Section
-   - Outline & Other Section
+→ Zvol Custom a vyber vlastní barvu pro tónování šedi
+```
 
-Need maximum contrast
-1) Live Preview → [High Contrast]
-2) All text contrasts ≥ 7:1
-3) Suitable for WCAG AAA compliance
+### 📐 Pro custom radius/shadows
+```
+Levý panel → Surface Controls
+├─ Radius: [None] [Medium] [Circular]
+└─ Shadow: [None] [Subtle] [Strong]
 
----
+→ Medium + Subtle = Material Design like
+→ Circular + Subtle = iOS like
+```
 
-## 🐛 Troubleshooting
+### 🔍 Pro manuální tone mapping
+```
+Advanced Controls → Pro Mode
+☑️ Zapni Pro Mode
 
-Why do some colors look desaturated?
-- Adaptive chroma reduces saturation at extreme tones due to physical color limits.
-
-How do I set the secondary color manually?
-- Harmony Mode → None, then set Secondary in the color picker.
-
-The export file didn’t download
-- Check browser permissions for downloads. Try another browser.
-
-What does ⚠️ mean in Tonal Palette?
-- Indicates adaptive chroma where saturation is reduced at extreme tones.
-
-Why does High Contrast look “too harsh”?
-- It’s intentional for accessibility. Use Default for normal usage.
+→ Objeví se Pro Mode Controls panel
+→ Můžeš ručně nastavit tone (0-1000) pro každou semantic barvu
+→ On-colors se automaticky vypočítají pro WCAG compliance
+```
 
 ---
 
-## 📚 More resources
+## 📚 Další dokumentace
 
-- `IMPROVEMENTS.md` → Technical details of the improvements
-- `MATERIAL_HCT_INTEGRATION.md` → Material Design 3 HCT system
-- `README_FINAL.md` → Complete documentation
+| Dokument | K čemu je |
+|----------|-----------|
+| [README.md](./README.md) | Kompletní přehled feature |
+| [IMPROVEMENTS.md](./IMPROVEMENTS.md) | Implementační detaily |
+| [COLOR_THEORY.md](./COLOR_THEORY.md) | OKLCH a color science |
+| **Docs page v app** | Interaktivní dokumentace s live audit |
 
 ---
 
-Done. You’ve got a professional design system in 5 minutes. 🎉
+## 🎯 Typické workflow
 
-Copy the exported tokens into your project and you’re good to go! 🚀
+### Scénář 1: Rychlý start (2 minuty)
+1. Nastav Primary barvu
+2. Klikni Randomize pro Secondary
+3. Zvol Light/Dark
+4. Export → CSS Variables
+5. Hotovo! ✅
+
+### Scénář 2: Brand design system (10 minut)
+1. Nastav Primary podle brand guidelines
+2. Použij Harmony Mode: Analogous pro harmonickou secondary
+3. Zapni Pure Neutrals (pokud brand nepoužívá tinted)
+4. Upravit Saturation a Temperature dle potřeby
+5. Zkontroluj Colorblind Simulation
+6. Export → Figma W3C (se všemi checkboxy)
+7. Import do Figma jako Variables
+8. Hotovo! ✅
+
+### Scénář 3: Accessibility-first (15 minut)
+1. Nastav Primary a Secondary
+2. Přepni na High Contrast mód
+3. Zkontroluj Live Preview - všechny komponenty
+4. Otevři Docs → Live Contrast Audit
+5. Ověř že všechny tokeny jsou AAA (7:1+)
+6. Export → CSV Audit pro dokumentaci
+7. Export → CSS Variables pro implementaci
+8. Hotovo! ✅
+
+---
+
+## ❓ FAQ
+
+### Q: Jak změním kontrast jen pro jeden element?
+**A**: High Contrast mód ovlivňuje všechny tokeny globálně. Pro per-element kontrolu použij Pro Mode a custom tone mapping.
+
+### Q: Proč některé barvy mají badge "⚠️ P3"?
+**A**: Tyto barvy překračují sRGB gamut. Vypadají super na moderních displejích (iPhone, MacBook Pro), ale můžou vypadat jinak na starších monitorech.
+
+### Q: Co jsou to "tinted neutrals"?
+**A**: Šedá škála s jemným barevným tónem (obvykle z primary barvy). Vytváří vizuálně koherentnější design než čistá šedá.
+
+### Q: Proč má škála 21 kroků (0-1000)?
+**A**: Power 0.9 easing poskytuje perceptuálně rovnoměrné rozložení. Kroky po 50 dávají dostatečnou granularitu pro všechny případy použití.
+
+### Q: Můžu použít vlastní kroky místo auto-generovaných?
+**A**: Ano! Zapni Pro Mode a nastav custom tones (0-1000) pro každou semantic barvu.
+
+---
+
+**Připraven? Běž do aplikace a vytvoř svůj design system! 🚀**

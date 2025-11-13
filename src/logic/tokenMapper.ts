@@ -1,4 +1,22 @@
-// src/logic/tokenMapper.ts
+/**
+ * tokenMapper.ts
+ * ==============
+ * Mapování barevných škál na sémantické design tokeny.
+ * 
+ * Kombinuje dva přístupy:
+ * 1. DYNAMICKÉ mapování: FindOptimalShade, FindOptimalContainer, GetOnColor
+ *    - Vybírá kroky podle WCAG kontrastu (4.5:1, 7:1, 9:1)
+ *    - Adaptivní pro různé kontrastní módy (Default/High/Extra-High)
+ * 
+ * 2. STATICKÉ mapování: Surface, text, disabled tokeny
+ *    - Pevně definované kroky z formálního algoritmu (Krok 4 + 6D)
+ *    - Konzistentní napříč tématy
+ * 
+ * Výstup:
+ * - 100+ CSS custom properties (--color-primary, --color-on-primary, etc.)
+ * - Light/Dark módy
+ * - Support pro high contrast režimy
+ */
 import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
 
