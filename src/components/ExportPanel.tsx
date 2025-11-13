@@ -3,12 +3,11 @@ import { useThemeStore } from '../store/themeStore';
 import { Accordion } from './ui/Accordion';
 import { Download } from 'lucide-react';
 import { Button } from './ui/Button';
-import { Checkbox } from './ui/Checkbox';
 import { getContrast } from '../logic/contrastChecker';
 import { generateMappedTokens } from '../logic/tokenMapper';
 import './HeaderToolbar.css'; // Import segmented control styles
 
-type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma' | 'figma-variables' | 'csv';
+type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma-variables' | 'csv';
 type TailwindVersion = 'v3' | 'v4';
 type ThemeMode = 'light' | 'dark';
 
@@ -21,9 +20,6 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
     const { tokens, scales } = useThemeStore();
     const [tailwindVersion, setTailwindVersion] = useState<TailwindVersion>('v4');
     const [figmaMode, setFigmaMode] = useState<ThemeMode>('light');
-    const [figmaIncludeScales, setFigmaIncludeScales] = useState(true);
-    const [figmaIncludeAliases, setFigmaIncludeAliases] = useState(true);
-    const [figmaIncludeSurface, setFigmaIncludeSurface] = useState(true);
 
     const generateCSS = (): string => {
         let css = ':root {\n  /* Light Mode */\n';
@@ -116,78 +112,6 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
 
     const generateJSON = (): string => {
         return JSON.stringify({ tokens, scales }, null, 2);
-    };
-
-    const generateFigma = (): string => {
-        // W3C Design Tokens compatible JSON for Figma Variables Import/Export
-        const modeTokens = figmaMode === 'light' ? tokens.light : tokens.dark;
-
-        // Helper to sanitize names (remove leading --)
-        const clean = (k: string) => k.replace(/^--/, '');
-
-        // Build color group from semantic tokens (only --color-* keys)
-        type W3CStringVal = { $value: string };
-        type W3CNumVal = { $value: number };
-        type W3CAliasVal = { $value: string };
-
-        const colorGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, W3CStringVal | W3CAliasVal>;
-        Object.entries(modeTokens).forEach(([key, value]) => {
-            if (key.startsWith('--color-')) {
-                const tokenName = clean(key).replace('color-', '');
-                if (figmaIncludeAliases) {
-                    // If aliases enabled, check if we can reference a scale step
-                    let aliasRef: string | null = null;
-                    Object.entries(scales).forEach(([scaleName, scaleColors]) => {
-                        if (!aliasRef && Object.values(scaleColors).includes(value)) {
-                            const step = Object.keys(scaleColors).find(s => (scaleColors as Record<string, string>)[s] === value);
-                            if (step) aliasRef = `{scale.${scaleName}.${step}}`;
-                        }
-                    });
-                    colorGroup[tokenName] = aliasRef ? { $value: aliasRef } : { $value: value };
-                } else {
-                    colorGroup[tokenName] = { $value: value };
-                }
-            }
-        });
-
-        // Build number group from surface numeric tokens (radius, border widths)
-        const numberGroup = ({ $type: 'number' } as const) as { $type: 'number' } & Record<string, W3CNumVal>;
-        if (figmaIncludeSurface) {
-            Object.entries(tokens.surface).forEach(([key, value]) => {
-                const lower = key.toLowerCase();
-                if (lower.includes('radius') || lower.includes('border-width')) {
-                    const m = String(value).match(/(-?\d+(?:\.\d+)?)/);
-                    if (m) numberGroup[clean(key).replace('--', '')] = { $value: Number(m[1]) };
-                }
-            });
-        }
-
-        // Build color scales under a separate group
-        const scaleGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, Record<string, W3CStringVal>>;
-        if (figmaIncludeScales) {
-            (Object.keys(scales) as Array<keyof typeof scales>).forEach((scaleName) => {
-                const scale = scales[scaleName] as Record<string, string>;
-                const group: Record<string, W3CStringVal> = {};
-                Object.entries(scale).forEach(([step, hex]) => {
-                    group[step] = { $value: hex };
-                });
-                scaleGroup[scaleName] = group;
-            });
-        }
-
-        const designTokens: Record<string, unknown> = {
-            color: colorGroup,
-        };
-
-        if (figmaIncludeSurface && Object.keys(numberGroup).length > 1) {
-            designTokens.number = numberGroup;
-        }
-
-        if (figmaIncludeScales) {
-            designTokens.scale = scaleGroup;
-        }
-
-        return JSON.stringify(designTokens, null, 2);
     };
 
     const generateCSV = (): string => {
@@ -309,7 +233,6 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             case 'tailwind': return generateTailwind();
             case 'scss': return generateSCSS();
             case 'json': return generateJSON();
-            case 'figma': return generateFigma();
             case 'figma-variables': return generateFigmaVariables();
             case 'csv': return generateCSV();
         }
@@ -332,11 +255,10 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             tailwind: tailwindVersion === 'v3' ? 'js' : 'css',
             scss: 'scss',
             json: 'json',
-            figma: 'json',
             'figma-variables': 'json',
             csv: 'csv'
         };
-        const suffix = (format === 'figma' || format === 'csv') ? `-${figmaMode}` : '';
+        const suffix = format === 'csv' ? `-${figmaMode}` : '';
         downloadFile(content, `theme-tokens${suffix}.${extensions[format]}`);
     };
 
@@ -417,83 +339,15 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
                     JSON
                 </Button>
 
-                {/* Figma W3C Export with Mode selector and checkboxes */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', borderRadius: '8px', background: 'var(--color-surface-variant)' }}>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <Button
-                            onClick={() => handleExport('figma')}
-                            variant="ghost"
-                            size="medium"
-                            style={{ flex: 1 }}
-                        >
-                            Figma W3C
-                        </Button>
-                        <div role="group" aria-label="Figma Mode" className="seg">
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'light'}
-                                onClick={() => setFigmaMode('light')}
-                                className="seg__btn"
-                            >
-                                Light
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="small"
-                                aria-pressed={figmaMode === 'dark'}
-                                onClick={() => setFigmaMode('dark')}
-                                className="seg__btn"
-                            >
-                                Dark
-                            </Button>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '6px' }}>
-                        <Checkbox
-                            checked={figmaIncludeScales}
-                            onChange={setFigmaIncludeScales}
-                            label="Include color scales (0-1000)"
-                        />
-                        <Checkbox
-                            checked={figmaIncludeAliases}
-                            onChange={setFigmaIncludeAliases}
-                            label="Use aliases (references to scales)"
-                        />
-                        <Checkbox
-                            checked={figmaIncludeSurface}
-                            onChange={setFigmaIncludeSurface}
-                            label="Include surface tokens (radius, borders)"
-                        />
-                    </div>
-                    <div style={{
-                        fontSize: '11px',
-                        color: 'var(--color-on-surface-variant)',
-                        paddingTop: '4px',
-                        lineHeight: '1.3'
-                    }}>
-                        Single-mode JSON (W3C spec). Import via Figma Tokens plugin.
-                    </div>
-                </div>
-
-                {/* Figma Variables - NEW FORMAT */}
+                {/* Figma Variables Export */}
                 <Button
                     onClick={() => handleExport('figma-variables')}
                     variant="primary"
                     size="medium"
                     fullWidth
                 >
-                    Figma Variables (6 Modes)
+                    Figma Variables
                 </Button>
-                <div style={{
-                    fontSize: '11px',
-                    color: 'var(--color-on-surface-variant)',
-                    paddingLeft: '4px',
-                    lineHeight: '1.3',
-                    marginTop: '-6px'
-                }}>
-                    All 6 modes (Light, Dark, LightHigh, DarkHigh, LightExtraHigh, DarkExtraHigh)
-                </div>
 
                 {/* CSV Export with Mode selector */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
