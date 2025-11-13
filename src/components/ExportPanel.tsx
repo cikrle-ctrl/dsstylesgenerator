@@ -3,6 +3,7 @@ import { useThemeStore } from '../store/themeStore';
 import { Accordion } from './ui/Accordion';
 import { Download } from 'lucide-react';
 import { Button } from './ui/Button';
+import './HeaderToolbar.css'; // Import segmented control styles
 
 type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma';
 type TailwindVersion = 'v3' | 'v4';
@@ -176,7 +177,7 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
                 
                 {/* Tailwind s výběrem verze */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <Button 
                             onClick={() => handleExport('tailwind')}
                             variant="primary"
@@ -185,51 +186,30 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
                         >
                             Tailwind Config
                         </Button>
-                        <div style={{ 
-                            display: 'flex', 
-                            gap: '4px', 
-                            padding: '2px', 
-                            background: 'var(--surface-container-low)',
-                            borderRadius: '8px',
-                            border: '1px solid var(--outline-variant)'
-                        }}>
-                            <button
+                        <div role="group" aria-label="Tailwind Version" className="seg">
+                            <Button
+                                variant="ghost"
+                                size="small"
+                                aria-pressed={tailwindVersion === 'v3'}
                                 onClick={() => setTailwindVersion('v3')}
-                                style={{
-                                    padding: '4px 10px',
-                                    fontSize: '12px',
-                                    fontWeight: 500,
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    background: tailwindVersion === 'v3' ? 'var(--primary)' : 'transparent',
-                                    color: tailwindVersion === 'v3' ? 'var(--on-primary)' : 'var(--on-surface-variant)',
-                                    transition: 'all 0.2s ease'
-                                }}
+                                className="seg__btn"
                             >
                                 v3
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="small"
+                                aria-pressed={tailwindVersion === 'v4'}
                                 onClick={() => setTailwindVersion('v4')}
-                                style={{
-                                    padding: '4px 10px',
-                                    fontSize: '12px',
-                                    fontWeight: 500,
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    background: tailwindVersion === 'v4' ? 'var(--primary)' : 'transparent',
-                                    color: tailwindVersion === 'v4' ? 'var(--on-primary)' : 'var(--on-surface-variant)',
-                                    transition: 'all 0.2s ease'
-                                }}
+                                className="seg__btn"
                             >
                                 v4
-                            </button>
+                            </Button>
                         </div>
                     </div>
                     <div style={{ 
                         fontSize: '11px', 
-                        color: 'var(--on-surface-variant)', 
+                        color: 'var(--color-on-surface-variant)', 
                         paddingLeft: '4px',
                         lineHeight: '1.3'
                     }}>
