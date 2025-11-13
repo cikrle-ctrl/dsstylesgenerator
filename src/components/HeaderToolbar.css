@@ -1,0 +1,17 @@
+.toolbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--color-surface); border-bottom: 1px solid var(--color-outline-subtle); backdrop-filter: saturate(180%) blur(6px); }
+.toolbar__side { display: flex; align-items: center; gap: 12px; }
+
+/* Segmented control */
+.seg { display: inline-flex; border: 1px solid var(--color-outline-subtle); border-radius: 10px; overflow: hidden; }
+/* Use our Button inside segmented group; strip borders, flatten radius, add separators */
+.seg .custom-button { border: 0; border-radius: 0; background: transparent; color: var(--color-on-surface-heading); padding: 8px 12px; }
+.seg .custom-button + .custom-button { border-left: 1px solid var(--color-outline-subtle); }
+.seg .custom-button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+.seg .custom-button:hover { background: var(--color-surface-hover); }
+.seg .custom-button:active { background: var(--color-surface-pressed); }
+.seg .custom-button[aria-pressed="true"]:hover { background: var(--color-primary-hover); }
+.seg .custom-button[aria-pressed="true"]:active { background: var(--color-primary-pressed); }
+.seg .custom-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* Doc button uses our Button component; keep spacing with toolbar */
+.toolbar__docbtn { margin-left: 4px; }

@@ -1,0 +1,158 @@
+/* src/App.css */
+
+/* Globální styly a @import fontu jsou nyní
+   ve 'src/index.css', kde mají správně být.
+*/
+
+.app-layout {
+  display: grid;
+  /* Dvousloupcový layout: levý sidebar a hlavní obsah */
+  grid-template-columns: 320px 1fr; 
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--app-bg);
+}
+
+/* === Main Content Wrapper (Header + Live Preview) === */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* === 1. Levý Panel (Kontrolky) === */
+.control-panel {
+  padding: 24px 20px;
+  /* Token-based background so it adapts to light/dark/contrast */
+  background: var(--color-surface-variant);
+  border-right: 1px solid var(--color-outline-subtle);
+  overflow-y: auto;
+}
+
+.control-panel__header {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  /* Use outline token for a crisp divider under the title */
+  border-bottom: 1px solid var(--color-outline-default);
+}
+
+.control-panel__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-on-surface-heading);
+  letter-spacing: -0.5px;
+}
+
+.control-panel__subtitle {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  font-weight: 400;
+}
+
+.control-group {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-outline-subtle);
+  padding-bottom: 24px;
+}
+.control-group:last-child {
+  border-bottom: none;
+}
+
+.control-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.color-inputs {
+  display: flex;
+  gap: 16px;
+}
+.color-inputs div {
+  flex: 1;
+}
+/* Sub-label pro "Primary" a "Secondary" */
+.color-inputs label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+}
+
+.color-inputs input[type="color"] {
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--app-border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  -webkit-appearance: none; /* Odstranění defaultních stylů */
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+}
+/* Moderní input[type=color] nemá vnitřní padding */
+.color-inputs input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.color-inputs input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 7px; /* O 1px méně než wrapper */
+}
+
+.control-panel select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+
+/* === 2. Střední Panel (Live Preview) === */
+.live-preview {
+  flex: 1;
+  padding: 32px;
+  /* Toto je náš "canvas" - používá token! */
+  background: var(--color-background); 
+  color: var(--color-text-primary);
+  overflow-y: auto;
+  
+  /* Malý trik pro "canvas" vzhled */
+  background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Centered content container for the main page block */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+
+.live-preview h2 {
+  margin-top: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 16px;
+  color: var(--color-text-primary); /* Musíme přebít globální */
+}
+
+/* Wrapper pro Dark Mode preview */
+.dark-preview-wrapper {
+  margin-top: 32px;
+  padding: 32px;
+  border-radius: 12px;
+  
+  /* Tady je kouzlo - wrapper si sám nastaví proměnné */
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .token-test {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .token-box {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .token-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .token-value {
+            font-family: monospace;
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Token Color Test</h1>
+    
+    <h2>Primary Tokens</h2>
+    <div class="token-test">
+        <div class="token-box" style="background: var(--color-primary); color: var(--color-on-primary);">
+            <div class="token-name">Primary</div>
+            <div class="token-value">--color-primary</div>
+        </div>
+        <div class="token-box" style="background: var(--color-primary-hover); color: var(--color-on-primary-hover);">
+            <div class="token-name">Primary Hover</div>
+            <div class="token-value">--color-primary-hover</div>
+        </div>
+        <div class="token-box" style="background: var(--color-primary-pressed); color: var(--color-on-primary-pressed);">
+            <div class="token-name">Primary Pressed</div>
+            <div class="token-value">--color-primary-pressed</div>
+        </div>
+    </div>
+
+    <h2>Disabled Tokens</h2>
+    <div class="token-test">
+        <div class="token-box" style="background: var(--color-disabled); color: var(--color-on-disabled);">
+            <div class="token-name">Disabled</div>
+            <div class="token-value">--color-disabled / --color-on-disabled</div>
+        </div>
+    </div>
+
+    <h2>Computed Values</h2>
+    <div id="computed"></div>
+
+    <script>
+        const tokens = [
+            'primary',
+            'primary-hover', 
+            'primary-pressed',
+            'disabled',
+            'on-disabled',
+            'outline-hover',
+            'outline-pressed',
+            'surface-hover',
+            'surface-pressed'
+        ];
+
+        const computed = document.getElementById('computed');
+        const style = getComputedStyle(document.documentElement);
+        
+        tokens.forEach(token => {
+            const value = style.getPropertyValue(`--color-${token}`).trim();
+            const div = document.createElement('div');
+            div.innerHTML = `<strong>--color-${token}:</strong> ${value || 'NOT DEFINED'}`;
+            div.style.marginBottom = '8px';
+            div.style.fontFamily = 'monospace';
+            div.style.fontSize = '13px';
+            computed.appendChild(div);
+        });
+    </script>
+</body>
+</html>

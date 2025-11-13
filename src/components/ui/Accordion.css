@@ -1,0 +1,95 @@
+/* Custom Accordion Component Styles */
+
+.accordion {
+    background: var(--color-surface);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid var(--color-outline-subtle);
+        /* Allow popovers/menus inside to escape */
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.accordion:hover {
+    border-color: var(--color-outline-hover);
+    box-shadow: none;
+}
+
+.accordion__header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    /* Smooth hover background respecting rounded corners */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    /* Square bottom so hover bg doesn't create rounded bleed at the split */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.accordion__header:hover {
+    background: var(--color-surface-hover);
+}
+
+.accordion__header:active {
+    background: var(--color-surface-pressed);
+}
+
+.accordion__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accordion__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.accordion__icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.accordion__title-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-on-surface-heading);
+    text-align: left;
+}
+
+.accordion__chevron {
+    color: var(--color-on-surface-variant);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.accordion__chevron--expanded {
+    transform: rotate(180deg);
+}
+
+.accordion__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.accordion__content--expanded {
+    max-height: 2000px;
+    opacity: 1;
+}
+
+.accordion__content-inner {
+    padding: 0 16px 16px 16px;
+}

@@ -1,0 +1,16 @@
+/* Shared preview card shell for main content sections */
+.preview-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-subtle);
+  /* Bigger radius on cards */
+  border-radius: calc(var(--radius-large-ui, 12px) + 4px);
+  padding: 24px;
+  color: var(--color-on-surface);
+  /* No shadow on cards per request */
+  box-shadow: none;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+@media (max-width: 900px) {
+  .preview-card { padding: 16px; }
+}

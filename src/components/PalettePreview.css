@@ -1,0 +1,112 @@
+/* src/components/PalettePreview.css */
+
+.palette-wrapper {
+    font-family: var(--font-family-base);
+    margin: 32px 0;
+}
+
+.palette-wrapper h2 {
+    color: var(--color-on-surface-heading);
+    border-bottom: 1px solid var(--color-outline-subtle);
+    padding-bottom: 16px;
+    margin-top: 0;
+}
+
+.palette-wrapper h3 {
+    color: var(--color-on-surface-variant);
+    font-size: 1.25rem; /* Větší než title-medium */
+    font-weight: 600;
+    margin: 32px 0 16px 0;
+}
+
+.palette-group {
+    background: var(--color-surface);
+    border: 1px solid var(--color-outline-subtle);
+    border-radius: calc(var(--radius-large-ui) + 4px);
+    padding: 24px;
+    box-shadow: none;
+    margin-bottom: 16px;
+}
+
+.palette-group-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-on-surface-variant);
+    margin: 0 0 16px 0;
+}
+
+/* Mřížka pro 4 sloupce */
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+/* Konkrétní buňka pro stav */
+.palette-cell {
+    border-radius: var(--radius-base-ui);
+    padding: 12px 16px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.palette-cell-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.palette-cell-value {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* --- Styly pro konkrétní tokeny --- */
+
+/* Primary */
+.cell-primary { background: var(--color-primary); color: var(--color-on-primary); }
+.cell-primary-hover { background: var(--color-primary-hover); color: var(--color-on-primary); }
+.cell-primary-pressed { background: var(--color-primary-pressed); color: var(--color-on-primary); }
+.cell-on-primary { background: var(--color-on-primary); color: var(--color-primary); }
+.cell-primary-container { background: var(--color-primary-container); color: var(--color-on-primary-container); }
+.cell-primary-container-hover { background: var(--color-primary-container-hover); color: var(--color-on-primary-container); }
+.cell-primary-container-pressed { background: var(--color-primary-container-pressed); color: var(--color-on-primary-container); }
+.cell-on-primary-container { background: var(--color-on-primary-container); color: var(--color-on-primary); }
+
+/* Secondary */
+.cell-secondary { background: var(--color-secondary); color: var(--color-on-secondary); }
+.cell-secondary-hover { background: var(--color-secondary-hover); color: var(--color-on-secondary); }
+.cell-secondary-pressed { background: var(--color-secondary-pressed); color: var(--color-on-secondary); }
+.cell-on-secondary { background: var(--color-on-secondary); color: var(--color-secondary); }
+.cell-secondary-container { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+.cell-secondary-container-hover { background: var(--color-secondary-container-hover); color: var(--color-on-secondary-container); }
+.cell-secondary-container-pressed { background: var(--color-secondary-container-pressed); color: var(--color-on-secondary-container); }
+.cell-on-secondary-container { background: var(--color-on-secondary-container); color: var(--color-on-secondary); }
+
+/* Error */
+.cell-error { background: var(--color-error); color: var(--color-on-error); }
+.cell-error-hover { background: var(--color-error-hover); color: var(--color-on-error); }
+.cell-error-pressed { background: var(--color-error-pressed); color: var(--color-on-error); }
+.cell-on-error { background: var(--color-on-error); color: var(--color-error); }
+.cell-error-container { background: var(--color-error-container); color: var(--color-on-error-container); }
+.cell-on-error-container { background: var(--color-on-error-container); color: var(--color-on-error); }
+
+/* Všechny disabled stavy */
+.cell-disabled {
+    background: var(--color-disabled);
+    color: var(--color-on-disabled);
+    cursor: not-allowed;
+}
+
+/* Styly pro Surface paletu */
+.cell-surface { background: var(--color-surface); color: var(--color-on-surface-heading); border: 1px solid var(--color-outline-subtle); }
+.cell-surface-variant { background: var(--color-surface-variant); color: var(--color-on-surface-variant); }
+.cell-background { background: var(--color-background); color: var(--color-on-surface-heading); border: 1px solid var(--color-outline-subtle); }
+.cell-on-surface-heading { background: var(--color-on-surface-heading); color: var(--color-surface); }
+.cell-on-surface-variant { background: var(--color-on-surface-variant); color: var(--color-surface); }
+.cell-on-surface-subtle { background: var(--color-on-surface-subtle); color: var(--color-surface); }
+.cell-inverse-surface { background: var(--color-inverse-surface); color: var(--color-on-surface-inverse); }
+.cell-primary-inverse { background: var(--color-primary-inverse); color: var(--color-on-surface-inverse); }

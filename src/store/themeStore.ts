@@ -1,0 +1,351 @@
+// src/store/themeStore.ts
+import { create } from 'zustand';
+import { 
+    generateShades, 
+    generateTintedNeutrals, 
+    autoGenerateSemantics,
+    generatePureNeutrals,
+    applySaturationMultiplier,
+    applyTemperatureShift
+} from '../logic/colorModule';
+import { generateMappedTokens } from '../logic/tokenMapper';
+import { 
+    generateSurfaceTokens, 
+    type RadiusStrategy, 
+    type ShadowStrategy 
+} from '../logic/surfaceAndRadius';
+import { type Oklch, oklch } from 'culori'; // <-- TOTO JE TA OPRAVA
+
+// Výchozí hodnoty
+const defaultPrimary = '#0052cc';
+const defaultSecondary = '#E87D00';
+const defaultRadius: RadiusStrategy = 'medium';
+const defaultShadow: ShadowStrategy = 'subtle';
+
+// --- Funkce pro generování výchozího stavu ---
+function generateInitialState() {
+    const primaryOklch = oklch(defaultPrimary) as Oklch; // <-- OPRAVA
+    const autoSemantics = autoGenerateSemantics(primaryOklch);
+
+    const inputs = {
+        colors: {
+            primary: defaultPrimary,
+            secondary: defaultSecondary,
+            error: autoSemantics.error,
+            warning: autoSemantics.warning,
+            success: autoSemantics.success,
+            info: autoSemantics.info,
+        },
+        surface: {
+            radiusStrategy: defaultRadius,
+            shadowStrategy: defaultShadow,
+        },
+    };
+
+    const scales = {
+        primary: generateShades(inputs.colors.primary),
+        secondary: generateShades(inputs.colors.secondary),
+        neutral: generateTintedNeutrals(inputs.colors.primary),
+        error: generateShades(inputs.colors.error),
+        warning: generateShades(inputs.colors.warning),
+        success: generateShades(inputs.colors.success),
+        info: generateShades(inputs.colors.info),
+    };
+
+    const colorTokens = generateMappedTokens(scales, 'default', false);
+
+    const tokens = {
+        light: colorTokens.light,
+        dark: colorTokens.dark,
+        surface: generateSurfaceTokens(defaultRadius, defaultShadow),
+    };
+
+    const ui = { themeMode: 'light' as 'light' | 'dark', contrastMode: 'default' as 'default' | 'high-contrast' | 'extra-high' };
+    return { inputs, scales, tokens, ui };
+}
+
+// --- Definice TS Interface ---
+interface ThemeState {
+    inputs: ReturnType<typeof generateInitialState>['inputs'];
+    scales: ReturnType<typeof generateInitialState>['scales'];
+    tokens: ReturnType<typeof generateInitialState>['tokens'];
+    ui: {
+        themeMode: 'light' | 'dark';
+        contrastMode: 'default' | 'high-contrast' | 'extra-high';
+        preview?: {
+            density: 'comfortable' | 'compact';
+            hover: boolean;
+            pressed: boolean;
+            focus: boolean;
+            disabled: boolean;
+            a11yOverlay: boolean;
+        };
+    };
+    
+    // Advanced settings
+    advancedSettings: {
+        usePureNeutrals: boolean;
+        saturationMultiplier: number;
+        temperatureShift: number;
+        harmonyMode: 'none' | 'analogous' | 'complementary' | 'triadic';
+        stayTrueToInputColor: boolean;
+    };
+    
+    // Akce
+    setPrimaryColor: (color: string) => void;
+    setSecondaryColor: (color: string) => void;
+    setErrorColor: (color: string) => void;
+    setWarningColor: (color: string) => void;
+    setSuccessColor: (color: string) => void;
+    setInfoColor: (color: string) => void;
+    setRadiusStrategy: (strategy: RadiusStrategy) => void;
+    setShadowStrategy: (strategy: ShadowStrategy) => void;
+    setAdvancedSettings: (settings: Partial<ThemeState['advancedSettings']>) => void;
+    setThemeMode: (mode: 'light' | 'dark') => void;
+    setContrastMode: (mode: 'default' | 'high-contrast' | 'extra-high') => void;
+    setPreview: (patch: Partial<NonNullable<ThemeState['ui']['preview']>>) => void;
+    resetPreview: () => void;
+}
+
+// --- Vytvoření Store ---
+export const useThemeStore = create<ThemeState>((set) => ({
+    ...generateInitialState(),
+    
+    // Advanced settings default
+    advancedSettings: {
+        usePureNeutrals: false,
+        saturationMultiplier: 1.0,
+        temperatureShift: 0,
+        harmonyMode: 'none',
+        stayTrueToInputColor: false,
+    },
+
+    // --- Akce ---
+    setThemeMode: (mode) => set((state) => ({ ui: { ...state.ui, themeMode: mode } })),
+    setContrastMode: (mode) =>
+        set((state) => {
+            // Při změně kontrastu přegenerujeme tokeny s novým kontrastem
+            const newColorTokens = generateMappedTokens(
+                state.scales, 
+                mode, 
+                state.advancedSettings.stayTrueToInputColor,
+                state.inputs.colors
+            );
+            return {
+                ui: { ...state.ui, contrastMode: mode },
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark },
+            };
+        }),
+    setPreview: (patch) =>
+        set((state) => ({
+            ui: {
+                ...state.ui,
+                preview: {
+                    density: state.ui.preview?.density ?? 'comfortable',
+                    hover: state.ui.preview?.hover ?? false,
+                    pressed: state.ui.preview?.pressed ?? false,
+                    focus: state.ui.preview?.focus ?? false,
+                    disabled: state.ui.preview?.disabled ?? false,
+                    a11yOverlay: state.ui.preview?.a11yOverlay ?? false,
+                    ...patch,
+                },
+            },
+        })),
+    resetPreview: () =>
+        set((state) => ({
+            ui: {
+                ...state.ui,
+                preview: {
+                    density: 'comfortable',
+                    hover: false,
+                    pressed: false,
+                    focus: false,
+                    disabled: false,
+                    a11yOverlay: false,
+                },
+            },
+        })),
+    setPrimaryColor: (color: string) =>
+        set((state) => {
+            const primaryOklch = oklch(color) as Oklch; // <-- OPRAVA
+            const autoSemantics = autoGenerateSemantics(primaryOklch);
+            
+            const newInputs = {
+                ...state.inputs,
+                colors: {
+                    ...state.inputs.colors,
+                    primary: color,
+                    error: autoSemantics.error,
+                    warning: autoSemantics.warning,
+                    success: autoSemantics.success,
+                    info: autoSemantics.info,
+                }
+            };
+
+            const newScales = {
+                primary: generateShades(newInputs.colors.primary),
+                secondary: generateShades(newInputs.colors.secondary),
+                neutral: generateTintedNeutrals(newInputs.colors.primary),
+                error: generateShades(newInputs.colors.error),
+                warning: generateShades(newInputs.colors.warning),
+                success: generateShades(newInputs.colors.success),
+                info: generateShades(newInputs.colors.info),
+            };
+
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                newInputs.colors
+            );
+            const newTokens = {
+                ...state.tokens,
+                light: newColorTokens.light,
+                dark: newColorTokens.dark,
+            };
+
+            return { inputs: newInputs, scales: newScales, tokens: newTokens };
+        }),
+
+    setSecondaryColor: (color: string) =>
+        set((state) => {
+            const newScales = { ...state.scales, secondary: generateShades(color) };
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                { ...state.inputs.colors, secondary: color }
+            );
+            return {
+                inputs: { ...state.inputs, colors: { ...state.inputs.colors, secondary: color } },
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+    setErrorColor: (color: string) =>
+        set((state) => {
+            const newScales = { ...state.scales, error: generateShades(color) };
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                { ...state.inputs.colors, error: color }
+            );
+            return {
+                inputs: { ...state.inputs, colors: { ...state.inputs.colors, error: color } },
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+    setWarningColor: (color: string) =>
+        set((state) => {
+            const newScales = { ...state.scales, warning: generateShades(color) };
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                { ...state.inputs.colors, warning: color }
+            );
+            return {
+                inputs: { ...state.inputs, colors: { ...state.inputs.colors, warning: color } },
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+    setSuccessColor: (color: string) =>
+        set((state) => {
+            const newScales = { ...state.scales, success: generateShades(color) };
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                { ...state.inputs.colors, success: color }
+            );
+            return {
+                inputs: { ...state.inputs, colors: { ...state.inputs.colors, success: color } },
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+    setInfoColor: (color: string) =>
+        set((state) => {
+            const newScales = { ...state.scales, info: generateShades(color) };
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                state.advancedSettings.stayTrueToInputColor,
+                { ...state.inputs.colors, info: color }
+            );
+            return {
+                inputs: { ...state.inputs, colors: { ...state.inputs.colors, info: color } },
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+    setRadiusStrategy: (strategy: RadiusStrategy) =>
+        set((state) => ({
+            inputs: { ...state.inputs, surface: { ...state.inputs.surface, radiusStrategy: strategy } },
+            tokens: { ...state.tokens, surface: generateSurfaceTokens(strategy, state.inputs.surface.shadowStrategy) }
+        })),
+    setShadowStrategy: (strategy: ShadowStrategy) =>
+        set((state) => ({
+            inputs: { ...state.inputs, surface: { ...state.inputs.surface, shadowStrategy: strategy } },
+            tokens: { ...state.tokens, surface: generateSurfaceTokens(state.inputs.surface.radiusStrategy, strategy) }
+        })),
+    
+    setAdvancedSettings: (newSettings: Partial<ThemeState['advancedSettings']>) =>
+        set((state) => {
+            const updatedSettings = { ...state.advancedSettings, ...newSettings };
+            
+            // Regeneruj scales s novými settings
+            const newScales = { ...state.scales };
+            
+            // Pokud se změnilo stayTrueToInputColor, NEPŘEGENERUJ škály (zůstávají stejné)
+            // Jen přegenerujeme tokeny s novým mappingem níže
+            
+            // Pure neutrals
+            if (updatedSettings.usePureNeutrals) {
+                newScales.neutral = generatePureNeutrals();
+            } else {
+                newScales.neutral = generateTintedNeutrals(state.inputs.colors.primary);
+            }
+            
+            // Saturation multiplier
+            if (updatedSettings.saturationMultiplier !== 1.0) {
+                Object.keys(newScales).forEach(key => {
+                    if (key !== 'neutral') {
+                        newScales[key as keyof typeof newScales] = applySaturationMultiplier(
+                            newScales[key as keyof typeof newScales],
+                            updatedSettings.saturationMultiplier
+                        );
+                    }
+                });
+            }
+            
+            // Temperature shift
+            if (updatedSettings.temperatureShift !== 0) {
+                Object.keys(newScales).forEach(key => {
+                    if (key !== 'neutral') {
+                        newScales[key as keyof typeof newScales] = applyTemperatureShift(
+                            newScales[key as keyof typeof newScales],
+                            updatedSettings.temperatureShift
+                        );
+                    }
+                });
+            }
+            
+            // Regeneruj tokeny s novým stayTrueToInputColor nastavením
+            const newColorTokens = generateMappedTokens(
+                newScales, 
+                state.ui.contrastMode,
+                updatedSettings.stayTrueToInputColor,
+                state.inputs.colors
+            );
+            
+            return {
+                advancedSettings: updatedSettings,
+                scales: newScales,
+                tokens: { ...state.tokens, light: newColorTokens.light, dark: newColorTokens.dark }
+            };
+        }),
+}));

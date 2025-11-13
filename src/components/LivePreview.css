@@ -1,0 +1,58 @@
+/* LivePreview styling using tokens and clean layout */
+
+.lp { 
+  background: transparent;
+}
+
+.lp__header { 
+  margin-bottom: 12px; 
+}
+
+.lp__title { 
+  margin: 0; 
+  font-size: 20px; 
+  font-weight: 600; 
+  color: var(--color-on-surface-heading);
+}
+
+/* Main preview card */
+.lp__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-subtle);
+  /* Bigger radius for the preview card */
+  border-radius: calc(var(--radius-large-ui, 12px) + 4px);
+  padding: 24px;
+  color: var(--color-on-surface);
+  /* Remove shadow per request */
+  box-shadow: none;
+}
+
+.lp__block { 
+  margin-bottom: 20px; 
+}
+.lp__block:last-child { 
+  margin-bottom: 0; 
+}
+
+.lp__block-title { 
+  margin: 0 0 12px 0; 
+  font-size: 16px; 
+  color: var(--color-on-surface-heading);
+}
+
+.lp__row { 
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+}
+
+/* Responsivní úpravy */
+@media (max-width: 900px) {
+  .lp__card { padding: 16px; }
+  .lp__row { gap: 10px; }
+}
+
+@media (max-width: 640px) {
+  .lp__row { flex-direction: column; gap: 8px; }
+  .lp__block-title { font-size: 15px; }
+}
