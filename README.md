@@ -12,16 +12,19 @@ A visual theme builder that generates complete design tokens and color scales (0
 | 2 | Perceptual Spacing | `colorModule.ts` | Non-linear lightness steps with easing |
 | 3 | Pure Neutrals | `AdvancedControls.tsx` | Toggle for pure gray neutrals (chroma = 0) |
 | 4 | Intelligent Color Selection | `tokenMapper.ts` + `contrastChecker.ts` | Dynamic contrast-based shade selection (4.5:1 / 7:1 / 9:1) |
-| 5 | Saturation/Temperature | `AdvancedControls.tsx` | Sliders for global saturation and temperature |
-| 6 | A11y Badges | `PalettePreview.tsx` | AAA/AA/FAIL indicators with colors |
-| 7 | Export Formats | `ExportPanel.tsx` | CSS, Tailwind, SCSS, JSON, Figma tokens |
-| 8 | Colorblind Simulation | `ColorblindSimulator.tsx` | Deuteranopia, Protanopia, Tritanopia, Grayscale |
-| 9 | Color Harmony | `ColorHarmonyVisualizer.tsx` | Analogous, Complementary, Triadic |
-| 10 | Live Preview | `LivePreview.tsx` | Combinable Theme (Light/Dark) + Contrast modes |
-| 11 | Material Design 3 HCT | `toneContrastSystem.ts` | Tone-based contrast system |
-| 12 | UI Components | Multiple | Complete UI for all capabilities |
-| 13 | Figma Plugin | `figma-plugin/` | Custom plugin for Variables import with mode support |
-| 14 | EyeDropper Tool | `ColorPicker.tsx` | Browser-native color picker from screen |
+| 5 | **Pro Mode - Tone Mapping** | `ProModeControls.tsx` + `tokenMapper.ts` | Manual tone override with accessibility guardrails |
+| 6 | **sRGB Gamut Warnings** | `gamutChecker.ts` + `PalettePreview.tsx` | Visual indicators for out-of-gamut colors (P3) |
+| 7 | **Enhanced Neutral Tinting** | `colorModule.ts` + `themeStore.ts` | Multiple tint sources (Primary/Secondary/Custom/Pure) |
+| 8 | Saturation/Temperature | `AdvancedControls.tsx` | Sliders for global saturation and temperature |
+| 9 | A11y Badges | `PalettePreview.tsx` | AAA/AA/FAIL indicators with colors |
+| 10 | Export Formats | `ExportPanel.tsx` | CSS, Tailwind, SCSS, JSON, Figma tokens |
+| 11 | Colorblind Simulation | `ColorblindSimulator.tsx` | Deuteranopia, Protanopia, Tritanopia, Grayscale |
+| 12 | Color Harmony | `ColorHarmonyVisualizer.tsx` | Analogous, Complementary, Triadic |
+| 13 | Live Preview | `LivePreview.tsx` | Combinable Theme (Light/Dark) + Contrast modes |
+| 14 | Material Design 3 HCT | `toneContrastSystem.ts` | Tone-based contrast system |
+| 15 | UI Components | Multiple | Complete UI for all capabilities |
+| 16 | Figma Plugin | `figma-plugin/` | Custom plugin for Variables import with mode support |
+| 17 | EyeDropper Tool | `ColorPicker.tsx` | Browser-native color picker from screen |
 
 ---
 
@@ -83,6 +86,61 @@ A visual theme builder that generates complete design tokens and color scales (0
 - 📦 Import both color scales and semantic tokens
 
 👉 See [`figma-plugin/README.md`](./figma-plugin/README.md) for installation and usage
+
+---
+
+## 🎯 Pro Mode Features
+
+### 1. Advanced Tone Mapping
+
+**Professional-grade control** over semantic color tone selection:
+
+- **Manual Override**: Set custom tone values (0-1000) for any semantic color
+- **Per-Mode Configuration**: Different tones for light and dark modes
+- **Accessibility Guardrails**: On-colors auto-calculate to maintain WCAG compliance
+- **Smart Fallback**: Automatic intelligent selection when tones aren't specified
+
+```typescript
+// Example: Force primary to be lighter in light mode
+Primary Light: 300  // Instead of auto-selected ~550
+Primary Dark: 400   // Instead of auto-selected ~350
+→ System ensures on-primary maintains 4.5:1 contrast
+```
+
+**Use cases:**
+- Brand guidelines requiring specific tone values
+- Fine-tuning for specific UI contexts
+- Matching existing design systems
+- Creating unique visual hierarchies
+
+### 2. sRGB Gamut Warnings
+
+**Visual indicators** for colors outside standard sRGB gamut:
+
+- **⚠️ P3 Badge**: Shows when color exceeds sRGB limits
+- **Cross-Device Consistency**: Ensures colors look consistent on all displays
+- **Severity Levels**: High/Medium/Low chroma excess indicators
+- **Real-time Feedback**: See warnings as you adjust colors
+
+**Why it matters:**
+- P3-wide colors look vibrant on modern displays (iPhone, MacBook Pro)
+- But appear "clamped" or different on older sRGB-only monitors
+- Critical for brands needing consistent appearance everywhere
+
+### 3. Enhanced Neutral Tinting
+
+**Multiple sources** for neutral color tinting:
+
+- **Primary** (default): Neutrals tinted with primary color
+- **Secondary**: Use secondary color for neutral tint
+- **Custom**: Pick any color for neutral tinting
+- **Pure**: Completely desaturated grayscale (chroma = 0)
+
+**Benefits:**
+- Create warmer/cooler neutral palettes
+- Match specific brand aesthetics
+- Separate UI tone from accent colors
+- Greater design flexibility
 
 ---
 
