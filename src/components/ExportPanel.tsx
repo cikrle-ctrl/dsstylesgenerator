@@ -7,6 +7,7 @@ import './HeaderToolbar.css'; // Import segmented control styles
 
 type ExportFormat = 'css' | 'tailwind' | 'scss' | 'json' | 'figma';
 type TailwindVersion = 'v3' | 'v4';
+type ThemeMode = 'light' | 'dark';
 
 interface ExportPanelProps {
     isExpanded?: boolean;
@@ -16,6 +17,7 @@ interface ExportPanelProps {
 export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
     const { tokens, scales } = useThemeStore();
     const [tailwindVersion, setTailwindVersion] = useState<TailwindVersion>('v4');
+    const [figmaMode, setFigmaMode] = useState<ThemeMode>('light');
 
     const generateCSS = (): string => {
         let css = ':root {\n  /* Light Mode */\n';
@@ -111,19 +113,51 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
     };
 
     const generateFigma = (): string => {
-        const figmaTokens: Record<string, { value: string; type: string }> = {};
-        
-        Object.entries(tokens.light).forEach(([key, value]) => {
-            figmaTokens[`light/${key}`] = { value, type: 'color' };
-        });
-        Object.entries(tokens.dark).forEach(([key, value]) => {
-            figmaTokens[`dark/${key}`] = { value, type: 'color' };
-        });
-        Object.entries(tokens.surface).forEach(([key, value]) => {
-            figmaTokens[`surface/${key}`] = { value, type: 'color' };
+        // W3C Design Tokens compatible JSON for Figma Variables Import/Export sample
+        const modeTokens = figmaMode === 'light' ? tokens.light : tokens.dark;
+
+        // Helper to sanitize names (remove leading --)
+        const clean = (k: string) => k.replace(/^--/, '');
+
+        // Build color group from semantic tokens (only --color-* keys)
+        type W3CStringVal = { $value: string };
+        type W3CNumVal = { $value: number };
+
+        const colorGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, W3CStringVal>;
+        Object.entries(modeTokens).forEach(([key, value]) => {
+            if (key.startsWith('--color-')) {
+                colorGroup[clean(key).replace('color-', '')] = { $value: value };
+            }
         });
 
-        return JSON.stringify(figmaTokens, null, 2);
+        // Build number group from surface numeric tokens (radius, border widths)
+        const numberGroup = ({ $type: 'number' } as const) as { $type: 'number' } & Record<string, W3CNumVal>;
+        Object.entries(tokens.surface).forEach(([key, value]) => {
+            const lower = key.toLowerCase();
+            if (lower.includes('radius') || lower.includes('border-width')) {
+                const m = String(value).match(/(-?\d+(?:\.\d+)?)/);
+                if (m) numberGroup[clean(key).replace('--', '')] = { $value: Number(m[1]) };
+            }
+        });
+
+        // Build color scales under a separate group
+        const scaleGroup = ({ $type: 'color' } as const) as { $type: 'color' } & Record<string, Record<string, W3CStringVal>>;
+        (Object.keys(scales) as Array<keyof typeof scales>).forEach((scaleName) => {
+            const scale = scales[scaleName] as Record<string, string>;
+            const group: Record<string, W3CStringVal> = {};
+            Object.entries(scale).forEach(([step, hex]) => {
+                group[step] = { $value: hex };
+            });
+            scaleGroup[scaleName] = group;
+        });
+
+        const designTokens = {
+            color: colorGroup,
+            number: numberGroup,
+            scale: scaleGroup,
+        };
+
+        return JSON.stringify(designTokens, null, 2);
     };
 
     const generateExport = (format: ExportFormat): string => {
@@ -155,7 +189,8 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
             json: 'json',
             figma: 'json'
         };
-        downloadFile(content, `theme-tokens.${extensions[format]}`);
+        const suffix = format === 'figma' ? `-${figmaMode}` : '';
+        downloadFile(content, `theme-tokens${suffix}.${extensions[format]}`);
     };
 
     return (
@@ -232,14 +267,46 @@ export const ExportPanel = ({ isExpanded, onToggle }: ExportPanelProps) => {
                 >
                     JSON
                 </Button>
-                <Button 
-                    onClick={() => handleExport('figma')}
-                    variant="ghost"
-                    size="medium"
-                    fullWidth
-                >
-                    Figma Tokens
-                </Button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <Button 
+                            onClick={() => handleExport('figma')}
+                            variant="ghost"
+                            size="medium"
+                            style={{ flex: 1 }}
+                        >
+                            Figma Variables (W3C)
+                        </Button>
+                        <div role="group" aria-label="Figma Mode" className="seg">
+                            <Button
+                                variant="ghost"
+                                size="small"
+                                aria-pressed={figmaMode === 'light'}
+                                onClick={() => setFigmaMode('light')}
+                                className="seg__btn"
+                            >
+                                Light
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="small"
+                                aria-pressed={figmaMode === 'dark'}
+                                onClick={() => setFigmaMode('dark')}
+                                className="seg__btn"
+                            >
+                                Dark
+                            </Button>
+                        </div>
+                    </div>
+                    <div style={{ 
+                        fontSize: '11px', 
+                        color: 'var(--color-on-surface-variant)', 
+                        paddingLeft: '4px',
+                        lineHeight: '1.3'
+                    }}>
+                        Exports single mode JSON (no multi-mode per W3C sample)
+                    </div>
+                </div>
             </div>
         </Accordion>
     );
