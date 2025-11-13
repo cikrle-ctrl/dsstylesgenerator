@@ -54,3 +54,33 @@ export function findBestContrast(
         return currentContrast > bestContrast ? current : best;
     }, textOptions[0]);
 }
+
+/**
+ * Najde optimální krok ve škále, který má kontrast nejblíže cílové hodnotě
+ * vzhledem k background barvě (typicky neutral-0 pro light nebo neutral-1000 pro dark)
+ */
+export function findOptimalStepByContrast(
+    scale: Record<string, string>,
+    backgroundHex: string,
+    targetContrast: number,
+    preferredRange: [number, number] = [200, 800]
+): string {
+    const [minStep, maxStep] = preferredRange;
+    let bestStep = '500';
+    let bestDiff = Infinity;
+
+    for (const [step, color] of Object.entries(scale)) {
+        const stepNum = parseInt(step, 10);
+        if (stepNum < minStep || stepNum > maxStep) continue;
+
+        const contrast = getContrast(backgroundHex, color);
+        const diff = Math.abs(contrast - targetContrast);
+
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            bestStep = step;
+        }
+    }
+
+    return bestStep;
+}

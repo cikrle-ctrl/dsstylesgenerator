@@ -1,5 +1,5 @@
 // src/logic/tokenMapper.ts
-import { findBestContrast } from './contrastChecker';
+import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
 
 type ShadeScale = Record<string, string>;
@@ -40,39 +40,40 @@ function createTokenSet(
     const s = scales[name]; // např. scales.primary
     const n = scales.neutral; // neutrální škála
 
-    // Základní krok pro akcent podle kontrastu a módu
+    // Určíme background pro výpočet kontrastu
+    const backgroundHex = isLight ? n['0'] : n['1000'];
+
+    // Cílové kontrasty podle režimu
+    const targetContrast = (() => {
+        if (contrast === 'extra-high') return 9.0;
+        if (contrast === 'high-contrast') return 7.0;
+        return 4.5; // default
+    })();
+
+    // Základní krok pro akcent - najdi optimální podle kontrastu
     // Pokud je stayTrueToInputColor, najdi nejbližší krok k input barvě (300-600)
-    // Jinak použij standardní mapping
+    // Jinak použij inteligentní hledání podle kontrastu
     const baseStep = (() => {
         if (stayTrueToInputColor && inputColor) {
             return findClosestStepInScale(inputColor, s, 300, 600);
         }
         
-        if (isLight) {
-            // High/Extra: zůstaň blízko středních tónů kvůli vyšší sytosti
-            if (contrast === 'extra-high') return '600';
-            if (contrast === 'high-contrast') return '550';
-            return '500';
-        }
-        // dark mode - světlejší barvy pro lepší viditelnost, ale s vyšší sytostí
-        if (contrast === 'extra-high') return '250';
-        if (contrast === 'high-contrast') return '300';
-        return '350';
+        // Inteligentní výběr: najdi krok s kontrastem nejblíže cílové hodnotě
+        // Preferujeme střední tóny (200-800) pro balanc sytosti a kontrastu
+        return findOptimalStepByContrast(s, backgroundHex, targetContrast, [200, 800]);
     })();
 
-    // Container: kontrastně závislé hodnoty (vyšší sytost v kontrastních režimech)
-    // Light: default 200, high 300, extra 250 (více barvy)
-    // Dark:  default 800, high 750, extra 700
-    const containerColor = (() => {
+    // Container: najdi světlejší/tmavší variantu s nižším kontrastem (3:1)
+    const containerTargetContrast = contrast === 'extra-high' ? 3.0 : 3.0;
+    const containerStep = (() => {
+        // Pro container preferujeme světlejší/tmavší tóny
         if (isLight) {
-            if (contrast === 'extra-high') return s['250'];
-            if (contrast === 'high-contrast') return s['300'];
-            return s['200'];
+            return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [100, 400]);
+        } else {
+            return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [600, 900]);
         }
-        if (contrast === 'extra-high') return s['700'];
-        if (contrast === 'high-contrast') return s['750'];
-        return s['800'];
     })();
+    const containerColor = s[containerStep];
 
     // Pomocné funkce pro práci se stupnicí (0..1000 po 50)
     const clampStep = (value: number) => Math.min(1000, Math.max(0, value));
@@ -80,13 +81,6 @@ function createTokenSet(
     const offsetStep = (baseKey: string, delta: number) => {
         const base = parseInt(baseKey, 10);
         return toStepKey(base + delta);
-    };
-    const findStepByHex = (hex: string): string | null => {
-        const target = (hex || '').toLowerCase();
-        for (const [k, v] of Object.entries(s)) {
-            if (String(v).toLowerCase() === target) return k;
-        }
-        return null;
     };
 
     // Offsety pro interakční stavy podle kontrastu
@@ -98,7 +92,6 @@ function createTokenSet(
         : (contrast === 'extra-high' ? -200 : -100);
 
     // Vypočítáme container hover/pressed barvy
-    const containerStep = findStepByHex(containerColor) ?? (isLight ? '200' : '700');
     const containerHover = s[offsetStep(containerStep, hoverDelta)];
     const containerPressed = s[offsetStep(containerStep, pressedDelta)];
 
