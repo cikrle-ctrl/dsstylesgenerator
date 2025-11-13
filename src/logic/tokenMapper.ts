@@ -69,20 +69,32 @@ function createTokenSet(
     const s = scales[name]; // např. scales.primary
     const n = scales.neutral; // neutrální škála
 
-    // Určíme background pro výpočet kontrastu
-    const backgroundHex = isLight ? n['0'] : n['1000'];
+    // Určíme background pro výpočet kontrastu (SURFACE, ne neutral-0/1000!)
+    const backgroundHex = isLight ? n['0'] : n['950'];
 
-    // Cílové kontrasty podle režimu
-    const targetContrast = (() => {
+    // Cílové kontrasty podle režimu a typu tokenu
+    // Kontrastní tabulka:
+    // Light Default: 4.5:1 (akcent), 3.0:1 (container)
+    // Light High: 7.0:1 (akcent), 4.5:1 (container)
+    // Light Extra-High: 9.0:1 (akcent), 7.0:1 (container)
+    // Dark Default: 4.5:1 (akcent), 3.0:1 (container)
+    // Dark High: 7.0:1 (akcent), 4.5:1 (container)
+    // Dark Extra-High: 9.0:1 (akcent), 7.0:1 (container)
+    
+    const accentContrast = (() => {
         if (contrast === 'extra-high') return 9.0;
         if (contrast === 'high-contrast') return 7.0;
         return 4.5; // default
     })();
 
-    // Základní krok pro akcent - najdi optimální podle kontrastu
-    // Pokud je stayTrueToInputColor, najdi nejbližší krok k input barvě (300-600)
-    // Pokud je customTones (Profi režim), použij uživatelský tón
-    // Jinak použij inteligentní hledání podle kontrastu
+    const containerContrast = (() => {
+        if (contrast === 'extra-high') return 7.0;
+        if (contrast === 'high-contrast') return 4.5;
+        return 3.0; // default
+    })();
+
+    // A. FindOptimalShade (Pro akcenty - primary, secondary, error...)
+    // Najde krok s kontrastem nejblíže accentContrast
     const baseStep = (() => {
         // 1. Profi režim - vlastní tóny (pouze pro semantic colors, ne neutral)
         if (customTones && name !== 'neutral' && customTones[name as keyof typeof customTones]) {
@@ -90,65 +102,34 @@ function createTokenSet(
                 ? customTones[name as keyof typeof customTones]?.light 
                 : customTones[name as keyof typeof customTones]?.dark;
             if (customTone !== undefined) {
-                // Clamp to valid step
                 const clampedTone = Math.min(1000, Math.max(0, Math.round(customTone / 50) * 50));
                 return String(clampedTone);
             }
         }
         
-        // 2. Stay true to input color
+        // 2. Stay true to input color - najdi nejbližší krok v rozsahu 300-600
         if (stayTrueToInputColor && inputColor) {
             return findClosestStepInScale(inputColor, s, 300, 600);
         }
         
-        // 3. Inteligentní výběr: najdi krok s kontrastem nejblíže cílové hodnotě
-        // Pro light mode preferujeme 300-500, pro dark mode 500-700
-        const range: [number, number] = isLight ? [300, 500] : [500, 700];
-        return findOptimalStepByContrast(s, backgroundHex, targetContrast, range);
+        // 3. SPRÁVNÝ ALGORITMUS: FindOptimalShade
+        // Light mode: preferuj rozsah 400-700 (tmavší barvy pro dobrý kontrast na bílém)
+        // Dark mode: preferuj rozsah 300-600 (světlejší barvy pro dobrý kontrast na černém)
+        const range: [number, number] = isLight ? [400, 700] : [300, 600];
+        return findOptimalStepByContrast(s, backgroundHex, accentContrast, range);
     })();
 
-    // Container: světlé (100-300) pro light mode, tmavé (700-900) pro dark mode
-    // V high/extra-high kontrastu se rozsah může měnit podle potřeby kontrastu s on-container
-    const containerTargetContrast = (() => {
-        if (contrast === 'extra-high') return 7.0; // Vyšší kontrast pro extra-high
-        if (contrast === 'high-contrast') return 4.5; // Střední kontrast pro high
-        return 3.0; // Základní jemný kontrast pro default
-    })();
-    
+    // B. FindOptimalContainer (Pro kontejnery)
+    // Kontejnery potřebují NIŽŠÍ kontrast (3.0:1 v default, 4.5:1 v high, 7.0:1 v extra-high)
+    // Light mode: světlejší tóny (100-300)
+    // Dark mode: tmavší tóny (700-900)
     const containerStep = (() => {
-        if (isLight) {
-            // Light mode: světlé tóny 100-300
-            // Logika: Čím tmavší je baseStep, tím světlejší musí být container
-            const baseStepNum = parseInt(baseStep, 10);
-            if (baseStepNum >= 600) {
-                // Tmavá primary (600+) → nejsvětlejší container (100-150)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [100, 150]);
-            } else if (baseStepNum >= 400) {
-                // Střední primary (400-599) → střední světlý container (150-250)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [150, 250]);
-            } else {
-                // Světlá primary (0-399) → tmavší světlý container (200-300)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [200, 300]);
-            }
-        } else {
-            // Dark mode: tmavé tóny 700-900
-            // Logika: Čím světlejší je baseStep, tím tmavší musí být container
-            const baseStepNum = parseInt(baseStep, 10);
-            if (baseStepNum <= 400) {
-                // Světlá primary (0-400) → nejtmavší container (850-900)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [850, 900]);
-            } else if (baseStepNum <= 600) {
-                // Střední primary (401-600) → střední tmavý container (750-850)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [750, 850]);
-            } else {
-                // Tmavá primary (601+) → světlejší tmavý container (700-800)
-                return findOptimalStepByContrast(s, backgroundHex, containerTargetContrast, [700, 800]);
-            }
-        }
+        const range: [number, number] = isLight ? [100, 300] : [700, 900];
+        return findOptimalStepByContrast(s, backgroundHex, containerContrast, range);
     })();
     const containerColor = s[containerStep];
 
-    // Pomocné funkce pro práci se stupnicí (0..1000 po 50)
+    // Pomocné funkce pro práci se stupnicí
     const clampStep = (value: number) => Math.min(1000, Math.max(0, value));
     const toStepKey = (value: number) => String(clampStep(Math.round(value / 50) * 50));
     const offsetStep = (baseKey: string, delta: number) => {
@@ -156,93 +137,64 @@ function createTokenSet(
         return toStepKey(base + delta);
     };
 
-    // Offsety pro interakční stavy podle kontrastu
-    const hoverDelta = mode === 'light'
-        ? (contrast === 'extra-high' ? 150 : 100)
-        : (contrast === 'extra-high' ? -100 : -50); // Menší delta pro dark mode
-    const pressedDelta = mode === 'light'
-        ? (contrast === 'extra-high' ? 300 : 200)
-        : (contrast === 'extra-high' ? -200 : -100);
+    // Hover/Pressed stavy: offsety od base
+    // Light mode: tmavší (+ delta)
+    // Dark mode: světlejší (- delta)
+    const hoverDelta = isLight ? 100 : -100;
+    const pressedDelta = isLight ? 200 : -200;
 
-    // Vypočítáme container hover/pressed barvy
-    const containerHover = s[offsetStep(containerStep, hoverDelta)];
-    const containerPressed = s[offsetStep(containerStep, pressedDelta)];
-
-    // Vypočítáme fix hover/pressed barvy
-    const fixHover = s['500'];
-    const fixPressed = s['600'];
-    
-    // Vypočítáme base hover/pressed barvy
     const baseHover = s[offsetStep(baseStep, hoverDelta)];
     const basePressed = s[offsetStep(baseStep, pressedDelta)];
 
-    // Základní tokeny podle finální specifikace
-    const tokens: CssTokenMap = {
-        // Hlavní tokeny
-        [`--color-${name}`]: s[baseStep],
-        [`--color-on-${name}`]: findBestContrast(
-            s[baseStep],
-            // Pro tmavé/sytější barvy (400+) použij pouze bílou a světlé tóny
-            // Pro světlé barvy (<400) použij pouze černou a tmavé tóny
-            parseInt(baseStep, 10) >= 400 
-                ? [n['0'], s['0'], s['50'], s['100']]  // Pouze světlé možnosti
-                : [n['1000'], s['1000'], s['950'], s['900']],  // Pouze tmavé možnosti
-            contrast === 'extra-high' ? 8.5 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
-        [`--color-${name}-container`]: containerColor,
-        [`--color-on-${name}-container`]: findBestContrast(
-            containerColor,
-            // V light: preferuj tmavé; v dark: preferuj světlé
-            isLight
-                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
-                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
-            contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
+    // Container hover/pressed
+    const containerHover = s[offsetStep(containerStep, hoverDelta)];
+    const containerPressed = s[offsetStep(containerStep, pressedDelta)];
 
-        // Fix varianty (stejné pro Light i Dark mode) + stavy
-        // Fix = 400 (typicky světlejší tón) → preferuj černou, fallback bílá
+    // Fix tokeny (fix = 400 vždy, nezávisle na módu)
+    const fixHover = s['500'];
+    const fixPressed = s['600'];
+    
+    // C. GetOnColor (Pro text na barevném pozadí)
+    // Kandidáti: neutral-0 (bílá), neutral-1000 (černá)
+    // Vrací tu, která má lepší kontrast a splňuje minimum
+    const getOnColor = (bgColor: string): string => {
+        return findBestContrast(
+            bgColor,
+            [n['0'], n['1000']], // Vždy jen bílá nebo černá
+            accentContrast // Použij stejný kontrast jako pro akcenty
+        );
+    };
+
+    // Základní tokeny
+    const tokens: CssTokenMap = {
+        // Hlavní akcent
+        [`--color-${name}`]: s[baseStep],
+        [`--color-on-${name}`]: getOnColor(s[baseStep]),
+        
+        // Container
+        [`--color-${name}-container`]: containerColor,
+        [`--color-on-${name}-container`]: getOnColor(containerColor),        
+        // Fix varianty (fix = 400 vždy)
         [`--color-${name}-fix`]: s['400'],
         [`--color-${name}-fix-hover`]: fixHover,
         [`--color-${name}-fix-pressed`]: fixPressed,
-        [`--color-on-${name}-fix`]: findBestContrast(s['400'], [n['1000'], n['0']], contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5),
+        [`--color-on-${name}-fix`]: getOnColor(s['400']),
+        [`--color-on-${name}-fix-hover`]: getOnColor(fixHover),
+        [`--color-on-${name}-fix-pressed`]: getOnColor(fixPressed),
         
-        // Interakční stavy s přepočítaným on-color
-        // V light módu: hover/pressed jsou tmavší → preferuj černou
-        // V dark módu: hover/pressed jsou světlejší → preferuj bílou
+        // Hover stavy
         [`--color-${name}-hover`]: baseHover,
-        [`--color-on-${name}-hover`]: findBestContrast(
-            baseHover,
-            isLight ? [n['1000'], n['0'], s['1000'], s['0']] : [n['0'], n['1000'], s['0'], s['1000']],
-            contrast === 'extra-high' ? 8.5 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
+        [`--color-on-${name}-hover`]: getOnColor(baseHover),
+        
+        // Pressed stavy
         [`--color-${name}-pressed`]: basePressed,
-        [`--color-on-${name}-pressed`]: findBestContrast(
-            basePressed,
-            isLight ? [n['1000'], n['0'], s['1000'], s['0']] : [n['0'], n['1000'], s['0'], s['1000']],
-            contrast === 'extra-high' ? 8.5 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
+        [`--color-on-${name}-pressed`]: getOnColor(basePressed),
         
-        // Container hover/pressed s novým on-color (minimum 4.5:1 pro text)
+        // Container hover/pressed
         [`--color-${name}-container-hover`]: containerHover,
-        [`--color-on-${name}-container-hover`]: findBestContrast(
-            containerHover,
-            isLight
-                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
-                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
-            contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
+        [`--color-on-${name}-container-hover`]: getOnColor(containerHover),
         [`--color-${name}-container-pressed`]: containerPressed,
-        [`--color-on-${name}-container-pressed`]: findBestContrast(
-            containerPressed,
-            isLight
-                ? [n['1000'], s['1000'], s['900'], s['800'], n['900'], n['800'], n['0']]
-                : [n['0'], s['0'], s['50'], s['100'], n['1000'], n['900'], n['800']],
-            contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5
-        ),
-        
-        // Fix hover/pressed s novým on-color (preferuj černou - fix tokeny jsou typicky světlejší)
-        [`--color-on-${name}-fix-hover`]: findBestContrast(fixHover, [n['1000'], n['0']], contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5),
-        [`--color-on-${name}-fix-pressed`]: findBestContrast(fixPressed, [n['1000'], n['0']], contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 7.0 : 4.5),
+        [`--color-on-${name}-container-pressed`]: getOnColor(containerPressed),
     };
     return tokens;
 }
