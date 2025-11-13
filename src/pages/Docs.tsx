@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useThemeStore } from '../store/themeStore';
+import { getContrast } from '../logic/contrastChecker';
 import { ColorHarmonyVisualizer } from '../components/ColorHarmonyVisualizer';
 
 const title = {
@@ -31,6 +33,7 @@ export function Docs() {
         { id: 'toolbar', label: 'Toolbar & Modes' },
         { id: 'export', label: 'Exports' },
         { id: 'naming', label: 'Token naming' },
+        { id: 'audit', label: 'Contrast audit' },
         { id: 'a11y', label: 'Accessibility' },
         { id: 'files', label: 'File structure' },
         { id: 'harmony', label: 'Color Harmony Generator' },
@@ -54,6 +57,28 @@ export function Docs() {
     }, [sections]);
 
     const filtered = useMemo(() => sections.filter(s => s.label.toLowerCase().includes(q.toLowerCase())), [q, sections]);
+
+    // Pull live tokens/mode to compute runtime audit
+    const { tokens, ui } = useThemeStore();
+    const tokenMap = ui.themeMode === 'light' ? tokens.light : tokens.dark;
+    const contrastTargetText = ui.contrastMode === 'extra-high' ? 9.0 : ui.contrastMode === 'high-contrast' ? 7.0 : 4.5;
+    const contrastTargetContainer = ui.contrastMode === 'extra-high' ? 4.0 : ui.contrastMode === 'high-contrast' ? 3.5 : 3.0;
+
+    const audits = [
+        { role: 'Primary text', fg: '--color-on-primary', bg: '--color-primary', target: contrastTargetText },
+        { role: 'Primary container', fg: '--color-on-primary-container', bg: '--color-primary-container', target: contrastTargetText },
+        { role: 'Secondary text', fg: '--color-on-secondary', bg: '--color-secondary', target: contrastTargetText },
+        { role: 'Secondary container', fg: '--color-on-secondary-container', bg: '--color-secondary-container', target: contrastTargetText },
+        { role: 'On surface', fg: '--color-on-surface-heading', bg: '--color-surface', target: contrastTargetText },
+        { role: 'Outline default vs surface', fg: '--color-outline-default', bg: '--color-surface', target: 3.0 },
+        { role: 'Container contrast vs surface', fg: '--color-primary-container', bg: '--color-surface', target: contrastTargetContainer },
+    ].map(item => {
+        const fgHex = tokenMap[item.fg];
+        const bgHex = tokenMap[item.bg];
+        const ratio = fgHex && bgHex ? getContrast(fgHex, bgHex) : 0;
+        const pass = ratio >= item.target;
+        return { ...item, fgHex, bgHex, ratio: Number(ratio.toFixed(2)), pass };
+    });
 
     return (
         <div style={{ padding: 24, maxWidth: 1280, margin: '0 auto' }}>
@@ -96,6 +121,52 @@ export function Docs() {
                         <code>data-theme</code> and <code>data-contrast</code> on the container.
                     </li>
                 </ol>
+            </section>
+
+            {/* Contrast Audit */}
+            <section id="audit" className="preview-card" style={section}>
+                <h2 style={{ ...title, fontSize: 18 }}>Contrast audit (live)</h2>
+                <p style={{ ...body, marginBottom: 10 }}>Values update with your current theme, mode and contrast settings.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+                    {audits.map(a => (
+                        <div key={a.role} style={{ border: '1px solid var(--color-outline-subtle)', borderRadius: 10, overflow: 'hidden' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--color-surface-variant)' }}>
+                                <span style={{ color: 'var(--color-on-surface-heading)', fontWeight: 600 }}>{a.role}</span>
+                                <span style={{
+                                    padding: '2px 8px',
+                                    borderRadius: 999,
+                                    fontSize: 12,
+                                    color: a.pass ? 'var(--color-on-success-container)' : 'var(--color-on-error-container)',
+                                    background: a.pass ? 'var(--color-success-container)' : 'var(--color-error-container)'
+                                }}>{a.pass ? 'PASS' : 'FAIL'}</span>
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                                <div style={{ padding: 12 }}>
+                                    <div style={{ fontSize: 12, color: 'var(--color-on-surface-variant)', marginBottom: 6 }}>Foreground</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <div style={{ width: 18, height: 18, borderRadius: 4, background: a.fgHex, border: '1px solid var(--color-outline-subtle)' }} />
+                                        <code style={{ fontSize: 12 }}>{a.fg} = {a.fgHex}</code>
+                                    </div>
+                                </div>
+                                <div style={{ padding: 12 }}>
+                                    <div style={{ fontSize: 12, color: 'var(--color-on-surface-variant)', marginBottom: 6 }}>Background</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <div style={{ width: 18, height: 18, borderRadius: 4, background: a.bgHex, border: '1px solid var(--color-outline-subtle)' }} />
+                                        <code style={{ fontSize: 12 }}>{a.bg} = {a.bgHex}</code>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ padding: '8px 12px', borderTop: '1px solid var(--color-outline-subtle)', display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: 'var(--color-on-surface-variant)' }}>Contrast ratio</span>
+                                <span style={{ fontWeight: 700, color: 'var(--color-on-surface-heading)' }}>{a.ratio}:1</span>
+                            </div>
+                            <div style={{ padding: '8px 12px', borderTop: '1px solid var(--color-outline-subtle)', display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: 'var(--color-on-surface-variant)' }}>Target</span>
+                                <span style={{ fontWeight: 600 }}>{a.target}:1</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </section>
 
             {/* Color Theory */}
