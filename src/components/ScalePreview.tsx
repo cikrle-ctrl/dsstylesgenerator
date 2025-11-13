@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import './PreviewCard.css';
+import './ScalePreview.css';
 
 // Helper function for contrast-based text color
 const getTextColor = (hex: string) => {
@@ -65,11 +66,9 @@ export function ScalePreview() {
                     {scaleName === 'info' && 'information'}
                 </span>
             </div>
-            <div aria-label={`${scaleName} scale, click to copy`} style={{
-                display: 'flex',
+            <div aria-label={`${scaleName} scale, click to copy`} className="scale-row" style={{
                 borderRadius: '8px',
                 overflow: 'hidden',
-                height: '56px',
                 boxShadow: 'none',
                 cursor: 'pointer',
                 border: '1px solid var(--color-outline-subtle)'
@@ -84,8 +83,8 @@ export function ScalePreview() {
                     return (
                         <div 
                             key={step} 
+                            className="scale-cell"
                             style={{
-                                flex: 1,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',

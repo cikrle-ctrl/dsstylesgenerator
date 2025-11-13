@@ -1,0 +1,32 @@
+/* Responsive layout for color scales */
+
+/* Default (desktop): single row flex */
+.scale-row {
+  display: flex;
+  height: 56px;
+}
+
+.scale-cell {
+  flex: 1 1 0%;
+}
+
+/* Mobile/tablet: wrap into multiple rows using grid
+   6 columns -> for 21 steps it creates 4 rows (6+6+6+3)
+*/
+@media (max-width: 768px) {
+  .scale-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    height: auto;
+  }
+  .scale-cell {
+    height: 44px;
+  }
+}
+
+/* Extra small phones: slightly taller cells for tap targets */
+@media (max-width: 480px) {
+  .scale-cell {
+    height: 48px;
+  }
+}
