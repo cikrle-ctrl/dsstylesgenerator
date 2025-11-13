@@ -74,6 +74,23 @@ export function ColorPicker({ value, onChange, onClose }: ColorPickerProps) {
     setDirtyText(null);
   };
 
+  const hasEyeDropper = typeof window !== 'undefined' && 'EyeDropper' in window;
+
+  const pickColorFromScreen = async () => {
+    if (!hasEyeDropper) return;
+    try {
+      // @ts-ignore - EyeDropper is not in TypeScript types yet
+      const eyeDropper = new EyeDropper();
+      const result = await eyeDropper.open();
+      if (result?.sRGBHex) {
+        onChange(result.sRGBHex.toUpperCase());
+      }
+    } catch (err) {
+      // User cancelled or error occurred
+      console.log('EyeDropper cancelled or failed:', err);
+    }
+  };
+
   return (
     <div className="cp">
       <div
@@ -109,6 +126,19 @@ export function ColorPicker({ value, onChange, onClose }: ColorPickerProps) {
             ]}
           />
         </div>
+        {hasEyeDropper && (
+          <button
+            type="button"
+            className="cp__eyedropper"
+            onClick={pickColorFromScreen}
+            title="Pick color from screen"
+            aria-label="Pick color from screen"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 6.5L9.5 2.5L10.5 1.5C10.7761 1.22386 11.1478 1.06836 11.5355 1.06836C11.9232 1.06836 12.2949 1.22386 12.571 1.5L14.5 3.429C14.7761 3.70514 14.9316 4.07681 14.9316 4.4645C14.9316 4.85219 14.7761 5.22386 14.5 5.5L13.5 6.5ZM12.5 7.5L4.5 15.5H0.5V11.5L8.5 3.5L12.5 7.5Z" fill="currentColor"/>
+            </svg>
+          </button>
+        )}
         <input
           className="cp__hexinput"
           value={dirtyText ?? displayText}
