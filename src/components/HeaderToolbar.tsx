@@ -72,7 +72,7 @@ export function HeaderToolbar() {
                     icon={isDocs ? <Home size={16} /> : undefined}
                     iconPosition="left"
                 >
-                    {isDocs ? 'Zpět' : 'Dokumentace'} {isDocs ? '' : ''}
+                    {isDocs ? 'Back' : 'Docs'} {isDocs ? '' : ''}
                     {!isDocs && <span style={{ display: 'inline-flex', marginLeft: 8 }}><FileText size={16} /></span>}
                 </Button>
             </div>

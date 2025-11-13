@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import './PreviewCard.css';
 
-// Pomocná fce pro kontrast
+// Helper function for contrast-based text color
 const getTextColor = (hex: string) => {
     try {
         const rgb = parseInt(hex.substring(1), 16);
         const r = (rgb >> 16) & 0xff;
         const g = (rgb >> 8) & 0xff;
         const b = (rgb >> 0) & 0xff;
-        // Relativní luminance podle sRGB
+        // Relative luminance in sRGB
         const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
         return luminance > 0.5 ? 'black' : 'white';
     } catch { return 'white'; }
@@ -56,16 +56,16 @@ export function ScalePreview() {
                     color: 'var(--color-on-surface-variant)',
                     textTransform: 'none'
                 }}>
-                    {scaleName === 'primary' && 'hlavní akční barva'}
-                    {scaleName === 'secondary' && 'sekundární akce'}
-                    {scaleName === 'neutral' && 'texty a pozadí'}
-                    {scaleName === 'error' && 'chyby a varování'}
-                    {scaleName === 'warning' && 'upozornění'}
-                    {scaleName === 'success' && 'úspěch'}
-                    {scaleName === 'info' && 'informace'}
+                    {scaleName === 'primary' && 'main action color'}
+                    {scaleName === 'secondary' && 'secondary actions'}
+                    {scaleName === 'neutral' && 'text and backgrounds'}
+                    {scaleName === 'error' && 'errors and warnings'}
+                    {scaleName === 'warning' && 'alerts'}
+                    {scaleName === 'success' && 'success'}
+                    {scaleName === 'info' && 'information'}
                 </span>
             </div>
-            <div aria-label={`${scaleName} scale, klikni pro zkopírování`} style={{
+            <div aria-label={`${scaleName} scale, click to copy`} style={{
                 display: 'flex',
                 borderRadius: '8px',
                 overflow: 'hidden',
@@ -79,7 +79,7 @@ export function ScalePreview() {
                     if (!color) return null;
                     const isCopied = copied === color;
                     const isHighlighted = highlightedStep === `${scaleName}-${step}`;
-                    const ariaLabel = `${String(scaleName)} ${step}: ${color}. Klikni nebo stiskni Enter pro zkopírování`;
+                    const ariaLabel = `${String(scaleName)} ${step}: ${color}. Click or press Enter to copy`;
                     
                     return (
                         <div 
@@ -160,10 +160,10 @@ export function ScalePreview() {
                     fontSize: '16px',
                     lineHeight: '1.5'
                 }}>
-                    Z těchto barevných škál se automaticky generuje sémantická paleta. 
-                    Každý odstín (50-900) má specifické využití v design systému.
+                    The semantic palette is generated automatically from these color scales.
+                    Each shade (50-900) has a specific purpose in the design system.
                     <br />
-                    <strong>Klikni na jakoukoliv barvu pro zkopírování hex kódu.</strong>
+                    <strong>Click any color to copy its hex code.</strong>
                 </p>
                 {renderScale('primary', scales.primary)}
                 {renderScale('secondary', scales.secondary)}

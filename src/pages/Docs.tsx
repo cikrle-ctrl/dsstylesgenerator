@@ -17,15 +17,15 @@ const section = {
 
 export function Docs() {
     const sections = useMemo(() => ([
-        { id: 'how', label: 'Jak aplikace funguje' },
-        { id: 'scales', label: 'Barevné škály' },
-        { id: 'contrast', label: 'Kontrastní módy' },
+        { id: 'how', label: 'How it works' },
+        { id: 'scales', label: 'Color scales' },
+        { id: 'contrast', label: 'Contrast modes' },
         { id: 'tokens', label: 'Design tokens' },
         { id: 'surface', label: 'Surface & Radius & Outline' },
-        { id: 'advanced', label: 'Pokročilá nastavení' },
-        { id: 'export', label: 'Exporty' },
-        { id: 'a11y', label: 'Přístupnost' },
-        { id: 'files', label: 'Struktura souborů' },
+        { id: 'advanced', label: 'Advanced settings' },
+        { id: 'export', label: 'Exports' },
+        { id: 'a11y', label: 'Accessibility' },
+        { id: 'files', label: 'File structure' },
         { id: 'harmony', label: 'Color Harmony Generator' },
     ]), []);
 
@@ -61,62 +61,62 @@ export function Docs() {
                             .docs-search:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-focus)}
                         `}</style>
             
-            <h1 style={{ ...title, fontSize: 24 }}>Dokumentace</h1>
+            <h1 style={{ ...title, fontSize: 24 }}>Documentation</h1>
             <p style={{ ...body, marginBottom: 20 }}>
-                Kompletní průvodce tím, jak náš theme builder funguje: generování škál, mapování do tokenů,
-                kontrastní režimy, přizpůsobení, exporty a nástroje pro ověření přístupnosti.
+                A complete guide to how the theme builder works: scale generation, token mapping,
+                contrast modes, customization, exports, and tools for accessibility verification.
             </p>
             <div className="docs-grid">
               <div>
             {/* How it works */}
             <section id="how" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Jak aplikace funguje</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>How the app works</h2>
                 <ol style={{ ...body, paddingLeft: 18 }}>
                     <li>
-                        <b>Vstupy</b> – Zvolíte primární/sekundární barvu a strategie povrchů. Vstupy spravuje Zustand store
+                        <b>Inputs</b> – Pick primary/secondary colors and surface strategies. Inputs are managed by Zustand
                         (<code>src/store/themeStore.ts</code>).
                     </li>
                     <li>
-                        <b>Generování škál</b> – Z <code>colorModule.ts</code> vznikne škála 0→1000 (po 50) v OKLCH.
-                        Používáme perceptuální <i>lightness</i> křivku a <i>adaptive chroma</i> pro přirozené výsledky.
+                        <b>Scale generation</b> – <code>colorModule.ts</code> produces a 0→1000 scale (step 50) in OKLCH.
+                        We use a perceptual <i>lightness</i> curve and <i>adaptive chroma</i> for natural results.
                     </li>
                     <li>
-                        <b>Mapování do tokenů</b> – Funkce <code>generateMappedTokens()</code> v
-                        <code> tokenMapper.ts</code> vytvoří semantic tokens pro light/dark a kontrastní režimy.
+                        <b>Token mapping</b> – The <code>generateMappedTokens()</code> in
+                        <code> tokenMapper.ts</code> creates semantic tokens for light/dark and contrast modes.
                     </li>
                     <li>
-                        <b>Live Preview</b> – Komponenty čtou CSS custom properties a zobrazují výsledné styly. Přepínače
-                        režimů mění <code>data-theme</code> a <code>data-contrast</code> na kontejneru.
+                        <b>Live Preview</b> – Components read CSS custom properties and reflect resulting styles. Toggles update
+                        <code>data-theme</code> and <code>data-contrast</code> on the container.
                     </li>
                 </ol>
             </section>
 
             {/* Scales */}
             <section id="scales" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Barevné škály a generování</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>Color scales and generation</h2>
                 <p style={body}>
-                    Škály generujeme v OKLCH: pro každý krok je definovaná cílová světlost. Chroma se adaptivně snižuje
-                    na extrémech (velmi světlé/tmavé) a mírně zvyšuje v mid-tone pásmu pro dark mode akcenty. Neutrál je
-                    tónovaná šedá odvozená z primární barvy (nebo čistá šedá, pokud je aktivována volba Pure neutrals).
+                    Scales are generated in OKLCH: each step targets a specific lightness. Chroma adaptively reduces
+                    at extremes (very light/dark) and slightly increases in mid-tones for dark mode accents. Neutral is
+                    a tinted gray derived from the primary color (or pure gray when Pure neutrals is enabled).
                 </p>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Stay true to input</b> – akcent se mapuje na nejbližší krok ve škále (300–600).</li>
-                    <li><b>Harmony</b> – volitelné generování analogous/complementary/triadic doplňkových barev.</li>
-                    <li><b>WCAG validace</b> – testujeme kontrast textu vůči pozadí pomocí správné relativní luminance.</li>
+                    <li><b>Stay true to input</b> – accent maps to the nearest scale step (300–600).</li>
+                    <li><b>Harmony</b> – optional analogous/complementary/triadic complementary colors.</li>
+                    <li><b>WCAG validation</b> – contrast is tested using proper relative luminance.</li>
                 </ul>
             </section>
 
             {/* Contrast */}
             <section id="contrast" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Kontrastní módy</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>Contrast modes</h2>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><b>Default</b> – Text 4.5:1, UI 3:1, jemné surface stavy.</li>
-                    <li><b>High-contrast</b> – Text 7:1, výraznější stavy, barevnější containers (žádná černobílá plocha).</li>
-                    <li><b>Extra-high</b> – 7:1+ s nejvyšší čitelností a kontrolovanou barevností.</li>
+                    <li><b>Default</b> – Text 4.5:1, UI 3:1, subtle surface states.</li>
+                    <li><b>High-contrast</b> – Text 7:1, stronger states, more colorful containers (no grayscale).</li>
+                    <li><b>Extra-high</b> – 7:1+ with maximum readability and controlled colorfulness.</li>
                 </ul>
                 <p style={{ ...body, marginTop: 8 }}>
-                    V kontrastních módech udržujeme barevnost: containers a <code>surface-variant</code> lehce tintujeme
-                    z primární škály, zároveň zajišťujeme požadované WCAG poměry pro on-colors.
+                    In contrast modes we preserve colorfulness: containers and <code>surface-variant</code> are gently tinted
+                    from the primary scale, while ensuring required WCAG ratios for on-colors.
                 </p>
             </section>
 
@@ -125,7 +125,7 @@ export function Docs() {
                 <h2 style={{ ...title, fontSize: 18 }}>Design tokens</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
                     <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Akcenty</h3>
+                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Accents</h3>
                         <ul style={{ ...body, paddingLeft: 18 }}>
                             <li>--color-primary, --color-secondary</li>
                             <li>--color-<i>role</i>-container</li>
@@ -148,7 +148,7 @@ export function Docs() {
                         </ul>
                     </div>
                     <div>
-                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Další</h3>
+                        <h3 style={{ ...title, fontSize: 14, marginBottom: 6 }}>Other</h3>
                         <ul style={{ ...body, paddingLeft: 18 }}>
                             <li>--color-disabled, --color-on-disabled</li>
                             <li>--color-focus (focus ring)</li>
@@ -161,47 +161,46 @@ export function Docs() {
             <section id="surface" className="preview-card" style={section}>
                 <h2 style={{ ...title, fontSize: 18 }}>Surface & Radius & Outline</h2>
                 <p style={body}>
-                    Povrchy a rádiusy generujeme ve <code>surfaceAndRadius.ts</code>. Karty mají větší poloměr pro čistší
-                    vzhled a žádné stíny (flat estetika). Stavy hover/pressed jsou jemné v default a výraznější v
-                    kontrastních módech.
+                    Surfaces and radii are generated in <code>surfaceAndRadius.ts</code>. Cards use larger radii for a cleaner look
+                    and no shadows (flat aesthetics). Hover/pressed states are subtle in default and stronger in contrast modes.
                 </p>
             </section>
 
             {/* Advanced */}
             <section id="advanced" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Pokročilá nastavení</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>Advanced settings</h2>
                 <ul style={{ ...body, paddingLeft: 18 }}>
                     <li>Pure neutrals, Saturation multiplier, Temperature shift</li>
                     <li>Harmony mode (analogous/complementary/triadic)</li>
-                    <li>Stay true to input color (mapování akcentu na nejbližší krok)</li>
+                    <li>Stay true to input color (map accent to nearest step)</li>
                 </ul>
             </section>
 
             {/* Export */}
             <section id="export" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Exporty</h2>
-                <p style={body}>Generujeme více formátů: CSS, SCSS, Tailwind, JSON a Figma JSON.</p>
+                <h2 style={{ ...title, fontSize: 18 }}>Exports</h2>
+                <p style={body}>Multiple formats are supported: CSS, SCSS, Tailwind, JSON and Figma JSON.</p>
             </section>
 
             {/* A11y */}
             <section id="a11y" className="preview-card" style={section}>
-                <h2 style={{ ...title, fontSize: 18 }}>Přístupnost</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>Accessibility</h2>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li>WCAG kontrastní výpočty s korektní relativní luminancí</li>
+                    <li>WCAG contrast checks with correct relative luminance</li>
                     <li>Colorblind Simulation (deuteranopia, protanopia, tritanopia, grayscale)</li>
-                    <li>Focus ring na všech interaktivních prvcích</li>
+                    <li>Focus rings on all interactive elements</li>
                 </ul>
             </section>
 
             {/* Files */}
             <section id="files" className="preview-card" style={{ ...section, marginBottom: 24 }}>
-                <h2 style={{ ...title, fontSize: 18 }}>Struktura souborů</h2>
+                <h2 style={{ ...title, fontSize: 18 }}>File structure</h2>
                 <ul style={{ ...body, paddingLeft: 18 }}>
-                    <li><code>src/logic/colorModule.ts</code> – generování škál</li>
-                    <li><code>src/logic/tokenMapper.ts</code> – mapování na tokens</li>
-                    <li><code>src/logic/contrastChecker.ts</code> – WCAG výpočty</li>
-                    <li><code>src/store/themeStore.ts</code> – stav, režimy, export</li>
-                    <li><code>src/components</code> – UI a Live Preview</li>
+                    <li><code>src/logic/colorModule.ts</code> – scale generation</li>
+                    <li><code>src/logic/tokenMapper.ts</code> – token mapping</li>
+                    <li><code>src/logic/contrastChecker.ts</code> – WCAG calculations</li>
+                    <li><code>src/store/themeStore.ts</code> – state, modes, export</li>
+                    <li><code>src/components</code> – UI and Live Preview</li>
                 </ul>
             </section>
 
@@ -209,22 +208,22 @@ export function Docs() {
                         <div id="harmony" className="preview-card" style={{ marginBottom: 12 }}>
                             <h2 style={{ ...title, fontSize: 18, marginBottom: 12 }}>Color Harmony Generator</h2>
                             <p style={{ ...body, marginBottom: 10 }}>
-                                Automatické kombinace barev založené na teorii barev. Vhodné pro sekundární barvy nebo akcenty.
+                                Automatic color combinations based on color theory. Useful for secondary colors or accents.
                             </p>
                             <ColorHarmonyVisualizer showHeader={false} showNote={false} />
                             <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 8, background: 'var(--color-warning-container)', color: 'var(--color-on-warning-container)', border: '1px solid var(--color-outline-subtle)' }}>
-                                <b>Poznámka:</b> Harmonii nepoužívejte pro sémantické barvy (error, warning, success). Ty by měly
-                                zachovávat konvenční významy kvůli použitelnosti.
+                                <b>Note:</b> Don’t use harmony for semantic colors (error, warning, success). They should
+                                keep conventional meanings for usability.
                             </div>
                           </div>
                             </div>
                             {/* Sticky TOC */}
                             <aside className="docs-toc">
                                 <div className="preview-card">
-                                    <h3 style={{ ...title, fontSize: 16, marginBottom: 10 }}>Obsah</h3>
+                                    <h3 style={{ ...title, fontSize: 16, marginBottom: 10 }}>Contents</h3>
                                     <input
                                         className="docs-search"
-                                        placeholder="Hledat v sekcích..."
+                                        placeholder="Search sections..."
                                         value={q}
                                         onChange={(e) => setQ(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter' && filtered[0]) { document.getElementById(filtered[0].id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }}

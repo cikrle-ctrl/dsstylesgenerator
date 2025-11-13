@@ -36,14 +36,14 @@ function App() {
         <>
             <ThemeInjector />
             <div className="app-layout">
-                {/* LEVÝ PANEL (KONTROLKY) */}
+                {/* LEFT PANEL (CONTROLS) */}
                 <div className="control-panel">
                     <div className="control-panel__header">
                         <h2 className="control-panel__title">ThemeEngine</h2>
                         <p className="control-panel__subtitle">Design System Generator</p>
                     </div>
 
-                    <Accordion title="Hlavní Barvy" icon={<Palette />} defaultExpanded={true}>
+                    <Accordion title="Core Colors" icon={<Palette />} defaultExpanded={true}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <ColorInput
                                 label="Primary"
@@ -66,12 +66,12 @@ function App() {
                                     setSecondaryColor(rand());
                                 }}
                             >
-                                Náhodně
+                                Randomize
                             </Button>
                         </div>
                     </Accordion>
 
-                    <Accordion title="Sémantické Barvy" icon={<Sparkles />} defaultExpanded={false}>
+                    <Accordion title="Semantic Colors" icon={<Sparkles />} defaultExpanded={false}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <ColorInput
                                 label="Error"
@@ -96,33 +96,33 @@ function App() {
                         </div>
                     </Accordion>
 
-                    <Accordion title="Povrchy & Stíny" icon={<Box />} defaultExpanded={false}>
+                    <Accordion title="Surfaces & Shadows" icon={<Box />} defaultExpanded={false}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, marginBottom: '8px', color: 'var(--color-on-surface-variant)' }}>
-                                    Styl Zaoblení
+                                    Corner Radius
                                 </label>
                                                                 <Select
                                                                     value={inputs.surface.radiusStrategy}
                                                                     onChange={(v) => setRadiusStrategy(v as RadiusStrategy)}
                                                                     options={[
-                                                                        { value: 'none', label: 'Žádné' },
-                                                                        { value: 'medium', label: 'Střední (8px)' },
-                                                                        { value: 'circular', label: 'Kulaté (Pilulka)' },
+                                                                        { value: 'none', label: 'None' },
+                                                                        { value: 'medium', label: 'Medium (8px)' },
+                                                                        { value: 'circular', label: 'Circular (Pill)' },
                                                                     ]}
                                                                 />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, marginBottom: '8px', color: 'var(--color-on-surface-variant)' }}>
-                                    Styl Stínů
+                                    Shadow Style
                                 </label>
                                                                 <Select
                                                                     value={inputs.surface.shadowStrategy}
                                                                     onChange={(v) => setShadowStrategy(v as ShadowStrategy)}
                                                                     options={[
-                                                                        { value: 'none', label: 'Žádné' },
-                                                                        { value: 'subtle', label: 'Jemné' },
-                                                                        { value: 'strong', label: 'Výrazné' },
+                                                                        { value: 'none', label: 'None' },
+                                                                        { value: 'subtle', label: 'Subtle' },
+                                                                        { value: 'strong', label: 'Strong' },
                                                                     ]}
                                                                 />
                             </div>
@@ -133,7 +133,7 @@ function App() {
                     <ExportPanel />
                 </div>
 
-                {/* STŘEDNÍ PANEL: routes */}
+                {/* MIDDLE PANEL: routes */}
                 <div className="main-content">
                     <HeaderToolbar />
                     <div className="live-preview">

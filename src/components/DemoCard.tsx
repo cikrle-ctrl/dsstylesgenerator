@@ -39,11 +39,11 @@ export function DemoCard() {
                 fontWeight: '600',
                 color: 'var(--color-on-surface-heading)',
             }}>
-                Ukázková Karta
+                Sample Card
             </h3>
             <p style={textStyles}>
-                Tato karta používá sémantické tokeny pro pozadí,
-                okraj a barvu textu.
+                This card uses semantic tokens for background,
+                border, and text color.
             </p>
         </div>
     );

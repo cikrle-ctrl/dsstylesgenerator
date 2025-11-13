@@ -55,7 +55,7 @@ export const AdvancedControls = () => {
     };
 
     return (
-        <Accordion title="Pokročilá Nastavení" icon={<Settings />} defaultExpanded={false}>
+        <Accordion title="Advanced Settings" icon={<Settings />} defaultExpanded={false}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
                 {/* Stay True to Input Color Toggle */}

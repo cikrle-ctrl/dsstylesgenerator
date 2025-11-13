@@ -1,45 +1,45 @@
-# 🎨 DS Styles Generator - Kompletní Implementace
+# 🎨 DS Styles Generator - Complete Implementation
 
-## ✅ Všechny funkce implementovány!
+## ✅ All features implemented
 
-### 📋 Přehled dokončených features
+### 📋 Feature overview
 
-| # | Feature | Status | Komponenta | Popis |
-|---|---------|--------|------------|-------|
-| 1 | Adaptive Chroma | ✅ | `colorModule.ts` + `toneContrastSystem.ts` | Automatická redukce saturace na extrémních tone hodnotách |
-| 2 | Perceptual Spacing | ✅ | `colorModule.ts` | Nelineární lightness steps s easing funkcemi |
-| 3 | Pure Neutrals | ✅ | `AdvancedControls.tsx` | Toggle pro čistě šedé neutraly (chroma = 0) |
-| 4 | Adaptive Container | ✅ | `tokenMapper.ts` | Dynamický výběr container barvy pro 3:1 kontrast |
-| 5 | Saturation/Temperature | ✅ | `AdvancedControls.tsx` | Slidery pro globální úpravy saturace a teploty |
-| 6 | A11y Badges | ✅ | `PalettePreview.tsx` | AAA/AA/FAIL indikátory s barvami |
+| # | Feature | Status | Component | Description |
+|---|---------|--------|------------|-------------|
+| 1 | Adaptive Chroma | ✅ | `colorModule.ts` + `toneContrastSystem.ts` | Automatic saturation reduction at extreme tone values |
+| 2 | Perceptual Spacing | ✅ | `colorModule.ts` | Non-linear lightness steps with easing |
+| 3 | Pure Neutrals | ✅ | `AdvancedControls.tsx` | Toggle for pure gray neutrals (chroma = 0) |
+| 4 | Adaptive Container | ✅ | `tokenMapper.ts` | Dynamic container color selection for 3:1 contrast |
+| 5 | Saturation/Temperature | ✅ | `AdvancedControls.tsx` | Sliders for global saturation and temperature |
+| 6 | A11y Badges | ✅ | `PalettePreview.tsx` | AAA/AA/FAIL indicators with colors |
 | 7 | Export Formats | ✅ | `ExportPanel.tsx` | CSS, Tailwind, SCSS, JSON, Figma tokens |
 | 8 | Colorblind Simulation | ✅ | `ColorblindSimulator.tsx` | Deuteranopia, Protanopia, Tritanopia, Grayscale |
 | 9 | Color Harmony | ✅ | `ColorHarmonyVisualizer.tsx` | Analogous, Complementary, Triadic |
-| 10 | Live Preview | ✅ | `LivePreview.tsx` | Kombinovatelné Theme (Light/Dark) + Contrast režimy |
-| 11 | Material Design 3 HCT | ✅ | `toneContrastSystem.ts` | Tone-based contrast systém |
-| 12 | UI Components | ✅ | Multiple | Kompletní UI pro všechny funkce |
+| 10 | Live Preview | ✅ | `LivePreview.tsx` | Combinable Theme (Light/Dark) + Contrast modes |
+| 11 | Material Design 3 HCT | ✅ | `toneContrastSystem.ts` | Tone-based contrast system |
+| 12 | UI Components | ✅ | Multiple | Complete UI for all capabilities |
 
 ---
 
-## 🎯 Nové komponenty
+## 🎯 New components
 
 ### 1. **LivePreview** (Redesignovaná)
 ```tsx
 <LivePreview />
 ```
 **Features:**
-- 🔄 **2 nezávislé segmented buttony**:
+- 🔄 Two independent segmented controls:
   - Theme: Light | Dark
   - Contrast: Default | High Contrast
-- 📦 Jeden box místo dvou separátních sekcí
-- 🎨 4 možné kombinace režimů
-- ✨ Automatické theme switching
+- 📦 Single preview box instead of two separate sections
+- 🎨 4 possible combinations
+- ✨ Automatic theme switching
 
-**Kombinace:**
-1. Light + Default → Standard světlý režim
-2. Light + High Contrast → Světlý s max kontrastem (21:1)
-3. Dark + Default → Standard tmavý režim
-4. Dark + High Contrast → Tmavý s max kontrastem (21:1)
+Combinations:
+1. Light + Default → Standard light mode
+2. Light + High Contrast → Light with max contrast (up to 21:1)
+3. Dark + Default → Standard dark mode
+4. Dark + High Contrast → Dark with max contrast (up to 21:1)
 
 ---
 
@@ -48,13 +48,13 @@
 <AdvancedControls />
 ```
 **Features:**
-- ☑️ **Pure Neutrals Toggle**: Přepne na grayscale neutrály
-- 🎚️ **Saturation Slider**: 0.5x - 1.5x global multiplier
-- 🌡️ **Temperature Slider**: -15° až +15° hue shift
-- 🎨 **Harmony Dropdown**: None, Analogous, Complementary, Triadic
-- 📖 Kontextová nápověda pro každý control
+- ☑️ Pure Neutrals Toggle: Switch to grayscale neutrals
+- 🎚️ Saturation Slider: 0.5x - 1.5x global multiplier
+- 🌡️ Temperature Slider: -15° to +15° hue shift
+- 🎨 Harmony Dropdown: None, Analogous, Complementary, Triadic
+- 📖 Inline guidance for each control
 
-**Expandable:** Kliknutím na header se rozbalí/skryje
+Expandable: Click header to expand/collapse
 
 ---
 
@@ -63,15 +63,15 @@
 <TonalPalettePreview />
 ```
 **Features:**
-- 📊 Zobrazuje Material Design 3 tone palette (0-100)
-- 🎯 Zvýrazněné klíčové tones (40, 80, 90, 100)
-- ⚠️ Indikátory adaptive chroma na extrémních hodnotách
-- 📚 Vysvětlení tone systému pro light/dark/high-contrast
+- 📊 Displays Material Design 3 tone palette (0-100)
+- 🎯 Highlights key tones (40, 80, 90, 100)
+- ⚠️ Indicates adaptive chroma at extremes
+- 📚 Explains tone usage for light/dark/high-contrast
 
-**Zobrazuje:**
-- Primary tonal palette (13 kroků)
-- Secondary tonal palette (13 kroků)
-- Error tonal palette (13 kroků)
+Displays:
+- Primary tonal palette (13 steps)
+- Secondary tonal palette (13 steps)
+- Error tonal palette (13 steps)
 
 ---
 
@@ -80,13 +80,13 @@
 <ColorHarmonyVisualizer />
 ```
 **Features:**
-- 🎨 **Analogous**: Primary + Adjacent color (+30° hue)
-- 🎯 **Complementary**: Primary + Opposite color (+180° hue)
-- 🔺 **Triadic**: Three evenly spaced colors (+120° intervals)
-- 🖼️ Vizuální swatches s hex hodnotami
-- 💡 Vysvětlení každého harmony typu
+- 🎨 Analogous: Primary + Adjacent color (+30° hue)
+- 🎯 Complementary: Primary + Opposite color (+180° hue)
+- 🔺 Triadic: Three evenly spaced colors (+120° intervals)
+- 🖼️ Visual swatches with hex values
+- 💡 Explanation for each harmony type
 
-**Live updates:** Automaticky se aktualizuje při změně primary color
+Live updates: Automatically updates when the primary color changes
 
 ---
 
@@ -95,10 +95,10 @@
 <ColorblindSimulator />
 ```
 **Features:**
-- 👁️ 5 režimů: None, Deuteranopia, Protanopia, Tritanopia, Grayscale
-- 🎨 Before/After preview pro všechny sémantické barvy
-- 📊 Grid layout s vizuálním srovnáním
-- 🧬 Color matrix transformace (Brettel algoritmus)
+- 👁️ 5 modes: None, Deuteranopia, Protanopia, Tritanopia, Grayscale
+- 🎨 Before/After preview for all semantic colors
+- 📊 Grid layout for side-by-side comparison
+- 🧬 Color matrix transformations (Brettel algorithm)
 
 ---
 
@@ -106,18 +106,18 @@
 ```tsx
 <ExportPanel />
 ```
-**Podporované formáty:**
-1. **CSS Variables** → `.css` soubor s `:root` a `[data-theme="dark"]`
-2. **Tailwind Config** → `.js` s `module.exports` objektem
-3. **SCSS Variables** → `.scss` s `$color-primary` syntaxí
-4. **JSON** → `.json` s kompletními tokens a scales
-5. **Figma Tokens** → `.json` kompatibilní s Figma Tokens plugin
+**Supported formats:**
+1. CSS Variables → `.css` with `:root` and `[data-theme="dark"]`
+2. Tailwind Config → `.js` with `module.exports` object
+3. SCSS Variables → `.scss` with `$color-primary` syntax
+4. JSON → `.json` with complete tokens and scales
+5. Figma Tokens → `.json` compatible with Figma Tokens plugin
 
-**One-click download** pro každý formát
+One-click download for each format
 
 ---
 
-## 🔬 Material Design 3 HCT Systém
+## 🔬 Material Design 3 HCT System
 
 ### Tone-Based Contrast
 
@@ -144,7 +144,7 @@ Dark Mode:
 ```
 
 ### Adaptive Chroma
-Automatická redukce saturace na fyzikálně limitovaných tone hodnotách:
+Automatic saturation reduction at physically limited tone values:
 
 ```typescript
 if (tone >= 95 || tone <= 5)   → chroma × 0.3  // Extrémní
@@ -153,13 +153,13 @@ if (tone >= 75 || tone <= 25)  → chroma × 0.8  // Lehce světlé/tmavé
 else                            → chroma × 1.0  // Plná saturace
 ```
 
-**Proč?** Fyzikální limity barev - některé kombinace hue + chroma + tone jsou nemožné (např. "bright light blue @ 95% tone").
+Why? Physical color limits — some hue + chroma + tone combinations are impossible (e.g., “bright light blue @ 95% tone”).
 
 ---
 
 ## 🎨 Color Harmony
 
-### Implementované režimy
+### Implemented modes
 
 **1. Analogous (+30° hue)**
 ```
@@ -167,7 +167,7 @@ Primary: #0052cc (blue, 220°)
 ↓
 Secondary: #5200cc (purple, 250°)
 ```
-Použití: Harmonické, klidné palety
+Use: Harmonious, calm palettes
 
 **2. Complementary (+180° hue)**
 ```
@@ -175,7 +175,7 @@ Primary: #0052cc (blue, 220°)
 ↓
 Secondary: #cc7a00 (orange, 40°)
 ```
-Použití: Vysoký kontrast, živé palety
+Use: High contrast, vibrant palettes
 
 **3. Triadic (+120° intervals)**
 ```
@@ -184,11 +184,11 @@ Primary: #0052cc (blue, 220°)
 Colors: #0052cc, #cc0052, #52cc00
         (blue, red, green - 120° apart)
 ```
-Použití: Vyvážené, vibrantní palety
+Use: Balanced, vibrant palettes
 
 ---
 
-## 📊 Struktura projektu
+## 📊 Project structure
 
 ```
 src/
@@ -212,9 +212,9 @@ src/
 
 ---
 
-## 🚀 Použití
+## 🚀 Usage
 
-### 1. Základní nastavení
+### 1. Basic setup
 ```tsx
 // Vlevo: Color inputs
 - Primary color picker
@@ -245,7 +245,7 @@ Contrast: [Default] [High Contrast]
 ✅ Dark + High Contrast
 ```
 
-### 4. Vizualizace
+### 4. Visualizations
 ```tsx
 // Scroll down pro:
 - 🎨 Color Harmony Generator (3 harmony types)
@@ -266,9 +266,9 @@ Contrast: [Default] [High Contrast]
 
 ---
 
-## 🎯 Klíčové principy
+## 🎯 Key principles
 
-### 1. Fyzikální limity barev
+### 1. Physical color limits
 ```typescript
 // Některé barvy jsou fyzikálně nemožné
 ❌ "Bright light blue" @ tone 95 + high chroma
@@ -277,7 +277,7 @@ Contrast: [Default] [High Contrast]
 // Systém to řeší automaticky adaptive chroma
 ```
 
-### 2. Tone-based garantovaný kontrast
+### 2. Tone-based guaranteed contrast
 ```typescript
 // Místo hádat barvy, používáme tone systém
 Primary (tone 40) + On Primary (tone 100) = garantovaný 4.5:1 kontrast
@@ -286,7 +286,7 @@ Primary (tone 40) + On Primary (tone 100) = garantovaný 4.5:1 kontrast
 Primary (tone 30) + On Primary (tone 100) = garantovaný 7.1:1 kontrast
 ```
 
-### 3. Nezávislé režimy
+### 3. Independent modes
 ```typescript
 // Theme a Contrast jsou samostatné
 data-theme="light" | "dark"           // Barevné schéma
@@ -304,7 +304,7 @@ data-contrast="default" | "high"       // Úroveň kontrastu
 
 ---
 
-## 📚 Dokumentace
+## 📚 Documentation
 
 - **IMPROVEMENTS.md** → Kompletní seznam 10 improvements + implementace
 - **MATERIAL_HCT_INTEGRATION.md** → Material Design 3 HCT systém detailně
@@ -312,12 +312,12 @@ data-contrast="default" | "high"       // Úroveň kontrastu
 
 ---
 
-## 🎉 Výsledek
+## 🎉 Outcome
 
-**Profesionální design system generator s:**
-- ✅ Material Design 3 HCT tone systém
-- ✅ Kombinovatelné Light/Dark + Default/High Contrast režimy
-- ✅ Adaptive chroma respektující fyzikální limity barev
+Professional design system generator with:
+- ✅ Material Design 3 HCT tone system
+- ✅ Combinable Light/Dark + Default/High Contrast modes
+- ✅ Adaptive chroma honoring physical color limits
 - ✅ Perceptual lightness spacing
 - ✅ Color harmony generation (analogous, complementary, triadic)
 - ✅ Pure neutrals option
@@ -325,8 +325,8 @@ data-contrast="default" | "high"       // Úroveň kontrastu
 - ✅ Colorblind simulation (4 types)
 - ✅ Multi-format export (CSS, Tailwind, SCSS, JSON, Figma)
 - ✅ Real-time WCAG contrast validation (AAA/AA/FAIL)
-- ✅ 0-1000 color scale (21 steps po 50)
+- ✅ 0-1000 color scale (21 steps, step 50)
 - ✅ 100+ semantic tokens
-- ✅ Live preview všech komponent
+- ✅ Live preview of all components
 
-**Postaveno na vědě, fyzice a přístupnosti!** 🚀✨
+Built on science, physics, and accessibility! 🚀✨

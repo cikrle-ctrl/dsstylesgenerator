@@ -1,76 +1,76 @@
 # DS Styles Generator
 
-Vizuální theme builder, který generuje kompletní design tokens a barevné škály (0→1000), podporuje Light/Dark režimy, tři úrovně kontrastu, a export do více formátů. Postaveno na React + TypeScript + Vite a OKLCH/HCT principech.
+A visual theme builder that generates complete design tokens and color scales (0→1000), supports Light/Dark modes, three contrast levels, and multi-format export. Built with React + TypeScript + Vite and grounded in OKLCH/HCT color principles.
 
-## Co umí
+## What it does
 
-- 0–1000 barevná škála po 50 krocích (perceptuální rozestupy)
-- Semantic tokens pro Primary, Secondary, Error, Warning, Success, Info + Neutral
-- Light/Dark módy a kontrasty: default / high-contrast / extra-high
-- Adaptive chroma (vyšší sytost ve středních tónech, redukce na extrémech)
-- Tokeny pro surface/outline/focus/disabled + hover/pressed varianty
+- 0–1000 color scale in 50-step increments (perceptual spacing)
+- Semantic tokens for Primary, Secondary, Error, Warning, Success, Info + Neutral
+- Light/Dark themes and contrast levels: default / high-contrast / extra-high
+- Adaptive chroma (boosts mid-tones, reduces at extremes)
+- Tokens for surface/outline/focus/disabled + hover/pressed variants
 - Color harmonies (analogous, complementary, triadic)
-- Colorblind simulace (4 typy)
+- Colorblind simulation (4 types)
 - Export: CSS, SCSS, Tailwind, JSON, Figma (JSON)
 
-## Jak to funguje (zkráceně)
+## How it works (short)
 
-- Generování škál: `src/logic/colorModule.ts`
-  - OKLCH lightness křivka (perceptuální), adaptive chroma podle světlosti
-  - Neutrál: tónovaná šedá z primární barvy nebo čistá šedá (volitelně)
-- Mapování na tokeny: `src/logic/tokenMapper.ts`
-  - Vytvoří semantic tokens pro oba módy a všechny kontrasty
-  - On-colors jsou vybírány funkcí `findBestContrast` (WCAG 2.1)
-  - Kontrastní módy zachovávají barevnost (barevnější containers a surface-variant)
-- Stavový systém: `src/store/themeStore.ts` (Zustand)
-  - Ukládá vstupy (barvy, surface strategie), škály, vygenerované tokeny a UI režimy
+- Scale generation: `src/logic/colorModule.ts`
+  - OKLCH perceptual lightness curve, adaptive chroma by lightness
+  - Neutral: tinted gray from primary or pure gray (optional)
+- Token mapping: `src/logic/tokenMapper.ts`
+  - Produces semantic tokens for both themes and all contrast tiers
+  - On-colors selected via `findBestContrast` (WCAG 2.1)
+  - Contrast modes stay colorful (more colorful containers and surface-variant)
+- State: `src/store/themeStore.ts` (Zustand)
+  - Stores inputs (colors, surface strategies), scales, generated tokens, and UI modes
 
-## Kontrastní módy
+## Contrast modes
 
-- Default: text 4.5:1, UI 3:1, jemné surface stavy
-- High-contrast: text 7:1, výraznější surface, barevné containers (ne černobíle)
-- Extra-high: text 7:1+, nejvyšší čitelnost a výraznost stavů
+- Default: text 4.5:1, UI 3:1, subtle surface states
+- High-contrast: text 7:1, stronger surfaces, colorful containers (not grayscale)
+- Extra-high: text 7:1+, maximum readability and state prominence
 
-## Tokeny (výběr)
+## Tokens (selection)
 
-- Barvy: `--color-primary`, `--color-secondary`, `--color-error`, ...
+- Colors: `--color-primary`, `--color-secondary`, `--color-error`, ...
 - On-colors: `--color-on-primary`, `--color-on-primary-container`, ...
 - Surface: `--color-surface`, `--color-surface-variant`, `--color-surface-hover/pressed`
 - Outline: `--color-outline-subtle/default/strong/hover/pressed`
 - Disabled: `--color-disabled`, `--color-on-disabled`
 - Focus ring: `--color-focus`
 
-## UI a komponenty
+## UI and components
 
-- Vlastní komponenty: Select, Slider, Checkbox, ColorInput, ColorPicker, Tabs, atd.
-- Live Preview: ukázky tlačítek, karet, text fieldu, tabs, alertů, badge, progress…
-- Colorblind Simulation: vizuální srovnání originální vs. filtrované barvy
+- Custom components: Select, Slider, Checkbox, ColorInput, ColorPicker, Tabs, etc.
+- Live Preview: buttons, cards, text field, tabs, alerts, badges, progress…
+- Colorblind Simulation: side-by-side comparison of original vs filtered colors
 
-## Použití
+## Usage
 
-Vývojový server spustíte a otevřete v prohlížeči. Exporty najdete v sekci Export/Accordion přímo v UI.
+Run the dev server and open in your browser. Exports are available in the Export panel within the UI.
 
-## Responsivní chování
+## Responsive behavior
 
-- Karty a layout mají adaptivní paddingy, řádky se skládají na sloupce pod 768 px
-- Select a vstupy používají šířku 100% v kontejnerech
-- Komponenty s pevnou šířkou (např. text field) se omezují na `min(100%, …px)`
+- Cards and layout adapt paddings; rows collapse to columns under 768 px
+- Selects and inputs use 100% width in their containers
+- Fixed-width components (e.g., text field) clamp with `min(100%, …px)`
 
-## Struktura projektu (zkráceně)
+## Project structure (short)
 
-- `src/components` – UI a demo komponenty (LivePreview, Palette/Scale Preview, …)
-- `src/logic` – generování škál, tokenů, kontrast, HCT/OKLCH
-- `src/store` – Zustand store pro vstupy, škály, tokeny a UI režimy
+- `src/components` – UI and demo components (LivePreview, Palette/Scale Preview, …)
+- `src/logic` – scale generation, tokens, contrast, HCT/OKLCH
+- `src/store` – Zustand store for inputs, scales, tokens and UI modes
 
-## Skripty
+## Scripts
 
 Dev: `npm run dev`  •  Build: `npm run build`  •  Lint: `npm run lint`
 
-## Další dokumentace
+## Further documentation
 
-- Material HCT integrace: `MATERIAL_HCT_INTEGRATION.md`
-- Detailní rozpis zlepšení: `IMPROVEMENTS.md`
+- Material HCT integration: `MATERIAL_HCT_INTEGRATION.md`
+- Improvements breakdown: `IMPROVEMENTS.md`
 
 ---
 
-Tipy: Pokud chcete upravit přísnost kontrastu nebo saturaci v kontrastních módech, podívejte se do `tokenMapper.ts` a `colorModule.ts` (komentáře u příslušných větví).
+Tips: If you want to tweak contrast strictness or saturation in contrast modes, check `tokenMapper.ts` and `colorModule.ts` (see inline comments for relevant branches).
