@@ -163,6 +163,8 @@ export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps
                             { value: 'analogous', label: 'Analogous (+30° hue)' },
                             { value: 'complementary', label: 'Complementary (+180° hue)' },
                             { value: 'triadic', label: 'Triadic (+120° hue)' },
+                            { value: 'split-complementary', label: 'Split-Complementary (+150°/+210° hue)' },
+                            { value: 'tetradic', label: 'Tetradic (Rectangle)' },
                         ]}
                     />
                     <p style={{ 
@@ -175,6 +177,8 @@ export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps
                         {advancedSettings.harmonyMode === 'analogous' && 'Secondary color next to primary on color wheel'}
                         {advancedSettings.harmonyMode === 'complementary' && 'Secondary color opposite to primary on color wheel'}
                         {advancedSettings.harmonyMode === 'triadic' && 'Secondary color 120° apart for balanced triad'}
+                        {advancedSettings.harmonyMode === 'split-complementary' && 'Secondary color split from complementary (±30° offset)'}
+                        {advancedSettings.harmonyMode === 'tetradic' && 'Secondary color in rectangular harmony with primary'}
                     </p>
                 </div>
 

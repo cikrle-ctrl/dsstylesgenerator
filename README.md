@@ -1,11 +1,8 @@
 # 🎨 DS Styles Generator
 
-**Professional design token generator** with Light/Dark modes, high contrast
-support, and Figma Variables export.
+**Professional design token generator** with Light/Dark modes, high contrast support, HCT color model, and Figma Variables export.
 
-Built on scientific principles: **OKLCH color space**, **power 0.9 easing
-curve**, and **parabolic adaptive chroma** for perceptually uniform color
-scales.
+Built on scientific principles: **OKLCH color space**, **Material Design 3 HCT**, **power 0.9 easing curve**, and **parabolic adaptive chroma** for perceptually uniform color scales.
 
 ## 🚀 Quick Start
 
@@ -22,11 +19,12 @@ npm run build
 
 ## ✨ Key Features
 
-### 🎨 Color Scale Generation
-- **21 steps** (0-1000, increments of 50) for each color
+### 🎨 Dual Color System
+- **OKLCH Mode** (default) - 0-1000 step scale with 21 granular steps
+- **HCT Mode** (Material Design 3) - 0-100 tone scale with perceptual accuracy
 - **Power 0.9 easing** for perceptually uniform distribution
 - **Parabolic adaptive chroma** respecting sRGB physical limits
-- **OKLCH color space** (perceptually uniform, unlike HSL/RGB)
+- **Seamless switching** between OKLCH and HCT color models
 
 ### 🌓 Modes and Contrast
 - **Light / Dark modes** - complete support for both themes
@@ -34,25 +32,39 @@ npm run build
 - **6 combinations** - independent theme and contrast switching
 - **WCAG 2.1** - automatic AA (4.5:1) or AAA (7:1+) contrast compliance
 
+### 🎨 Color Harmonies
+Six professional color harmony modes for automatic secondary color generation:
+- **None** - Manual color selection
+- **Analogous** - Adjacent colors (+30° hue shift)
+- **Complementary** - Opposite colors (+180° hue shift)
+- **Triadic** - Evenly spaced triangle (+120° intervals)
+- **Split-Complementary** - Softer complementary (+150°/+210° hue)
+- **Tetradic** - Rectangle harmony (four balanced colors)
+
 ### 🎯 Intelligent Token Mapping
 - **Dynamic FindOptimalShade** - finds step with required contrast
 - **Static mapping** for surface/text/disabled tokens (per algorithm)
 - **GetOnColor** - automatic text selection on colored backgrounds
 - **FindBestContrast** - outline tokens with precise target contrast
+- **HCT-aware labeling** - proper tone display in Material Design mode
 
-### 📊 Figma Variables Export
-- **W3C Design Tokens** format with aliases
-- **Scales + Semantic tokens** structure
-- **Light/Dark modes** included
-- **Surface tokens** for backgrounds
+### 📊 Export Formats
+- **Figma Variables** - W3C Design Tokens with multi-platform codeSyntax (WEB/iOS/Android)
+- **CSS Variables** - Standard custom properties
+- **Tailwind v3/v4** - JavaScript config or CSS @theme
+- **SCSS** - Sass variables
+- **JSON** - Complete tokens and scales
+- **CSV** - Contrast audit with WCAG levels
 
 ### 🧰 Advanced Tools
 
 #### Advanced Controls
 - ☑️ **Pure Neutrals** - pure gray without color tint
-- 🎚️ **Saturation** - global multiplier 0.5× - 1.5×
+- ☑️ **HCT Model** - Material Design 3 color system toggle
+- ☑️ **Stay True to Input** - preserve brand colors in palette
+- 🎚️ **Saturation** - global multiplier 0.5× - 2.0×
 - 🌡️ **Temperature** - hue shift -15° to +15°
-- 🎨 **Harmony** - analogous, complementary, triadic schemes
+- 🎨 **Harmony** - 6 color harmony modes
 
 #### Neutral Tint Source
 - Source selection for neutral scale tinting:
@@ -64,7 +76,7 @@ npm run build
 #### Pro Mode
 - 🎯 **Custom Tone Mapping** - manual override steps for semantic tokens
 - 🔍 **sRGB Gamut Warnings** - P3-wide color indicators
-- 🎨 **Stay True to Input** - preserves input color in scale
+- 🎨 **Stay True to Input** - preserves input color in scale (works with HCT)
 
 ### 👁️ Visual Tools
 - **Colorblind Simulation** - Deuteranopia, Protanopia, Tritanopia, Grayscale
@@ -105,6 +117,47 @@ L > 0.92:              0.25× (steps 0, 50, 100) - pastels
 0.20 < L ≤ 0.28:       0.55× (750, 800) - dark containers
 L ≤ 0.20:              0.3×  (850-1000) - dark backgrounds
 ```
+
+### HCT Color Model (Material Design 3)
+
+#### Tone System (0-100)
+```typescript
+// HCT uses perceptual lightness mapping with power curve
+function toneToLightness(tone: number): number {
+    return (tone / 100) ^ 0.9;  // Perceptual mapping
+}
+
+// Standard Material Design 3 tone palette
+Tone 100 → Lightest (pure white)
+Tone 40  → Primary default
+Tone 0   → Darkest (pure black)
+```
+
+#### Step-to-Tone Mapping
+```typescript
+// Our 0-1000 steps map to HCT 0-100 tones
+Step 0    → Tone 100  (lightest)
+Step 200  → Tone 85
+Step 400  → Tone 50
+Step 500  → Tone 40   (primary default)
+Step 800  → Tone 10
+Step 1000 → Tone 0    (darkest)
+```
+
+#### Adaptive Chroma in HCT
+```typescript
+// Chroma automatically reduces at extremes for gamut compliance
+Tones 95-100 or 0-5:   30% chroma (very light/dark)
+Tones 85-94 or 6-15:   60% chroma (light/dark)
+Tones 75-84 or 16-25:  80% chroma (slightly light/dark)
+Tones 26-74:          100% chroma (mid-range)
+```
+
+#### When to Use HCT
+- ✅ Building Material Design 3 applications
+- ✅ Need scientifically precise color relationships
+- ✅ Want Google's proven color system
+- ⚠️ Default OKLCH mode recommended for most design systems (more flexible)
 
 ### Token Mapping
 
@@ -204,13 +257,26 @@ src/
 ### 2. Advanced Controls (optional)
 ```tsx
 // Click "Advanced Controls" for extended options:
+- HCT Model: ☑️ Material Design 3 color system
+- Stay True to Input: ☑️ Preserve brand colors
 - Pure Neutrals: ☑️ Disables neutral scale tinting
-- Saturation: 🎚️ Global saturation multiplier
+- Saturation: 🎚️ Global saturation multiplier (0.5x-2x)
 - Temperature: 🌡️ Hue shift (warmer/cooler)
-- Harmony: 🎨 Auto-generate secondary (analogous/complementary/triadic)
+- Harmony: 🎨 6 modes (analogous/complementary/triadic/split/tetradic)
 ```
 
 ### 3. Live Preview
+```tsx
+// Automatic secondary color generation based on color theory:
+None:                Manual selection
+Analogous:           +30° hue (calm, cohesive)
+Complementary:       +180° hue (maximum contrast)
+Triadic:             +120° hue (balanced triad)
+Split-Complementary: +150°/+210° hue (softer contrast)
+Tetradic:            Rectangle harmony (rich variety)
+```
+
+### 4. Live Preview
 ```tsx
 // Top panel - independent switching:
 Theme:    [Light] [Dark]
@@ -225,38 +291,22 @@ Contrast: [Default] [High Contrast]
 
 ### 4. Export
 ```tsx
-// Export tokens to your preferred format:
-[CSS Variables] [Tailwind v3] [Tailwind v4]
-[SCSS] [JSON] [Figma W3C] [CSV Audit]
+// Export to your preferred format:
+[CSS] [Tailwind v3] [Tailwind v4] [SCSS] [JSON] [Figma] [CSV]
 
-// Figma export - W3C Design Tokens spec:
-- Checkbox options: scales / aliases / surface
-- Light/Dark selector
-- Aliases in format {scale.primary.500}
+// Figma Variables - W3C Design Tokens with codeSyntax:
+- Multi-platform: WEB / iOS / Android
+- Scales + Semantic tokens
+- Light/Dark modes included
 
 // CSV Audit:
-- All tokens with contrast vs background
-- AA/AAA/FAIL labels
+- All tokens with WCAG contrast ratios
+- AA/AAA/FAIL labels for accessibility
 ```
 
-## 🧪 Vizualizace
-
-### Color Harmony
-- **Analogous**: Primary + adjacent color (+30° hue)
-- **Complementary**: Primary + opposite color (+180° hue)
-- **Triadic**: 3 evenly distributed colors (+120° intervals)
+## 🧪 Visualization Tools
 
 ### Colorblind Simulation
-- **None** - original colors
-- **Deuteranopia** - green blindness (most common)
-- **Protanopia** - red blindness
-- **Tritanopia** - blue blindness (rare)
-- **Grayscale** - complete color blindness
-
-### Tonal Palette (Material Design 3)
-- Display of 0-100 tones for Primary/Secondary/Error
-- HCT tone-based contrast system
-- Used in Material Design 3
 
 ## 📚 Related Documents
 

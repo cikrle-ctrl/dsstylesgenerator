@@ -121,13 +121,21 @@ const Cell = ({ label, sublabel, token, mode, tokens, scope, onToken }: {
 };
 
 // Komponenta pro jeden ��dek barev (Primary row)
-const ColorRow = ({ name, mode, tokens, scales }: { name: string; mode: 'light' | 'dark'; tokens: Tokens, scales: Scales }) => {
+const ColorRow = ({ name, mode, tokens, scales, useHctModel }: { name: string; mode: 'light' | 'dark'; tokens: Tokens, scales: Scales, useHctModel: boolean }) => {
     const s = name.toLowerCase();
     const isLight = mode === 'light';
 
+    // HCT mapování: krok -> tón
+    const toneMapping: Record<string, number> = {
+        '0': 100, '50': 99, '100': 95, '150': 90, '200': 85, '250': 80,
+        '300': 70, '350': 60, '400': 50, '450': 45, '500': 40, '550': 35,
+        '600': 30, '650': 25, '700': 20, '750': 15, '800': 10, '850': 8,
+        '900': 6, '950': 4, '1000': 0,
+    };
+
     // Pomocn� fce: najde p�esn� �t�tek pro "On" barvu porovn�n�m s kandid�ty
     const getExactOnLabel = (onHex: string): string => {
-        if (!onHex) return 'neutral-0/1000';
+        if (!onHex) return useHctModel ? 'neutral/0' : 'neutral-0/1000';
         const hex = String(onHex).toLowerCase();
     const n = scales.neutral;
     const current = (scales as Record<string, ShadeScale>)[s];
@@ -138,18 +146,33 @@ const ColorRow = ({ name, mode, tokens, scales }: { name: string; mode: 'light' 
             { group: s, step: '1000', hex: (current?.['1000'] || '').toLowerCase() },
         ];
         const hit = candidates.find(c => c.hex === hex);
-        return hit ? `${hit.group}-${hit.step}` : 'neutral-0/1000';
+        if (!hit) return useHctModel ? 'neutral/0' : 'neutral-0/1000';
+        
+        if (useHctModel) {
+            const tone = toneMapping[hit.step] ?? hit.step;
+            return `${hit.group}/${tone}`;
+        }
+        return `${hit.group}-${hit.step}`;
     };
 
     // Pomocn� fce: p�esn� �t�tek pro On{Color}Container z kandid�t�
     const getExactOnContainerLabel = (onHex: string): string => {
-        if (!onHex) return isLight ? `${s}-700/1000` : `${s}-100/300`;
+        const defaultLight = useHctModel ? `${s}/20` : `${s}-700/1000`;
+        const defaultDark = useHctModel ? `${s}/95` : `${s}-100/300`;
+        if (!onHex) return isLight ? defaultLight : defaultDark;
+        
         const hex = String(onHex).toLowerCase();
     const current = (scales as Record<string, ShadeScale>)[s];
         const steps = ['700','800','900','1000','100','200','300'];
         const candidates = steps.map(step => ({ group: s, step, hex: (current?.[step] || '').toLowerCase() }));
         const hit = candidates.find(c => c.hex === hex);
-        return hit ? `${hit.group}-${hit.step}` : (isLight ? `${s}-700/1000` : `${s}-100/300`);
+        if (!hit) return isLight ? defaultLight : defaultDark;
+        
+        if (useHctModel) {
+            const tone = toneMapping[hit.step] ?? hit.step;
+            return `${hit.group}/${tone}`;
+        }
+        return `${hit.group}-${hit.step}`;
     };
 
     // Pomocn� fce: p�esn� �t�tek podle skute�n� hodnoty tokenu z dan� �k�ly
@@ -159,7 +182,13 @@ const ColorRow = ({ name, mode, tokens, scales }: { name: string; mode: 'light' 
         const scale = (scales as Record<string, ShadeScale>)[group];
         if (!hex || !scale) return group;
         const match = Object.entries(scale).find(([, value]) => String(value).toLowerCase() === hex);
-        return match ? `${group}-${match[0]}` : group;
+        if (!match) return group;
+        
+        if (useHctModel) {
+            const tone = toneMapping[match[0]] ?? match[0];
+            return `${group}/${tone}`;
+        }
+        return `${group}-${match[0]}`;
     };
     
     return (
@@ -465,8 +494,9 @@ const OutlineAndOtherSection = ({ mode, tokens, scales }: { mode: 'light' | 'dar
 };
 
 export function PalettePreview() {
-    const { tokens, scales, ui } = useThemeStore();
+    const { tokens, scales, ui, advancedSettings } = useThemeStore();
     const mode: 'light' | 'dark' = ui.themeMode;
+    const useHctModel = advancedSettings.useHctModel;
 
     return (
         <section>
@@ -482,12 +512,12 @@ export function PalettePreview() {
                         }}>
                             Color Palette · Light Mode
                         </h3>
-                        <ColorRow name="Primary" mode="light" tokens={tokens} scales={scales} />
-                        <ColorRow name="Secondary" mode="light" tokens={tokens} scales={scales} />
-                        <ColorRow name="Error" mode="light" tokens={tokens} scales={scales} />
-                        <ColorRow name="Success" mode="light" tokens={tokens} scales={scales} />
-                        <ColorRow name="Warning" mode="light" tokens={tokens} scales={scales} />
-                        <ColorRow name="Info" mode="light" tokens={tokens} scales={scales} />
+                        <ColorRow name="Primary" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Secondary" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Error" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Success" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Warning" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Info" mode="light" tokens={tokens} scales={scales} useHctModel={useHctModel} />
                         <SurfaceSection mode="light" tokens={tokens} scales={scales} />
                         <OnSurfaceSection mode="light" tokens={tokens} scales={scales} />
                         <OutlineAndOtherSection mode="light" tokens={tokens} scales={scales} />
@@ -502,12 +532,12 @@ export function PalettePreview() {
                         }}>
                             Color Palette · Dark Mode
                         </h3>
-                        <ColorRow name="Primary" mode="dark" tokens={tokens} scales={scales} />
-                        <ColorRow name="Secondary" mode="dark" tokens={tokens} scales={scales} />
-                        <ColorRow name="Error" mode="dark" tokens={tokens} scales={scales} />
-                        <ColorRow name="Success" mode="dark" tokens={tokens} scales={scales} />
-                        <ColorRow name="Warning" mode="dark" tokens={tokens} scales={scales} />
-                        <ColorRow name="Info" mode="dark" tokens={tokens} scales={scales} />
+                        <ColorRow name="Primary" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Secondary" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Error" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Success" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Warning" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
+                        <ColorRow name="Info" mode="dark" tokens={tokens} scales={scales} useHctModel={useHctModel} />
                         <SurfaceSection mode="dark" tokens={tokens} scales={scales} />
                         <OnSurfaceSection mode="dark" tokens={tokens} scales={scales} />
                         <OutlineAndOtherSection mode="dark" tokens={tokens} scales={scales} />

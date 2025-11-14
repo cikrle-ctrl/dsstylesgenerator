@@ -20,6 +20,7 @@
 import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
 import { generateTonalPalette } from './toneContrastSystem';
+import { oklch } from 'culori';
 
 type ShadeScale = Record<string, string>;
 type CssTokenMap = Record<string, string>;
@@ -104,7 +105,8 @@ function createTokenSet(
     contrast: ContrastMode,
     stayTrueToInputColor: boolean,
     inputColor?: string,
-    customTones?: CustomTones
+    customTones?: CustomTones,
+    useHctModel = false
 ): CssTokenMap {
     const isLight = mode === 'light';
     const s = scales[name]; // např. scales.primary
@@ -150,7 +152,52 @@ function createTokenSet(
         
         // 2. Stay true to input color - najdi nejbližší krok v rozsahu 300-600
         if (stayTrueToInputColor && inputColor) {
-            return findClosestStepInScale(inputColor, s, 300, 600);
+            if (useHctModel) {
+                // V HCT režimu: najdi nejbližší tón přímo podle lightness
+                const tonalPalette = generateTonalPalette(inputColor);
+                const inputOklch = oklch(inputColor);
+                if (inputOklch) {
+                    const targetLightness = inputOklch.l;
+                    let closestTone = 40; // střední fallback
+                    let minDiff = Infinity;
+                    
+                    // Hledej v rozsahu tónů 30-60 (odpovídá ~300-600 v našem systému)
+                    for (let tone = 30; tone <= 60; tone++) {
+                        const toneColor = oklch(tonalPalette[tone]);
+                        if (!toneColor) continue;
+                        const diff = Math.abs(toneColor.l - targetLightness);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closestTone = tone;
+                        }
+                    }
+                    
+                    // Mapuj tón zpět na náš krok
+                    const toneToStepMap: Record<number, string> = {
+                        100: '0', 99: '50', 95: '100', 90: '150', 85: '200', 80: '250',
+                        70: '300', 60: '350', 50: '400', 45: '450', 40: '500', 35: '550',
+                        30: '600', 25: '650', 20: '700', 15: '750', 10: '800', 8: '850',
+                        6: '900', 4: '950', 0: '1000',
+                    };
+                    
+                    // Najdi nejbližší mapovaný tón
+                    const mappedTones = Object.keys(toneToStepMap).map(Number).sort((a, b) => a - b);
+                    let nearestMappedTone = mappedTones[0];
+                    let nearestDiff = Math.abs(closestTone - nearestMappedTone);
+                    for (const mt of mappedTones) {
+                        const diff = Math.abs(closestTone - mt);
+                        if (diff < nearestDiff) {
+                            nearestDiff = diff;
+                            nearestMappedTone = mt;
+                        }
+                    }
+                    
+                    return toneToStepMap[nearestMappedTone] || '500';
+                }
+            } else {
+                // OKLCH režim: standardní hledání
+                return findClosestStepInScale(inputColor, s, 300, 600);
+            }
         }
         
         // 3. SPRÁVNÝ ALGORITMUS: FindOptimalShade
@@ -286,7 +333,8 @@ function getTokens(
     contrast: ContrastMode,
     stayTrueToInputColor: boolean,
     inputColors?: InputColors,
-    customTones?: CustomTones
+    customTones?: CustomTones,
+    useHctModel = false
 ): CssTokenMap {
     const isLight = mode === 'light';
     const n = scales.neutral;
@@ -298,12 +346,12 @@ function getTokens(
         return 4.5; // default
     })();
 
-    const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary, customTones);
-    const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary, customTones);
-    const errorSet = createTokenSet(scales, 'error', mode, contrast, stayTrueToInputColor, inputColors?.error, customTones);
-    const warningSet = createTokenSet(scales, 'warning', mode, contrast, stayTrueToInputColor, inputColors?.warning, customTones);
-    const successSet = createTokenSet(scales, 'success', mode, contrast, stayTrueToInputColor, inputColors?.success, customTones);
-    const infoSet = createTokenSet(scales, 'info', mode, contrast, stayTrueToInputColor, inputColors?.info, customTones);
+    const primarySet = createTokenSet(scales, 'primary', mode, contrast, stayTrueToInputColor, inputColors?.primary, customTones, useHctModel);
+    const secondarySet = createTokenSet(scales, 'secondary', mode, contrast, stayTrueToInputColor, inputColors?.secondary, customTones, useHctModel);
+    const errorSet = createTokenSet(scales, 'error', mode, contrast, stayTrueToInputColor, inputColors?.error, customTones, useHctModel);
+    const warningSet = createTokenSet(scales, 'warning', mode, contrast, stayTrueToInputColor, inputColors?.warning, customTones, useHctModel);
+    const successSet = createTokenSet(scales, 'success', mode, contrast, stayTrueToInputColor, inputColors?.success, customTones, useHctModel);
+    const infoSet = createTokenSet(scales, 'info', mode, contrast, stayTrueToInputColor, inputColors?.info, customTones, useHctModel);
 
     // Základní tokeny podle finální specifikace (Krok 4 + 6 algoritmu)
     const baseTokens: CssTokenMap = {
@@ -463,7 +511,7 @@ export function generateMappedTokens(
     }
     
     return {
-        light: getTokens(processedScales, 'light', contrast, stayTrueToInputColor, inputColors, customTones),
-        dark: getTokens(processedScales, 'dark', contrast, stayTrueToInputColor, inputColors, customTones),
+        light: getTokens(processedScales, 'light', contrast, stayTrueToInputColor, inputColors, customTones, useHctModel),
+        dark: getTokens(processedScales, 'dark', contrast, stayTrueToInputColor, inputColors, customTones, useHctModel),
     };
 }

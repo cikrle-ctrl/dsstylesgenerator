@@ -5,6 +5,8 @@ export function Docs() {
         { id: 'intro', label: 'Introduction' },
         { id: 'getting-started', label: 'Getting Started' },
         { id: 'color-system', label: 'Color System' },
+        { id: 'hct-model', label: 'HCT Color Model' },
+        { id: 'color-harmonies', label: 'Color Harmonies' },
         { id: 'contrast-modes', label: 'Contrast Modes' },
         { id: 'tokens', label: 'Design Tokens' },
         { id: 'export', label: 'Export Options' },
@@ -502,6 +504,222 @@ export function Docs() {
                         </div>
                     </section>
 
+                    {/* HCT Color Model */}
+                    <section id="hct-model" className="docs-section">
+                        <h2 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--color-on-surface-heading)', margin: '0 0 24px 0' }}>
+                            HCT Color Model
+                        </h2>
+
+                        <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '24px' }}>
+                            HCT (Hue, Chroma, Tone) is Google's Material Design 3 color system that ensures perceptually accurate color palettes. 
+                            Enable it in Advanced Settings for Material Design-compliant color generation.
+                        </p>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                📐 How HCT Works
+                            </h3>
+                            
+                            <div style={{ marginBottom: '20px' }}>
+                                <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 8px 0' }}>
+                                    Tone System (0-100)
+                                </h4>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                    HCT uses a 0-100 tone scale instead of our standard 0-1000 step scale:
+                                </p>
+                                <ul style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', paddingLeft: '20px', margin: 0 }}>
+                                    <li><strong>Tone 100:</strong> Lightest (pure white) — maps to step 0</li>
+                                    <li><strong>Tone 50:</strong> Mid-tone — maps to step 400</li>
+                                    <li><strong>Tone 40:</strong> Primary default — maps to step 500</li>
+                                    <li><strong>Tone 0:</strong> Darkest (pure black) — maps to step 1000</li>
+                                </ul>
+                            </div>
+
+                            <div style={{ marginBottom: '20px' }}>
+                                <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 8px 0' }}>
+                                    Perceptual Lightness Mapping
+                                </h4>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                    HCT applies a power curve (tone/100)^0.9 to convert tones to OKLCH lightness values. 
+                                    This ensures visually uniform color progression that matches human perception.
+                                </p>
+                            </div>
+
+                            <div style={{ marginBottom: '20px' }}>
+                                <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 8px 0' }}>
+                                    Adaptive Chroma
+                                </h4>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                    Chroma (color intensity) automatically reduces at extreme lightness/darkness to stay within the sRGB gamut:
+                                </p>
+                                <ul style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', paddingLeft: '20px', margin: '8px 0 0 0' }}>
+                                    <li>Tones 95-100 or 0-5: 30% chroma (very light/dark)</li>
+                                    <li>Tones 85-94 or 6-15: 60% chroma (light/dark)</li>
+                                    <li>Tones 75-84 or 16-25: 80% chroma (slightly light/dark)</li>
+                                    <li>Tones 26-74: 100% chroma (mid-range)</li>
+                                </ul>
+                            </div>
+
+                            <div style={{ 
+                                background: 'var(--color-warning-container)', 
+                                padding: '16px', 
+                                borderRadius: '8px',
+                                border: '1px solid var(--color-warning)'
+                            }}>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-warning-container)', lineHeight: '1.6', margin: 0 }}>
+                                    <strong>💡 When to use HCT:</strong> Enable HCT when building Material Design 3 applications, or when you need scientifically precise color relationships. 
+                                    The default OKLCH mode is recommended for most design systems as it offers more flexibility.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 12px 0' }}>
+                                🔄 HCT vs OKLCH
+                            </h3>
+                            
+                            <div className="mode-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', margin: '16px 0 0 0' }}>
+                                <div style={{ background: 'var(--color-surface-variant)', padding: '16px', borderRadius: '8px' }}>
+                                    <h4 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 8px 0' }}>
+                                        OKLCH (Default)
+                                    </h4>
+                                    <ul style={{ fontSize: '13px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', paddingLeft: '16px', margin: 0 }}>
+                                        <li>0-1000 step scale</li>
+                                        <li>More granular control</li>
+                                        <li>Flexible chroma handling</li>
+                                        <li>Best for custom design systems</li>
+                                    </ul>
+                                </div>
+                                <div style={{ background: 'var(--color-primary-container)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-primary)' }}>
+                                    <h4 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-on-primary-container)', margin: '0 0 8px 0' }}>
+                                        HCT (Material Design 3)
+                                    </h4>
+                                    <ul style={{ fontSize: '13px', color: 'var(--color-on-primary-container)', lineHeight: '1.6', paddingLeft: '16px', margin: 0, opacity: 0.9 }}>
+                                        <li>0-100 tone scale</li>
+                                        <li>Material Design standard</li>
+                                        <li>Automatic chroma reduction</li>
+                                        <li>Best for Material Design apps</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Color Harmonies */}
+                    <section id="color-harmonies" className="docs-section">
+                        <h2 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--color-on-surface-heading)', margin: '0 0 24px 0' }}>
+                            Color Harmonies
+                        </h2>
+
+                        <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '24px' }}>
+                            Automatically generate secondary colors based on proven color theory relationships. 
+                            All harmonies preserve the hue relationship while maintaining optimal chroma and lightness for your design system.
+                        </p>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                🎨 Harmony Types
+                            </h3>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        None (Manual)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        Set your secondary color manually. Full control over your color palette without automatic generation.
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        Analogous (+30° hue)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        Creates a harmonious, low-contrast palette. Secondary color sits next to primary on the color wheel. 
+                                        Perfect for calm, cohesive designs with subtle color variation.
+                                    </p>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-on-surface-subtle)', marginTop: '6px', fontFamily: 'Consolas, monospace' }}>
+                                        Example: Blue (#0066CC) → Blue-Violet (#4D0099)
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        Complementary (+180° hue)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        Creates maximum contrast and visual tension. Secondary is directly opposite on the color wheel. 
+                                        Ideal for vibrant, energetic designs that demand attention.
+                                    </p>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-on-surface-subtle)', marginTop: '6px', fontFamily: 'Consolas, monospace' }}>
+                                        Example: Blue (#0066CC) → Orange (#CC6600)
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        Triadic (+120° hue)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        Evenly spaced colors forming an equilateral triangle on the color wheel. 
+                                        Provides balanced contrast with three distinct colors that work together harmoniously.
+                                    </p>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-on-surface-subtle)', marginTop: '6px', fontFamily: 'Consolas, monospace' }}>
+                                        Example: Blue (#0066CC) → Red (#CC0066)
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        Split-Complementary (+150°/+210° hue)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        A softer version of complementary. Uses two colors adjacent to the complement (±30° from opposite). 
+                                        Offers strong visual interest without the intensity of pure complementary colors.
+                                    </p>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-on-surface-subtle)', marginTop: '6px', fontFamily: 'Consolas, monospace' }}>
+                                        Example: Blue (#0066CC) → Yellow-Orange & Red-Orange
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--color-primary)', margin: '0 0 8px 0' }}>
+                                        Tetradic (Rectangle)
+                                    </h4>
+                                    <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
+                                        Four colors arranged in complementary pairs (60°, 180°, 240°). Forms a rectangle on the color wheel. 
+                                        Richest harmony with the most color variety, requires careful balance in usage.
+                                    </p>
+                                    <div style={{ fontSize: '13px', color: 'var(--color-on-surface-subtle)', marginTop: '6px', fontFamily: 'Consolas, monospace' }}>
+                                        Example: Blue (#0066CC) → Green-Yellow, Orange, Red-Violet
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 12px 0' }}>
+                                💡 Choosing the Right Harmony
+                            </h3>
+                            
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <p style={{ margin: '0 0 12px 0' }}>
+                                    <strong>For conservative, professional brands:</strong> Use Analogous for subtle sophistication.
+                                </p>
+                                <p style={{ margin: '0 0 12px 0' }}>
+                                    <strong>For dynamic, bold brands:</strong> Use Complementary or Split-Complementary for impact.
+                                </p>
+                                <p style={{ margin: '0 0 12px 0' }}>
+                                    <strong>For balanced, versatile systems:</strong> Use Triadic for equal visual weight across colors.
+                                </p>
+                                <p style={{ margin: '0' }}>
+                                    <strong>For complex, rich palettes:</strong> Use Tetradic when you need maximum variety and depth.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Contrast Modes */}
                     <section id="contrast-modes" className="docs-section">
                         <h2 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--color-on-surface-heading)', margin: '0 0 24px 0' }}>
@@ -957,30 +1175,141 @@ export function Docs() {
                         </div>
 
                         <div className="docs-card">
-                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 12px 0' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
                                 🎯 Pro Mode (Custom Tones)
                             </h3>
-                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
-                                Override automatic tone selection. Specify exact scale steps (0-1000) for light and dark modes per semantic color.
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Take full control of your color system by manually specifying exact tone values for each semantic color in both light and dark modes.
                             </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <p style={{ margin: '0 0 8px 0' }}><strong>How it works:</strong></p>
+                                <ul style={{ paddingLeft: '20px', margin: '0 0 12px 0' }}>
+                                    <li>Specify tones from 0 (lightest) to 1000 (darkest)</li>
+                                    <li>Override automatic WCAG contrast calculations</li>
+                                    <li>Set different values for light vs. dark mode</li>
+                                    <li>Fine-tune individual semantic colors (primary, secondary, error, etc.)</li>
+                                </ul>
+                                <p style={{ margin: '0', fontSize: '13px', color: 'var(--color-on-surface-subtle)' }}>
+                                    💡 Useful for brand guidelines that require specific color values or when matching existing design systems.
+                                </p>
+                            </div>
                         </div>
 
                         <div className="docs-card">
-                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 12px 0' }}>
-                                🌈 Neutral Tints
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                🎨 Stay True to Input Colors
                             </h3>
-                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
-                                Choose neutral source: Primary-tinted (subtle brand color), Secondary-tinted, Custom color, or Pure gray (achromatic).
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Forces the generator to find the closest tone in the scale (300-600 range) that matches your input color's lightness, 
+                                rather than automatically selecting optimal WCAG contrast.
                             </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <p style={{ margin: '0 0 8px 0' }}><strong>Use cases:</strong></p>
+                                <ul style={{ paddingLeft: '20px', margin: '0 0 12px 0' }}>
+                                    <li>Preserving exact brand colors in the palette</li>
+                                    <li>Maintaining visual consistency with existing designs</li>
+                                    <li>Creating color systems from logo colors</li>
+                                    <li>Works with both OKLCH and HCT color models</li>
+                                </ul>
+                                <div style={{ 
+                                    background: 'var(--color-warning-container)', 
+                                    padding: '12px', 
+                                    borderRadius: '6px',
+                                    border: '1px solid var(--color-warning)',
+                                    fontSize: '13px',
+                                    color: 'var(--color-on-warning-container)',
+                                    margin: '0'
+                                }}>
+                                    ⚠️ Note: May result in suboptimal contrast ratios. Always verify accessibility manually.
+                                </div>
+                            </div>
                         </div>
 
                         <div className="docs-card">
-                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 12px 0' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                🌈 Neutral Tint Options
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Choose the source color for your neutral/gray scale to add subtle brand character or maintain pure neutrality.
+                            </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <p style={{ margin: '0 0 8px 0' }}><strong>Options:</strong></p>
+                                <ul style={{ paddingLeft: '20px', margin: '0' }}>
+                                    <li><strong>Primary Tinted:</strong> Neutrals with a subtle hint of your primary color (default)</li>
+                                    <li><strong>Secondary Tinted:</strong> Neutrals influenced by secondary color</li>
+                                    <li><strong>Custom Color:</strong> Tint neutrals with any color you choose</li>
+                                    <li><strong>Pure Neutrals:</strong> Completely achromatic grays (0 chroma)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                🔬 Saturation & Temperature
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Fine-tune the overall feel of your color system with global adjustments.
+                            </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <ul style={{ paddingLeft: '20px', margin: '0' }}>
+                                    <li><strong>Saturation Multiplier:</strong> Scale chroma globally (0.5x to 2x) to make colors more muted or vibrant</li>
+                                    <li><strong>Temperature Shift:</strong> Shift hue towards warm (orange) or cool (blue) spectrum</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
                                 👁️ Colorblind Simulation
                             </h3>
-                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: 0 }}>
-                                Preview your palette through different types of color vision deficiency to ensure usability for all users.
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Preview your entire design system through different types of color vision deficiency to ensure usability for all users.
                             </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <p style={{ margin: '0 0 8px 0' }}><strong>Supported simulations:</strong></p>
+                                <ul style={{ paddingLeft: '20px', margin: '0' }}>
+                                    <li><strong>Protanopia:</strong> Red-blind (affects ~1% of males)</li>
+                                    <li><strong>Deuteranopia:</strong> Green-blind (most common, affects ~6% of males)</li>
+                                    <li><strong>Tritanopia:</strong> Blue-blind (rare, affects ~0.01% of population)</li>
+                                    <li><strong>Achromatopsia:</strong> Complete color blindness (very rare)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                📊 High Contrast Support
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                All generated tokens automatically include high contrast and extra-high contrast variants for enhanced accessibility.
+                            </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <ul style={{ paddingLeft: '20px', margin: '0 0 12px 0' }}>
+                                    <li>Default: 4.5:1 minimum (WCAG AA standard)</li>
+                                    <li>High Contrast: 7:1 minimum (WCAG AAA standard)</li>
+                                    <li>Extra-High: 9:1 minimum (maximum accessibility)</li>
+                                </ul>
+                                <p style={{ margin: '0', fontSize: '13px', color: 'var(--color-on-surface-subtle)' }}>
+                                    All six modes (Light/Dark × Default/High/Extra-High) are generated simultaneously.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="docs-card">
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
+                                🎭 Surface & Elevation System
+                            </h3>
+                            <p style={{ fontSize: '15px', color: 'var(--color-on-surface-variant)', lineHeight: '1.6', margin: '0 0 12px 0' }}>
+                                Comprehensive surface token system with proper hierarchy for backgrounds, cards, and modals.
+                            </p>
+                            <div style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7' }}>
+                                <ul style={{ paddingLeft: '20px', margin: '0' }}>
+                                    <li><strong>background:</strong> Page background (behind all content)</li>
+                                    <li><strong>surface:</strong> Default component background (cards, modals)</li>
+                                    <li><strong>surface-variant:</strong> Differentiated sections</li>
+                                    <li><strong>inverse-surface:</strong> Opposite theme surface for tooltips</li>
+                                </ul>
+                            </div>
                         </div>
                     </section>
                 </div>
