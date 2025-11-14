@@ -282,34 +282,68 @@ function getTokens(
         // on-surface-heading: Nejvyšší důraz, téměř černá/bílá
         '--color-on-surface-heading': isLight ? n['950'] : n['50'],
         
-        // on-surface-body: Standardní text (použijeme on-surface-variant jako body)
-        '--color-on-surface-variant': isLight ? n['800'] : n['100'],
+        // on-surface-variant: Standardní text (body)
+        // Light: 700 (default), 800 (high), 900 (extra-high)
+        // Dark: 300 (default), 200 (high), 100 (extra-high)
+        '--color-on-surface-variant': (() => {
+            if (isLight) {
+                if (contrast === 'extra-high') return n['900'];
+                if (contrast === 'high-contrast') return n['800'];
+                return n['700'];
+            } else {
+                if (contrast === 'extra-high') return n['100'];
+                if (contrast === 'high-contrast') return n['200'];
+                return n['300'];
+            }
+        })(),
         
-        // on-surface-subtle: Nízký důraz (placeholders), střední šedá
-        '--color-on-surface-subtle': isLight ? n['500'] : n['500'],
+        // on-surface-subtle: Nízký důraz (placeholders, captions)
+        // Light: 400 (default), 500 (high), 600 (extra-high)
+        // Dark: 600 (default), 500 (high), 400 (extra-high)
+        '--color-on-surface-subtle': (() => {
+            if (isLight) {
+                if (contrast === 'extra-high') return n['600'];
+                if (contrast === 'high-contrast') return n['500'];
+                return n['400'];
+            } else {
+                if (contrast === 'extra-high') return n['400'];
+                if (contrast === 'high-contrast') return n['500'];
+                return n['600'];
+            }
+        })(),
         
         '--color-on-surface-inverse': isLight ? n['0'] : n['1000'],
         '--color-primary-inverse': isLight ? scales.primary['300'] : scales.primary['500'],
 
-        // Outline (Ohraničení) - DYNAMICKÉ podle kontrastu
-        // Používají neutral škálu, ale cílový kontrast se mění podle režimu
+        // Outline (Ohraničení) - Fixní hodnoty pro default mode, dynamické pro high contrast
+        // Používají neutral škálu
         ...(() => {
             const surfaceHex = isLight ? n['0'] : n['950'];
             
-            // Cílové kontrasty pro outlines podle režimu
-            const subtleTarget = 2.0; // Vždy 2:1 (sotva viditelné)
-            const defaultTarget = contrast === 'extra-high' ? 4.5 : contrast === 'high-contrast' ? 3.5 : 3.0;
-            const hoverTarget = contrast === 'extra-high' ? 5.0 : contrast === 'high-contrast' ? 4.0 : 3.5;
-            const pressedTarget = contrast === 'extra-high' ? 6.0 : contrast === 'high-contrast' ? 4.5 : 4.0;
-            const strongTarget = contrast === 'extra-high' ? 7.0 : contrast === 'high-contrast' ? 5.5 : 4.5;
+            // Pro default contrast mode používáme fixní kroky
+            if (contrast === 'default') {
+                return {
+                    '--color-outline-subtle': isLight ? n['150'] : n['850'],
+                    '--color-outline-default': isLight ? n['300'] : n['700'],
+                    '--color-outline-hover': isLight ? n['350'] : n['650'],
+                    '--color-outline-pressed': isLight ? n['450'] : n['550'],
+                    '--color-outline-strong': isLight ? n['400'] : n['600'],
+                } as CssTokenMap;
+            }
             
-            // Light mode: rozsahy pro neutral (100-600)
-            // Dark mode: rozsahy pro neutral (400-900)
+            // Pro high contrast režimy - dynamické výpočty
+            const subtleTarget = 2.0;
+            const defaultTarget = contrast === 'extra-high' ? 4.5 : 3.5;
+            const hoverTarget = contrast === 'extra-high' ? 5.0 : 4.0;
+            const pressedTarget = contrast === 'extra-high' ? 6.0 : 4.5;
+            const strongTarget = contrast === 'extra-high' ? 7.0 : 5.5;
+            
+            // Adjusted ranges for high contrast
             const subtleRange: [number, number] = isLight ? [100, 200] : [800, 900];
-            const defaultRange: [number, number] = isLight ? [200, 400] : [600, 800];
-            const hoverRange: [number, number] = isLight ? [300, 500] : [500, 700];
-            const pressedRange: [number, number] = isLight ? [400, 600] : [400, 600];
-            const strongRange: [number, number] = isLight ? [500, 700] : [300, 500];
+            const defaultRange: [number, number] = isLight ? [300, 500] : [500, 700];
+            const hoverRange: [number, number] = isLight ? [350, 550] : [450, 650];
+            const pressedRange: [number, number] = isLight ? [450, 650] : [350, 550];
+            const strongRange: [number, number] = isLight ? [400, 600] : [400, 600];
             
             return {
                 '--color-outline-subtle': n[findOptimalStepByContrast(n, surfaceHex, subtleTarget, subtleRange)],
