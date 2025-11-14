@@ -160,6 +160,97 @@ export function Docs() {
                     background: var(--color-error-container);
                     color: var(--color-on-error-container);
                 }
+                .token-row {
+                    display: grid;
+                    grid-template-columns: 80px 1fr 2fr;
+                    gap: 16px;
+                    padding: 16px;
+                    border-bottom: 1px solid var(--color-outline-subtle);
+                    align-items: center;
+                }
+                .token-row:last-child {
+                    border-bottom: none;
+                }
+                .token-row:hover {
+                    background: var(--color-surface-hover);
+                }
+                .token-swatch {
+                    width: 64px;
+                    height: 48px;
+                    border-radius: 8px;
+                    border: 1px solid var(--color-outline-subtle);
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .token-name {
+                    font-family: 'Consolas', 'Monaco', monospace;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--color-on-surface-heading);
+                }
+                .token-desc {
+                    font-size: 14px;
+                    color: var(--color-on-surface-variant);
+                    line-height: 1.5;
+                }
+                .mode-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 16px;
+                    margin: 24px 0;
+                }
+                .mode-card {
+                    background: var(--color-surface);
+                    border: 2px solid var(--color-outline-default);
+                    border-radius: 12px;
+                    padding: 20px;
+                    transition: all 0.2s ease;
+                }
+                .mode-card:hover {
+                    border-color: var(--color-primary);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .mode-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 16px;
+                }
+                .mode-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                }
+                .mode-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: var(--color-on-surface-heading);
+                    margin: 0;
+                }
+                .mode-meta {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 12px;
+                    padding-top: 12px;
+                    border-top: 1px solid var(--color-outline-subtle);
+                }
+                .mode-meta-item {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 13px;
+                }
+                .mode-meta-label {
+                    color: var(--color-on-surface-variant);
+                }
+                .mode-meta-value {
+                    color: var(--color-on-surface-heading);
+                    font-weight: 600;
+                    font-family: 'Consolas', monospace;
+                }
             `}</style>
 
             {/* Header */}
@@ -244,9 +335,54 @@ export function Docs() {
                         </div>
 
                         <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '32px 0 16px 0' }}>
-                            Basic Usage
+                            Basic Usage Example
                         </h3>
-                        <div className="docs-code">
+                        
+                        <div className="docs-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
+                                <div style={{ background: 'var(--color-surface-variant)', padding: '24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                    <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-on-surface-variant)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Preview</div>
+                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                        <button style={{
+                                            background: 'var(--color-primary)',
+                                            color: 'var(--color-on-primary)',
+                                            padding: '12px 24px',
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.15s ease'
+                                        }}>
+                                            Primary Button
+                                        </button>
+                                        <button style={{
+                                            background: 'var(--color-secondary)',
+                                            color: 'var(--color-on-secondary)',
+                                            padding: '12px 24px',
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            cursor: 'pointer'
+                                        }}>
+                                            Secondary
+                                        </button>
+                                        <button style={{
+                                            background: 'transparent',
+                                            color: 'var(--color-primary)',
+                                            padding: '12px 24px',
+                                            borderRadius: '8px',
+                                            border: '1px solid var(--color-outline-default)',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            cursor: 'pointer'
+                                        }}>
+                                            Outlined
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="docs-code" style={{ margin: 0, borderRadius: 0 }}>
 {`/* Button Component */
 .button {
   background: var(--color-primary);
@@ -265,6 +401,8 @@ export function Docs() {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }`}
+                                </div>
+                            </div>
                         </div>
                     </section>
 
@@ -308,57 +446,226 @@ export function Docs() {
                         <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '16px' }}>
                             Each color generates a 21-step scale from 0 (white) to 1000 (black). Steps are 50 units apart for easy reference.
                         </p>
-                        <div className="docs-code">
-{`/* Scale Examples */
---primary-0: #ffffff     /* Lightest */
---primary-200: #c5d9ff   /* Container (Light Mode) */
---primary-500: #4c8bfd   /* Base color */
---primary-800: #1a3d7a   /* Container (Dark Mode) */
---primary-1000: #000000  /* Darkest */`}
+                        
+                        <div className="docs-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Primary Scale Example</div>
+                            </div>
+                            <div style={{ padding: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))', gap: '8px', marginBottom: '20px' }}>
+                                    {[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000].map(step => (
+                                        <div key={step} style={{ textAlign: 'center' }}>
+                                            <div style={{
+                                                height: '48px',
+                                                background: `var(--primary-${step})`,
+                                                borderRadius: '6px',
+                                                border: '1px solid var(--color-outline-subtle)',
+                                                marginBottom: '6px'
+                                            }}></div>
+                                            <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-on-surface-heading)', fontFamily: 'Consolas, monospace' }}>{step}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px' }}>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-on-surface-heading)', fontFamily: 'Consolas, monospace' }}>Step</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-on-surface-heading)' }}>Usage</div>
+                                    <div style={{ fontWeight: '600', color: 'var(--color-on-surface-heading)' }}>Token</div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px' }}>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-primary)', fontWeight: '600' }}>0</div>
+                                    <div style={{ color: 'var(--color-on-surface-variant)' }}>Lightest tint</div>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-surface-heading)', fontSize: '12px' }}>--primary-0</div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px', background: 'var(--color-info-container)' }}>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-info-container)', fontWeight: '600' }}>200</div>
+                                    <div style={{ color: 'var(--color-on-info-container)' }}>Container (Light Mode) ⭐</div>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-info-container)', fontSize: '12px' }}>--primary-200</div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px' }}>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-primary)', fontWeight: '600' }}>500</div>
+                                    <div style={{ color: 'var(--color-on-surface-variant)' }}>Base color (mid-point)</div>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-surface-heading)', fontSize: '12px' }}>--primary-500</div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px', background: 'var(--color-warning-container)' }}>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-warning-container)', fontWeight: '600' }}>800</div>
+                                    <div style={{ color: 'var(--color-on-warning-container)' }}>Container (Dark Mode) ⭐</div>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-warning-container)', fontSize: '12px' }}>--primary-800</div>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 200px', gap: '16px', padding: '12px 0', borderTop: '1px solid var(--color-outline-subtle)', fontSize: '13px' }}>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-primary)', fontWeight: '600' }}>1000</div>
+                                    <div style={{ color: 'var(--color-on-surface-variant)' }}>Darkest shade</div>
+                                    <div style={{ fontFamily: 'Consolas, monospace', color: 'var(--color-on-surface-heading)', fontSize: '12px' }}>--primary-1000</div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 
                     {/* Contrast Modes */}
                     <section id="contrast-modes" className="docs-section">
                         <h2 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--color-on-surface-heading)', margin: '0 0 24px 0' }}>
-                            Contrast Modes
+                            Accessibility Modes
                         </h2>
 
                         <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '24px' }}>
-                            The generator supports 6 modes (Light/Dark × Default/High/Extra-High) with guaranteed WCAG contrast ratios.
+                            Six accessibility modes ensure your design system works for everyone. Each mode guarantees WCAG-compliant contrast ratios.
                         </p>
 
-                        <div className="docs-card" style={{ background: 'var(--color-surface-variant)' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '2px solid var(--color-outline-default)' }}>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: 'var(--color-on-surface-heading)', fontWeight: '600' }}>Mode</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: 'var(--color-on-surface-heading)', fontWeight: '600' }}>Text Contrast</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: 'var(--color-on-surface-heading)', fontWeight: '600' }}>Container Contrast</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', color: 'var(--color-on-surface-heading)', fontWeight: '600' }}>WCAG Level</th>
-                                    </tr>
-                                </thead>
-                                <tbody style={{ color: 'var(--color-on-surface-variant)' }}>
-                                    <tr style={{ borderBottom: '1px solid var(--color-outline-subtle)' }}>
-                                        <td style={{ padding: '12px' }}><span className="contrast-badge default">Default</span></td>
-                                        <td style={{ padding: '12px' }}>4.5:1</td>
-                                        <td style={{ padding: '12px' }}>3.0:1</td>
-                                        <td style={{ padding: '12px' }}>AA</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid var(--color-outline-subtle)' }}>
-                                        <td style={{ padding: '12px' }}><span className="contrast-badge high">High Contrast</span></td>
-                                        <td style={{ padding: '12px' }}>7.0:1</td>
-                                        <td style={{ padding: '12px' }}>4.5:1</td>
-                                        <td style={{ padding: '12px' }}>AAA</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ padding: '12px' }}><span className="contrast-badge extra-high">Extra-High</span></td>
-                                        <td style={{ padding: '12px' }}>9.0:1</td>
-                                        <td style={{ padding: '12px' }}>7.0:1</td>
-                                        <td style={{ padding: '12px' }}>AAA+</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div className="mode-grid">
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-info-container)', color: 'var(--color-on-info-container)' }}>
+                                        ☀️
+                                    </div>
+                                    <h3 className="mode-title">Light</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Standard light mode with comfortable contrast for everyday use.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">4.5:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">3.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AA ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-primary-container)', color: 'var(--color-on-primary-container)' }}>
+                                        🌙
+                                    </div>
+                                    <h3 className="mode-title">Dark</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Standard dark mode reducing eye strain in low-light conditions.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">4.5:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">3.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AA ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-warning-container)', color: 'var(--color-on-warning-container)' }}>
+                                        ☀️+
+                                    </div>
+                                    <h3 className="mode-title">Light High</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Enhanced contrast for bright environments or visual impairments.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">7.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">4.5:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AAA ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-secondary-container)', color: 'var(--color-on-secondary-container)' }}>
+                                        🌙+
+                                    </div>
+                                    <h3 className="mode-title">Dark High</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Enhanced dark mode with increased text clarity and readability.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">7.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">4.5:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AAA ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-error-container)', color: 'var(--color-on-error-container)' }}>
+                                        ☀️++
+                                    </div>
+                                    <h3 className="mode-title">Light Extra-High</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Maximum contrast for severe visual impairments or outdoor use.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">9.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">7.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AAA+ ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mode-card">
+                                <div className="mode-header">
+                                    <div className="mode-icon" style={{ background: 'var(--color-success-container)', color: 'var(--color-on-success-container)' }}>
+                                        🌙++
+                                    </div>
+                                    <h3 className="mode-title">Dark Extra-High</h3>
+                                </div>
+                                <p style={{ fontSize: '14px', color: 'var(--color-on-surface-variant)', margin: 0, lineHeight: '1.6' }}>
+                                    Ultimate dark mode contrast for accessibility compliance.
+                                </p>
+                                <div className="mode-meta">
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Text</span>
+                                        <span className="mode-meta-value">9.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">Container</span>
+                                        <span className="mode-meta-value">7.0:1</span>
+                                    </div>
+                                    <div className="mode-meta-item">
+                                        <span className="mode-meta-label">WCAG</span>
+                                        <span className="mode-meta-value">AAA+ ✓</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '32px 0 16px 0' }}>
@@ -381,49 +688,169 @@ export function Docs() {
                         </h2>
 
                         <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '24px' }}>
-                            100+ semantic tokens organized by purpose. Use these instead of hardcoded colors for automatic theme support.
+                            100+ semantic tokens organized by purpose. Use these instead of hardcoded colors for automatic theme support across all 6 modes.
                         </p>
 
-                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0 0 16px 0' }}>
-                            Primary Semantic Colors
-                        </h3>
-                        <div style={{ marginBottom: '24px' }}>
-                            <span className="token-chip">--color-primary</span>
-                            <span className="token-chip">--color-on-primary</span>
-                            <span className="token-chip">--color-primary-container</span>
-                            <span className="token-chip">--color-on-primary-container</span>
-                            <span className="token-chip">--color-primary-hover</span>
-                            <span className="token-chip">--color-primary-pressed</span>
+                        <div className="docs-card" style={{ padding: '0', overflow: 'hidden' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0', padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                Primary Colors
+                            </h3>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-primary)' }}></div>
+                                <div className="token-name">--color-primary</div>
+                                <div className="token-desc">Main brand color for buttons, links, and primary actions</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-on-primary)', border: '1px solid var(--color-outline-default)' }}></div>
+                                <div className="token-name">--color-on-primary</div>
+                                <div className="token-desc">Text and icons on primary color backgrounds</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-primary-container)' }}></div>
+                                <div className="token-name">--color-primary-container</div>
+                                <div className="token-desc">Subtle backgrounds for chips, badges, and highlights</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-on-primary-container)' }}></div>
+                                <div className="token-name">--color-on-primary-container</div>
+                                <div className="token-desc">Text on primary container backgrounds</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-primary-hover)' }}></div>
+                                <div className="token-name">--color-primary-hover</div>
+                                <div className="token-desc">Hover state for primary elements</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-primary-pressed)' }}></div>
+                                <div className="token-name">--color-primary-pressed</div>
+                                <div className="token-desc">Active/pressed state for primary elements</div>
+                            </div>
                         </div>
 
-                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '24px 0 16px 0' }}>
-                            Surface & Background
-                        </h3>
-                        <div style={{ marginBottom: '24px' }}>
-                            <span className="token-chip">--color-surface</span>
-                            <span className="token-chip">--color-surface-variant</span>
-                            <span className="token-chip">--color-background</span>
-                            <span className="token-chip">--color-on-surface-heading</span>
-                            <span className="token-chip">--color-on-surface-variant</span>
-                            <span className="token-chip">--color-surface-hover</span>
+                        <div className="docs-card" style={{ padding: '0', overflow: 'hidden', marginTop: '20px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0', padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                Surface & Background
+                            </h3>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-outline-default)' }}></div>
+                                <div className="token-name">--color-surface</div>
+                                <div className="token-desc">Card backgrounds, modals, dropdowns</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-surface-variant)' }}></div>
+                                <div className="token-name">--color-surface-variant</div>
+                                <div className="token-desc">Alternate surface for subtle differentiation</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-background)', border: '1px solid var(--color-outline-default)' }}></div>
+                                <div className="token-name">--color-background</div>
+                                <div className="token-desc">Main page background</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-on-surface-heading)' }}></div>
+                                <div className="token-name">--color-on-surface-heading</div>
+                                <div className="token-desc">Headings, titles, emphasized text</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-on-surface-variant)' }}></div>
+                                <div className="token-name">--color-on-surface-variant</div>
+                                <div className="token-desc">Body text, descriptions, secondary content</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-surface-hover)' }}></div>
+                                <div className="token-name">--color-surface-hover</div>
+                                <div className="token-desc">Hover state for surface elements (list items, rows)</div>
+                            </div>
                         </div>
 
-                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '24px 0 16px 0' }}>
-                            Outline & Focus
-                        </h3>
-                        <div style={{ marginBottom: '24px' }}>
-                            <span className="token-chip">--color-outline-default</span>
-                            <span className="token-chip">--color-outline-subtle</span>
-                            <span className="token-chip">--color-outline-strong</span>
-                            <span className="token-chip">--color-focus</span>
+                        <div className="docs-card" style={{ padding: '0', overflow: 'hidden', marginTop: '20px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0', padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                Semantic States
+                            </h3>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-error)' }}></div>
+                                <div className="token-name">--color-error</div>
+                                <div className="token-desc">Errors, destructive actions, validation failures</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-warning)' }}></div>
+                                <div className="token-name">--color-warning</div>
+                                <div className="token-desc">Warnings, caution alerts, important notices</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-success)' }}></div>
+                                <div className="token-name">--color-success</div>
+                                <div className="token-desc">Success messages, confirmations, positive states</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-info)' }}></div>
+                                <div className="token-name">--color-info</div>
+                                <div className="token-desc">Informational messages, tips, neutral alerts</div>
+                            </div>
                         </div>
 
-                        <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '24px 0 16px 0' }}>
-                            States
-                        </h3>
-                        <div>
-                            <span className="token-chip">--color-disabled</span>
-                            <span className="token-chip">--color-on-disabled</span>
+                        <div className="docs-card" style={{ padding: '0', overflow: 'hidden', marginTop: '20px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0', padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                Outline & Focus
+                            </h3>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-outline-default)' }}></div>
+                                <div className="token-name">--color-outline-default</div>
+                                <div className="token-desc">Default borders, dividers, input outlines</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-outline-subtle)' }}></div>
+                                <div className="token-name">--color-outline-subtle</div>
+                                <div className="token-desc">Subtle dividers, card borders</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-outline-strong)' }}></div>
+                                <div className="token-name">--color-outline-strong</div>
+                                <div className="token-desc">Emphasized borders, active states</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-focus)' }}></div>
+                                <div className="token-name">--color-focus</div>
+                                <div className="token-desc">Keyboard focus indicators (3px outline)</div>
+                            </div>
+                        </div>
+
+                        <div className="docs-card" style={{ padding: '0', overflow: 'hidden', marginTop: '20px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '0', padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)' }}>
+                                Disabled States
+                            </h3>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-disabled)' }}></div>
+                                <div className="token-name">--color-disabled</div>
+                                <div className="token-desc">Disabled button backgrounds, inactive elements</div>
+                            </div>
+                            
+                            <div className="token-row">
+                                <div className="token-swatch" style={{ background: 'var(--color-on-disabled)' }}></div>
+                                <div className="token-name">--color-on-disabled</div>
+                                <div className="token-desc">Text on disabled backgrounds</div>
+                            </div>
                         </div>
                     </section>
 
@@ -437,26 +864,60 @@ export function Docs() {
                             Figma Variables (Recommended)
                         </h3>
                         <p style={{ fontSize: '16px', color: 'var(--color-on-surface-variant)', lineHeight: '1.7', marginBottom: '16px' }}>
-                            Exports all 6 modes with platform-specific codeSyntax for seamless handoff:
+                            Exports all 6 modes with platform-specific codeSyntax for seamless design-to-code handoff:
                         </p>
-                        <div className="docs-code">
-{`{
-  "collectionName": "Color Palette",
-  "modes": ["Light", "Dark", "LightHigh", "DarkHigh", 
-            "LightExtraHigh", "DarkExtraHigh"],
-  "variables": [
-    {
-      "name": "primary/primary",
-      "type": "COLOR",
-      "values": ["#4c8bfd", "#4c8bfd", ...],
-      "codeSyntax": {
-        "WEB": "var(--color-primary)",
-        "IOS": "PrimaryColor.primary",
-        "ANDROID": "color_primary"
-      }
-    }
-  ]
-}`}
+                        
+                        <div className="docs-card" style={{ padding: 0, overflow: 'hidden' }}>
+                            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-outline-subtle)', background: 'var(--color-primary-container)' }}>
+                                <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-on-primary-container)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Export Structure</div>
+                                <div style={{ fontSize: '14px', color: 'var(--color-on-primary-container)', opacity: 0.9 }}>Single JSON file with multi-platform support</div>
+                            </div>
+                            
+                            <div style={{ padding: '24px' }}>
+                                <div style={{ marginBottom: '24px' }}>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-on-surface-heading)', marginBottom: '12px' }}>📦 Collection</div>
+                                    <div style={{ background: 'var(--color-surface-variant)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-outline-subtle)' }}>
+                                        <div style={{ fontFamily: 'Consolas, monospace', fontSize: '13px', color: 'var(--color-on-surface-heading)' }}>"collectionName": "Color Palette"</div>
+                                    </div>
+                                </div>
+                                
+                                <div style={{ marginBottom: '24px' }}>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-on-surface-heading)', marginBottom: '12px' }}>🎨 Modes (6 total)</div>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        {['Light', 'Dark', 'LightHigh', 'DarkHigh', 'LightExtraHigh', 'DarkExtraHigh'].map(mode => (
+                                            <div key={mode} style={{
+                                                background: 'var(--color-secondary-container)',
+                                                color: 'var(--color-on-secondary-container)',
+                                                padding: '8px 14px',
+                                                borderRadius: '6px',
+                                                fontSize: '13px',
+                                                fontWeight: '500',
+                                                fontFamily: 'Consolas, monospace'
+                                            }}>
+                                                {mode}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-on-surface-heading)', marginBottom: '12px' }}>💻 Platform CodeSyntax</div>
+                                    <div style={{ display: 'grid', gap: '12px' }}>
+                                        <div style={{ background: 'var(--color-surface-variant)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-outline-subtle)' }}>
+                                            <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px', textTransform: 'uppercase' }}>WEB</div>
+                                            <div style={{ fontFamily: 'Consolas, monospace', fontSize: '13px', color: 'var(--color-on-surface-heading)' }}>var(--color-primary)</div>
+                                        </div>
+                                        <div style={{ background: 'var(--color-surface-variant)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-outline-subtle)' }}>
+                                            <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>iOS (Swift)</div>
+                                            <div style={{ fontFamily: 'Consolas, monospace', fontSize: '13px', color: 'var(--color-on-surface-heading)' }}>PrimaryColor.primary</div>
+                                        </div>
+                                        <div style={{ background: 'var(--color-surface-variant)', padding: '16px', borderRadius: '8px', border: '1px solid var(--color-outline-subtle)' }}>
+                                            <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-success)', marginBottom: '8px', textTransform: 'uppercase' }}>ANDROID (Kotlin)</div>
+                                            <div style={{ fontFamily: 'Consolas, monospace', fontSize: '13px', color: 'var(--color-on-surface-heading)' }}>color_primary</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <h3 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--color-on-surface-heading)', margin: '32px 0 16px 0' }}>
