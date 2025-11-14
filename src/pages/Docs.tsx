@@ -191,9 +191,14 @@ export function Docs() {
                 }
                 .mode-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(2, 1fr);
                     gap: 16px;
                     margin: 24px 0;
+                }
+                @media(min-width: 768px) {
+                    .mode-grid {
+                        grid-template-columns: repeat(3, 1fr);
+                    }
                 }
                 .mode-card {
                     background: var(--color-surface);
