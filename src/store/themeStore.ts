@@ -106,6 +106,7 @@ interface ThemeState {
     // Advanced settings
     advancedSettings: {
         usePureNeutrals: boolean;
+        useHctModel: boolean;
         saturationMultiplier: number;
         temperatureShift: number;
         harmonyMode: 'none' | 'analogous' | 'complementary' | 'triadic';
@@ -146,6 +147,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
     // Advanced settings default
     advancedSettings: {
         usePureNeutrals: false,
+        useHctModel: false,
         saturationMultiplier: 1.0,
         temperatureShift: 0,
         harmonyMode: 'none',

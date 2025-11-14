@@ -86,6 +86,14 @@ export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps
                   description={<span>Remove color tint from neutral palette (chroma = 0)</span>}
                 />
 
+                {/* HCT Model Toggle */}
+                <Checkbox
+                  checked={advancedSettings.useHctModel}
+                  onChange={(v) => setAdvancedSettings({ useHctModel: v })}
+                  label={<span>Use Material Design 3 HCT</span>}
+                  description={<span>Enable Material Design tone-based contrast system (HCT color space)</span>}
+                />
+
                 {/* Saturation Multiplier */}
                 <div>
                     <label style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
