@@ -113,7 +113,7 @@ function createTokenSet(
     const n = scales.neutral; // neutrální škála
 
     // Určíme background pro výpočet kontrastu (SURFACE, ne neutral-0/1000!)
-    const backgroundHex = isLight ? n['0'] : n['950'];
+    const backgroundHex = isLight ? n['0'] : n['900'];
 
     // Cílové kontrasty podle režimu a typu tokenu
     // Kontrastní tabulka:
@@ -248,20 +248,20 @@ function createTokenSet(
     const fixPressed = s['600'];
     
     // C. GetOnColor (Pro text na barevném pozadí)
-    // VŽDY jen neutral-0 (bílá) nebo neutral-1000 (černá)
+    // VŽDY jen čistá bílá #ffffff nebo čistá černá #000000 (ne tinted neutrals!)
     // Respektuje lightness pozadí pro lepší vizuální hierarchii
     const getOnColor = (bgColor: string): string => {
-        // Převedeme hex na OKLCH a zjistíme lightness
+        // Převedeme hex na RGB a zjistíme luminance
         const rgb = hexToRgb(bgColor);
-        if (!rgb) return n['0']; // fallback
+        if (!rgb) return '#ffffff'; // fallback bílá
         
         const [r, g, b] = rgb;
-        // Aproximace relativní luminance (simplified)
+        // WCAG relativní luminance výpočet
         const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
         
-        // Pokud je pozadí světlé (> 50% lightness), použij černý text
-        // Pokud je pozadí tmavé (< 50% lightness), použij bílý text
-        return luminance > 0.5 ? n['1000'] : n['0'];
+        // Pokud je pozadí světlé (> 50% lightness), použij čistou černou
+        // Pokud je pozadí tmavé (< 50% lightness), použij čistou bílou
+        return luminance > 0.5 ? '#000000' : '#ffffff';
     };
     
     // Pomocná funkce pro převod hex -> RGB
@@ -360,10 +360,10 @@ function getTokens(
         '--color-background': isLight ? n['50'] : n['1000'],
         
         // surface-default: Výchozí pozadí komponent (karty, modály) - hlavní pozadí pro výpočty kontrastu
-        '--color-surface': isLight ? n['0'] : n['950'],
+        '--color-surface': isLight ? n['0'] : n['900'],
         
         // surface-variant: Pozadí pro odlišené sekce (tmavší na světlém, světlejší na tmavém)
-        '--color-surface-variant': isLight ? n['100'] : n['900'],
+        '--color-surface-variant': isLight ? n['100'] : n['800'],
         
         '--color-inverse-surface': isLight ? n['950'] : n['0'],
 
