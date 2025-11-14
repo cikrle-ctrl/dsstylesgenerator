@@ -15,7 +15,6 @@ import {
     type RadiusStrategy, 
     type ShadowStrategy 
 } from '../logic/surfaceAndRadius';
-import { generateTonalPalette } from '../logic/toneContrastSystem';
 import { type Oklch, oklch } from 'culori';
 
 // Výchozí hodnoty
