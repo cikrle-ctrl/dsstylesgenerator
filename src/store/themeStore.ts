@@ -394,9 +394,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
             // Pokud se změnilo stayTrueToInputColor, NEPŘEGENERUJ škály (zůstávají stejné)
             // Jen přegenerujeme tokeny s novým mappingem níže
             
-            // Neutral tinting podle zdroje
+            // Neutral tinting podle zdroje nebo pure neutrals
+            const neutralSource = updatedSettings.usePureNeutrals 
+                ? 'pure' 
+                : updatedSettings.neutralTintSource;
+            
             newScales.neutral = generateNeutralsFromSource(
-                updatedSettings.neutralTintSource,
+                neutralSource,
                 state.inputs.colors.primary,
                 state.inputs.colors.secondary,
                 updatedSettings.customNeutralTint
