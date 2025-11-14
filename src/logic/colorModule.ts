@@ -272,6 +272,53 @@ export function generateTriadicColors(baseColorHex: string): [string, string, st
 }
 
 /**
+ * Harmonické schéma: Split-Complementary (rozštěpená doplňková, 180° ± 30°)
+ * Base + dva sousedé complementu
+ */
+export function generateSplitComplementaryColors(baseColorHex: string): [string, string, string] {
+    const baseOklch = oklch(baseColorHex);
+    if (!baseOklch) return [baseColorHex, baseColorHex, baseColorHex];
+    
+    const hue1 = baseOklch.h || 0;
+    let hue2 = hue1 + 150; // 180 - 30
+    let hue3 = hue1 + 210; // 180 + 30
+    
+    while (hue2 >= 360) hue2 -= 360;
+    while (hue3 >= 360) hue3 -= 360;
+    
+    return [
+        baseColorHex,
+        formatHex(clampChroma({ ...baseOklch, h: hue2 }, 'oklch')),
+        formatHex(clampChroma({ ...baseOklch, h: hue3 }, 'oklch')),
+    ];
+}
+
+/**
+ * Harmonické schéma: Tetradic (čtyřúhelník, 60° a 180° intervaly)
+ * Vytváří obdélník na barevném kruhu
+ */
+export function generateTetradicColors(baseColorHex: string): [string, string, string, string] {
+    const baseOklch = oklch(baseColorHex);
+    if (!baseOklch) return [baseColorHex, baseColorHex, baseColorHex, baseColorHex];
+    
+    const hue1 = baseOklch.h || 0;
+    let hue2 = hue1 + 60;  // Adjacent
+    let hue3 = hue1 + 180; // Complementary
+    let hue4 = hue1 + 240; // Adjacent to complementary
+    
+    while (hue2 >= 360) hue2 -= 360;
+    while (hue3 >= 360) hue3 -= 360;
+    while (hue4 >= 360) hue4 -= 360;
+    
+    return [
+        baseColorHex,
+        formatHex(clampChroma({ ...baseOklch, h: hue2 }, 'oklch')),
+        formatHex(clampChroma({ ...baseOklch, h: hue3 }, 'oklch')),
+        formatHex(clampChroma({ ...baseOklch, h: hue4 }, 'oklch')),
+    ];
+}
+
+/**
  * Zvýší sytost škály pro high contrast režimy
  * Extra-high (AAA) dostane nejvyšší boost sytosti
  */

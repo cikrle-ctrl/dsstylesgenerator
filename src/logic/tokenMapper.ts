@@ -19,6 +19,7 @@
  */
 import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
+import { generateTonalPalette } from './toneContrastSystem';
 
 type ShadeScale = Record<string, string>;
 type CssTokenMap = Record<string, string>;
@@ -54,6 +55,46 @@ type CustomTones = {
     success?: { light?: number; dark?: number };
     info?: { light?: number; dark?: number };
 };
+
+/**
+ * Konvertuje HCT tonal palette na naš ShadeScale formát (0-1000 kroky)
+ * HCT používá tóny 0-100, my používáme 0-1000 po krocích 50
+ */
+function convertHctToScale(baseColor: string): ShadeScale {
+    const tonalPalette = generateTonalPalette(baseColor);
+    
+    // Mapování našich kroků na HCT tóny
+    const toneMapping: Record<string, number> = {
+        '0': 100,      // Nejsvětlejší
+        '50': 99,
+        '100': 95,
+        '150': 90,
+        '200': 85,
+        '250': 80,
+        '300': 70,
+        '350': 60,
+        '400': 50,
+        '450': 45,
+        '500': 40,     // Střední
+        '550': 35,
+        '600': 30,
+        '650': 25,
+        '700': 20,
+        '750': 15,
+        '800': 10,
+        '850': 8,
+        '900': 6,
+        '950': 4,
+        '1000': 0,     // Nejtmavší
+    };
+    
+    const scale: Record<string, string> = {};
+    for (const [step, tone] of Object.entries(toneMapping)) {
+        scale[step] = tonalPalette[tone];
+    }
+    
+    return scale as ShadeScale;
+}
 
 // Pomocná funkce pro generování sady tokenů (Primary, Secondary, Error...)
 function createTokenSet(
@@ -403,11 +444,26 @@ export function generateMappedTokens(
     scales: AllScales, 
     contrast: ContrastMode = 'default',
     stayTrueToInputColor = false,
+    useHctModel = false,
     inputColors?: InputColors,
     customTones?: CustomTones
 ) {
+    // Pokud je zapnutý HCT model, konvertuj škály na HCT tonal palettes
+    let processedScales = scales;
+    if (useHctModel && inputColors) {
+        processedScales = {
+            primary: convertHctToScale(inputColors.primary),
+            secondary: convertHctToScale(inputColors.secondary),
+            error: convertHctToScale(inputColors.error),
+            warning: convertHctToScale(inputColors.warning),
+            success: convertHctToScale(inputColors.success),
+            info: convertHctToScale(inputColors.info),
+            neutral: scales.neutral, // Neutral zůstává stejný
+        };
+    }
+    
     return {
-        light: getTokens(scales, 'light', contrast, stayTrueToInputColor, inputColors, customTones),
-        dark: getTokens(scales, 'dark', contrast, stayTrueToInputColor, inputColors, customTones),
+        light: getTokens(processedScales, 'light', contrast, stayTrueToInputColor, inputColors, customTones),
+        dark: getTokens(processedScales, 'dark', contrast, stayTrueToInputColor, inputColors, customTones),
     };
 }

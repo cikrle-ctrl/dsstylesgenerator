@@ -15,7 +15,8 @@ import {
     type RadiusStrategy, 
     type ShadowStrategy 
 } from '../logic/surfaceAndRadius';
-import { type Oklch, oklch } from 'culori'; // <-- TOTO JE TA OPRAVA
+import { generateTonalPalette } from '../logic/toneContrastSystem';
+import { type Oklch, oklch } from 'culori';
 
 // Výchozí hodnoty
 const defaultPrimary = '#0052cc';
@@ -25,7 +26,7 @@ const defaultShadow: ShadowStrategy = 'subtle';
 
 // --- Funkce pro generování výchozího stavu ---
 function generateInitialState() {
-    const primaryOklch = oklch(defaultPrimary) as Oklch; // <-- OPRAVA
+    const primaryOklch = oklch(defaultPrimary) as Oklch;
     const autoSemantics = autoGenerateSemantics(primaryOklch);
 
     const inputs = {
@@ -53,7 +54,7 @@ function generateInitialState() {
         info: generateShades(inputs.colors.info),
     };
 
-    const colorTokens = generateMappedTokens(scales, 'default', false);
+    const colorTokens = generateMappedTokens(scales, 'default', false, false, inputs.colors);
 
     const tokens = {
         light: colorTokens.light,
@@ -109,7 +110,7 @@ interface ThemeState {
         useHctModel: boolean;
         saturationMultiplier: number;
         temperatureShift: number;
-        harmonyMode: 'none' | 'analogous' | 'complementary' | 'triadic';
+        harmonyMode: 'none' | 'analogous' | 'complementary' | 'triadic' | 'split-complementary' | 'tetradic';
         stayTrueToInputColor: boolean;
         proMode: boolean;
         customTones?: {
@@ -176,6 +177,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 boostedScales, 
                 mode, 
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 state.inputs.colors,
                 state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );
@@ -258,6 +260,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 newInputs.colors,
                 state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );
@@ -283,6 +286,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 { ...state.inputs.colors, secondary: color }
             );
             return {
@@ -304,6 +308,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 { ...state.inputs.colors, error: color }
             );
             return {
@@ -325,6 +330,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 { ...state.inputs.colors, warning: color }
             );
             return {
@@ -346,6 +352,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 { ...state.inputs.colors, success: color }
             );
             return {
@@ -367,6 +374,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 state.advancedSettings.stayTrueToInputColor,
+                state.advancedSettings.useHctModel,
                 { ...state.inputs.colors, info: color }
             );
             return {
@@ -437,6 +445,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
                 newScales, 
                 state.ui.contrastMode,
                 updatedSettings.stayTrueToInputColor,
+                updatedSettings.useHctModel,
                 state.inputs.colors,
                 state.advancedSettings.proMode ? state.advancedSettings.customTones : undefined
             );

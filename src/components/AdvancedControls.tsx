@@ -2,7 +2,9 @@ import { useThemeStore } from '../store/themeStore';
 import { 
     generateAnalogousColor,
     generateComplementaryColor,
-    generateTriadicColors
+    generateTriadicColors,
+    generateSplitComplementaryColors,
+    generateTetradicColors
 } from '../logic/colorModule';
 import { Accordion } from './ui/Accordion';
 import { Settings } from 'lucide-react';
@@ -12,7 +14,7 @@ import { Select } from './ui/Select';
 import { ProModeControls } from './ProModeControls';
 import { NeutralTintControls } from './NeutralTintControls';
 
-type HarmonyMode = 'none' | 'analogous' | 'complementary' | 'triadic';
+type HarmonyMode = 'none' | 'analogous' | 'complementary' | 'triadic' | 'split-complementary' | 'tetradic';
 
 interface AdvancedControlsProps {
     isExpanded?: boolean;
@@ -52,6 +54,16 @@ export const AdvancedControls = ({ isExpanded, onToggle }: AdvancedControlsProps
             case 'triadic': {
                 const [, triadic1] = generateTriadicColors(primaryColor);
                 setSecondaryColor(triadic1);
+                break;
+            }
+            case 'split-complementary': {
+                const [, split1] = generateSplitComplementaryColors(primaryColor);
+                setSecondaryColor(split1);
+                break;
+            }
+            case 'tetradic': {
+                const [, tetra1] = generateTetradicColors(primaryColor);
+                setSecondaryColor(tetra1);
                 break;
             }
             case 'none':
