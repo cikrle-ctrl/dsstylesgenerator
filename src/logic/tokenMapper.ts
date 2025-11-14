@@ -121,9 +121,14 @@ function createTokenSet(
 
     // B. FindOptimalContainer (Pro kontejnery)
     // Kontejnery potřebují NIŽŠÍ kontrast (3.0:1 v default, 4.5:1 v high, 7.0:1 v extra-high)
-    // Light mode: světlejší tóny (100-300)
-    // Dark mode: tmavší tóny (700-900)
+    // Light mode: světlejší tóny
+    // Dark mode: tmavší tóny
     const containerStep = (() => {
+        // Pro default mode: pevné hodnoty 200 (light) a 800 (dark)
+        if (contrast === 'default') {
+            return isLight ? '200' : '800';
+        }
+        // Pro high contrast módy: dynamické hledání
         const range: [number, number] = isLight ? [100, 300] : [700, 900];
         return findOptimalStepByContrast(s, backgroundHex, containerContrast, range);
     })();
