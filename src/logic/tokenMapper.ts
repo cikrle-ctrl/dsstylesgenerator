@@ -412,7 +412,7 @@ function getTokens(
             // Pro default contrast mode používáme fixní kroky
             if (contrast === 'default') {
                 return {
-                    '--color-outline-subtle': isLight ? n['150'] : n['850'],
+                    '--color-outline-subtle': isLight ? n['150'] : n['800'],
                     '--color-outline-default': isLight ? n['300'] : n['700'],
                     '--color-outline-hover': isLight ? n['350'] : n['650'],
                     '--color-outline-pressed': isLight ? n['450'] : n['550'],
