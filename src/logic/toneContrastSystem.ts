@@ -180,17 +180,15 @@ export function applyTone(baseColor: string, tone: number): string {
 }
 
 /**
- * Generuje kompletní tone palette pro barvu (0-100 po 10)
+ * Generuje kompletní tone palette pro barvu (všechny hodnoty 0-100)
  */
 export function generateTonalPalette(baseColor: string): Record<number, string> {
     const palette: Record<number, string> = {};
     
-    // Material používá tone hodnoty: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100
-    const tones = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100];
-    
-    tones.forEach(tone => {
+    // Generuj všechny tóny 0-100 pro flexibilitu
+    for (let tone = 0; tone <= 100; tone++) {
         palette[tone] = applyTone(baseColor, tone);
-    });
+    }
     
     return palette;
 }
