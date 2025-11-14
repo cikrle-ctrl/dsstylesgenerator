@@ -82,9 +82,19 @@ const lightnessSteps = {
 
 ### Color Wheel Relationships
 
-Colors relate to each other based on their hue angles:
+Colors relate to each other based on their hue angles. Professional color harmonies create cohesive, visually pleasing palettes:
 
-#### 1. Analogous Colors (+30°)
+#### 1. None (Manual)
+Full manual control over color selection.
+
+```
+Primary: User-defined
+Secondary: User-defined (no automatic generation)
+```
+
+**Use**: When you have specific brand colors or need complete control.
+
+#### 2. Analogous Colors (+30°)
 Colors next to each other on the wheel.
 
 ```
@@ -93,10 +103,13 @@ Primary: 220° (Blue)
 Analogous: 250° (Blue-Purple)
 ```
 
-**Use**: Calm, harmonious palettes. Good for subtle differentiation.
+**Use**: Calm, harmonious palettes. Good for subtle differentiation and cohesive designs.
 
-#### 2. Complementary Colors (+180°)
-Opposite colors on the wheel.
+**Example**: Blue primary → Blue-violet secondary  
+**Best for**: Conservative brands, professional interfaces, serene applications
+
+#### 3. Complementary Colors (+180°)
+Opposite colors on the wheel (maximum contrast).
 
 ```
 Primary: 220° (Blue)
@@ -104,10 +117,13 @@ Primary: 220° (Blue)
 Complementary: 40° (Orange)
 ```
 
-**Use**: High contrast, vibrant palettes. Good for call-to-action elements.
+**Use**: High contrast, vibrant palettes. Creates visual tension and energy.
 
-#### 3. Triadic Colors (+120°, +240°)
-Three evenly spaced colors.
+**Example**: Blue primary → Orange secondary  
+**Best for**: Bold brands, call-to-action elements, high-impact designs
+
+#### 4. Triadic Colors (+120°)
+Three evenly spaced colors forming an equilateral triangle.
 
 ```
 Primary: 220° (Blue)
@@ -117,7 +133,54 @@ Secondary: 340° (Red-Purple)
 Tertiary: 100° (Yellow-Green)
 ```
 
-**Use**: Balanced, vibrant palettes. Good for diverse UI elements.
+**Use**: Balanced, vibrant palettes with equal visual weight.
+
+**Example**: Blue primary → Red-purple secondary  
+**Best for**: Versatile systems, multi-category apps, balanced brand identities
+
+#### 5. Split-Complementary Colors (+150°/+210°)
+Two colors adjacent to the complement (softer than pure complementary).
+
+```
+Primary: 220° (Blue)
+↓ +150°
+Split-Comp A: 10° (Yellow-Orange)
+↓ +210° from primary
+Split-Comp B: 70° (Red-Orange)
+```
+
+**Use**: Strong visual interest without the intensity of complementary.
+
+**Example**: Blue primary → Yellow-orange/Red-orange variants  
+**Best for**: Dynamic designs that need contrast but more harmony than complementary
+
+#### 6. Tetradic (Rectangle) Colors
+Four colors forming two complementary pairs (60°, 180°, 240°).
+
+```
+Primary: 220° (Blue)
+↓ +60°
+Color A: 280° (Purple)
+↓ +180° from primary
+Color B: 40° (Orange)
+↓ +240° from primary
+Color C: 100° (Yellow-Green)
+```
+
+**Use**: Richest harmony with maximum color variety.
+
+**Example**: Blue primary → Green-yellow secondary (complex four-color system)  
+**Best for**: Complex systems needing diverse color categories, rich visual experiences
+
+### Choosing the Right Harmony
+
+| Harmony | Contrast Level | Cohesion | Best Use Case |
+|---------|---------------|----------|---------------|
+| **Analogous** | Low | Very High | Professional, calm brands |
+| **Complementary** | Very High | Low | Bold, energetic designs |
+| **Triadic** | High | Medium | Balanced, versatile systems |
+| **Split-Complementary** | High | Medium-High | Dynamic with harmony |
+| **Tetradic** | Very High | Low-Medium | Complex, rich palettes |
 
 ---
 

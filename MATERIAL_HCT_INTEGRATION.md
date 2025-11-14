@@ -14,6 +14,39 @@ Unlike HSL or RGB, **HCT allows changing hue and chroma without affecting tone**
 - Guarantee precise contrast by changing tone only
 - Maintain consistent visual weight across the palette
 
+## 🔀 HCT vs OKLCH in This System
+
+### OKLCH Mode (Default)
+- **Scale**: 0-1000 steps (21 granular levels)
+- **Usage**: Custom design systems, flexible control
+- **Chroma**: Parabolic adaptive chroma with mid-tone boost
+- **Best for**: Most design systems needing granular control
+
+### HCT Mode (Material Design 3)
+- **Scale**: 0-100 tones (perceptual lightness mapping)
+- **Usage**: Material Design 3 applications
+- **Chroma**: Automatic reduction at extremes for gamut compliance
+- **Best for**: Google Material Design implementations
+
+### Tone-to-Step Mapping
+When HCT mode is enabled, our 0-1000 steps map to HCT 0-100 tones:
+
+```typescript
+const toneMapping: Record<string, number> = {
+    '0': 100,      // Lightest
+    '200': 85,
+    '400': 50,
+    '500': 40,     // Primary default
+    '800': 10,
+    '1000': 0,     // Darkest
+};
+```
+
+### Sublabels in HCT Mode
+- **OKLCH Mode**: Displays as `primary-500` (step notation)
+- **HCT Mode**: Displays as `primary/40` (tone notation)
+- Automatic switching based on active color model
+
 ## 🔬 Physical Color Limitations
 
 ### Why can't we have "bright light blue"?

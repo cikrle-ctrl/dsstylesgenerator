@@ -1,6 +1,30 @@
 # 🎨 DS Styles Generator - Feature Showcase
 
-> Professional Design System Generator with Material Design 3 principles, OKLCH color space, and comprehensive accessibility features.
+> Professional Design System Generator with Material Design 3 HCT model, OKLCH color space, color harmonies, and comprehensive accessibility features.
+
+---
+
+## 🌟 Core Features at a Glance
+
+### 🎨 Dual Color System
+- **OKLCH Mode** - 0-1000 step scale (21 granular steps)
+- **HCT Mode** - Material Design 3 with 0-100 tone scale
+- Seamless switching between color models
+- Perceptually uniform color generation
+
+### 🎭 Color Harmonies (6 Modes)
+- **None** - Manual color selection
+- **Analogous** - Adjacent colors (+30° hue)
+- **Complementary** - Opposite colors (+180° hue)
+- **Triadic** - Evenly spaced triangle (+120°)
+- **Split-Complementary** - Softer contrast (+150°/+210°)
+- **Tetradic** - Rectangle harmony (4 colors)
+
+### ♿ Accessibility First
+- **6 Accessibility Modes** - Light/Dark × Default/High/Extra-High
+- **WCAG Compliance** - AA (4.5:1) and AAA (7:1+) contrast
+- **Live Contrast Audit** - Real-time WCAG calculations
+- **Colorblind Simulation** - Preview for 4 vision types
 
 ---
 
