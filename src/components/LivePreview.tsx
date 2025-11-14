@@ -34,9 +34,9 @@ export const LivePreview = () => {
         if (contrastMode === 'high-contrast' || contrastMode === 'extra-high') {
             return {
                 ...baseStyles,
-                background: themeMode === 'light' ? '#fff' : '#000',
-                color: themeMode === 'light' ? '#000' : '#fff',
-                border: `2px solid ${themeMode === 'light' ? '#000' : '#fff'}`,
+                background: 'var(--color-surface)',
+                color: 'var(--color-on-surface-heading)',
+                border: '2px solid var(--color-outline-strong)',
                 // High contrast CSS variables override
                 ['--high-contrast-multiplier' as string]: '1.5'
             };
