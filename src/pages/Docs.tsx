@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useThemeStore } from '../store/themeStore';
 
 export function Docs() {
     const sections = useMemo(() => ([
@@ -27,8 +26,6 @@ export function Docs() {
         });
         return () => obs.disconnect();
     }, [sections]);
-
-    const { ui } = useThemeStore();
 
     return (
         <div style={{ 

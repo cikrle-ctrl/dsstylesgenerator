@@ -17,7 +17,7 @@
  * - Light/Dark módy
  * - Support pro high contrast režimy
  */
-import { findBestContrast, findOptimalStepByContrast, getContrast } from './contrastChecker';
+import { findBestContrast, findOptimalStepByContrast } from './contrastChecker';
 import { findClosestStepInScale } from './colorModule';
 
 type ShadeScale = Record<string, string>;
@@ -161,14 +161,30 @@ function createTokenSet(
     
     // C. GetOnColor (Pro text na barevném pozadí)
     // VŽDY jen neutral-0 (bílá) nebo neutral-1000 (černá)
-    // Vrací tu, která má LEPŠÍ kontrast
+    // Respektuje lightness pozadí pro lepší vizuální hierarchii
     const getOnColor = (bgColor: string): string => {
-        const contrastWhite = getContrast(bgColor, n['0']);
-        const contrastBlack = getContrast(bgColor, n['1000']);
+        // Převedeme hex na OKLCH a zjistíme lightness
+        const rgb = hexToRgb(bgColor);
+        if (!rgb) return n['0']; // fallback
         
-        // Vrať tu s lepším kontrastem
-        return contrastWhite > contrastBlack ? n['0'] : n['1000'];
+        const [r, g, b] = rgb;
+        // Aproximace relativní luminance (simplified)
+        const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        
+        // Pokud je pozadí světlé (> 50% lightness), použij černý text
+        // Pokud je pozadí tmavé (< 50% lightness), použij bílý text
+        return luminance > 0.5 ? n['1000'] : n['0'];
     };
+    
+    // Pomocná funkce pro převod hex -> RGB
+    function hexToRgb(hex: string): [number, number, number] | null {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : null;
+    }
     
     // D. GetOnContainerColor (Pro text na container pozadí)
     // Preferuj hodnoty ze škály: 900 > 1000 > 800 > 100 > 0
